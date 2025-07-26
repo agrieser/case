@@ -5,9 +5,9 @@ export async function getCurrentInvestigation(
   channelId: string
 ): Promise<string | null> {
   const state = await prisma.channelState.findUnique({
-    where: { channelId }
+    where: { channelId },
   });
-  
+
   return state?.currentInvestigation || null;
 }
 
@@ -20,10 +20,10 @@ export async function setCurrentInvestigation(
     where: { channelId },
     create: {
       channelId,
-      currentInvestigation: investigationName
+      currentInvestigation: investigationName,
     },
     update: {
-      currentInvestigation: investigationName
-    }
+      currentInvestigation: investigationName,
+    },
   });
 }

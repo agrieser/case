@@ -14,11 +14,11 @@ export async function handleStatus(
   try {
     // Get current investigation for this channel
     const currentInvestigation = await getCurrentInvestigation(prisma, command.channel_id);
-    
+
     if (!currentInvestigation) {
       await respond({
         text: '⚠️ No active investigation in this channel. Create one with `/trace investigate [title]`',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
       return;
     }
@@ -28,16 +28,16 @@ export async function handleStatus(
       where: { name: currentInvestigation },
       include: {
         _count: {
-          select: { events: true }
+          select: { events: true },
         },
-        incident: true
-      }
+        incident: true,
+      },
     });
 
     if (!investigation) {
       await respond({
         text: '⚠️ Investigation not found',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
       return;
     }
@@ -52,46 +52,46 @@ export async function handleStatus(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Current Investigation: ${investigation.name}*`
-          }
+            text: `*Current Investigation: ${investigation.name}*`,
+          },
         },
         {
           type: 'section',
           fields: [
             {
               type: 'mrkdwn',
-              text: `*Title:*\n${investigation.title}`
+              text: `*Title:*\n${investigation.title}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Status:*\n${investigation.status}`
+              text: `*Status:*\n${investigation.status}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Events:*\n${investigation._count.events}`
+              text: `*Events:*\n${investigation._count.events}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Duration:*\n${duration}`
+              text: `*Duration:*\n${duration}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Created by:*\n<@${investigation.createdBy}>`
+              text: `*Created by:*\n<@${investigation.createdBy}>`,
             },
             {
               type: 'mrkdwn',
-              text: `*Incident:*\n${investigation.incident ? '🚨 Escalated' : 'None'}`
-            }
-          ]
-        }
-      ]
+              text: `*Incident:*\n${investigation.incident ? '🚨 Escalated' : 'None'}`,
+            },
+          ],
+        },
+      ],
     });
   } catch (error) {
     // Log error safely
     console.error('Error in handleStatus:', error instanceof Error ? error.message : 'Unknown error');
     await respond({
       text: '⚠️ Failed to fetch status. Please try again.',
-      response_type: 'ephemeral'
+      response_type: 'ephemeral',
     });
   }
 }

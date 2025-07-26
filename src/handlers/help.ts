@@ -11,15 +11,15 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'header',
         text: {
           type: 'plain_text',
-          text: '🔍 Trace - Incident Management'
-        }
+          text: '🔍 Trace - Incident Management',
+        },
       },
       {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '*Available Commands:*'
-        }
+          text: '*Available Commands:*',
+        },
       },
       {
         type: 'section',
@@ -30,22 +30,22 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
                 '• `/trace status` - Show current investigation status\n' +
                 '• `/trace incident` - Escalate current investigation to incident\n' +
                 '• `/trace switch [name]` - Switch to different investigation in this channel\n' +
-                '• `/trace help` - Show this help message'
-        }
+                '• `/trace help` - Show this help message',
+        },
       },
       {
-        type: 'divider'
+        type: 'divider',
       },
       {
         type: 'context',
         elements: [
           {
             type: 'mrkdwn',
-            text: '*Note:* Use `/trace event` as a reply to any message to add it to the current investigation'
-          }
-        ]
-      }
+            text: '*Note:* Use `/trace event` as a reply to any message to add it to the current investigation',
+          },
+        ],
+      },
     ],
-    response_type: 'ephemeral'
+    response_type: 'ephemeral',
   });
 }

@@ -22,15 +22,15 @@ export async function handleSwitch(
       where: { name: validatedName },
       include: {
         _count: {
-          select: { events: true }
-        }
-      }
+          select: { events: true },
+        },
+      },
     });
 
     if (!investigation) {
       await respond({
         text: `⚠️ Investigation *${validatedName}* not found`,
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
       return;
     }
@@ -45,26 +45,26 @@ export async function handleSwitch(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Switched to investigation: *${validatedName}*`
-          }
+            text: `✅ Switched to investigation: *${validatedName}*`,
+          },
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
             // Sanitize title before display
-            text: `*Title:* ${sanitizeInput(investigation.title)}\n*Status:* ${investigation.status}\n*Events:* ${investigation._count.events}`
-          }
-        }
-      ]
+            text: `*Title:* ${sanitizeInput(investigation.title)}\n*Status:* ${investigation.status}\n*Events:* ${investigation._count.events}`,
+          },
+        },
+      ],
     });
   } catch (error) {
     // Log error safely
     console.error('Error in handleSwitch:', error instanceof Error ? error.message : 'Unknown error');
-    
+
     await respond({
       text: createSafeErrorMessage(error),
-      response_type: 'ephemeral'
+      response_type: 'ephemeral',
     });
   }
 }

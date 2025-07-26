@@ -14,11 +14,11 @@ export async function handleEvent(
   try {
     // Get current investigation for this channel
     const currentInvestigation = await getCurrentInvestigation(prisma, command.channel_id);
-    
+
     if (!currentInvestigation) {
       await respond({
         text: '⚠️ No active investigation in this channel. Create one with `/trace investigate [title]`',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
       return;
     }
@@ -33,8 +33,8 @@ export async function handleEvent(
       data: {
         investigationName: currentInvestigation,
         slackMessageUrl,
-        addedBy: command.user_id
-      }
+        addedBy: command.user_id,
+      },
     });
 
     // Get investigation details
@@ -42,9 +42,9 @@ export async function handleEvent(
       where: { name: currentInvestigation },
       include: {
         _count: {
-          select: { events: true }
-        }
-      }
+          select: { events: true },
+        },
+      },
     });
 
     await respond({
@@ -54,26 +54,26 @@ export async function handleEvent(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Event added to investigation *${currentInvestigation}*`
-          }
+            text: `✅ Event added to investigation *${currentInvestigation}*`,
+          },
         },
         {
           type: 'context',
           elements: [
             {
               type: 'mrkdwn',
-              text: `Investigation: ${investigation?.title} • Events: ${investigation?._count.events || 0}`
-            }
-          ]
-        }
-      ]
+              text: `Investigation: ${investigation?.title} • Events: ${investigation?._count.events || 0}`,
+            },
+          ],
+        },
+      ],
     });
   } catch (error) {
     // Log error safely
     console.error('Error in handleEvent:', error instanceof Error ? error.message : 'Unknown error');
     await respond({
       text: '⚠️ Failed to add event. Please try again.',
-      response_type: 'ephemeral'
+      response_type: 'ephemeral',
     });
   }
 }

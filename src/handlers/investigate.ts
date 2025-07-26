@@ -21,7 +21,7 @@ export async function handleInvestigate(
     // Generate unique name based on title
     const name = await generateUniqueName(validatedTitle, async (n) => {
       const existing = await prisma.investigation.findUnique({
-        where: { name: n }
+        where: { name: n },
       });
       return !!existing;
     });
@@ -32,8 +32,8 @@ export async function handleInvestigate(
         name,
         title: validatedTitle,
         channelId: command.channel_id,
-        createdBy: command.user_id
-      }
+        createdBy: command.user_id,
+      },
     });
 
     // Set as current investigation for this channel
@@ -46,35 +46,35 @@ export async function handleInvestigate(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Investigation created: *${name}*`
-          }
+            text: `✅ Investigation created: *${name}*`,
+          },
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
             // Title is already sanitized, safe to display
-            text: `*Title:* ${validatedTitle}\n*Channel:* <#${command.channel_id}>\n*Created by:* <@${command.user_id}>`
-          }
+            text: `*Title:* ${validatedTitle}\n*Channel:* <#${command.channel_id}>\n*Created by:* <@${command.user_id}>`,
+          },
         },
         {
           type: 'context',
           elements: [
             {
               type: 'mrkdwn',
-              text: 'Reply to any message with `/trace event` to add it to this investigation'
-            }
-          ]
-        }
-      ]
+              text: 'Reply to any message with `/trace event` to add it to this investigation',
+            },
+          ],
+        },
+      ],
     });
   } catch (error) {
     // Log error safely without exposing sensitive details
     console.error('Error in handleInvestigate:', error instanceof Error ? error.message : 'Unknown error');
-    
+
     await respond({
       text: createSafeErrorMessage(error),
-      response_type: 'ephemeral'
+      response_type: 'ephemeral',
     });
   }
 }

@@ -18,15 +18,15 @@ const keywordMap: Record<string, string[]> = {
   'network': ['connected', 'linked', 'routed', 'transmitted'],
   'memory': ['cached', 'stored', 'allocated', 'buffered'],
   'cpu': ['processed', 'computed', 'calculated', 'executed'],
-  
+
   // General descriptors
   'issue': ['troubled', 'problematic', 'affected', 'impacted'],
   'problem': ['troubled', 'problematic', 'affected', 'impacted'],
   'investigation': ['curious', 'searching', 'hunting', 'tracking'],
   'incident': ['urgent', 'critical', 'alerted', 'escalated'],
-  
+
   // Default fallbacks
-  'default': ['mysterious', 'unknown', 'general', 'standard']
+  'default': ['mysterious', 'unknown', 'general', 'standard'],
 };
 
 // Animals/nouns grouped by characteristics
@@ -34,29 +34,29 @@ const nounGroups: Record<string, string[]> = {
   // Fast/performance related
   'swift': ['falcon', 'cheetah', 'hawk', 'eagle', 'gazelle'],
   'rapid': ['falcon', 'cheetah', 'hawk', 'eagle', 'gazelle'],
-  
+
   // Strong/reliable
   'persistent': ['elephant', 'tortoise', 'oak', 'mountain', 'boulder'],
   'stored': ['squirrel', 'bear', 'vault', 'archive', 'cache'],
-  
+
   // Network/connected
   'connected': ['spider', 'web', 'network', 'mesh', 'grid'],
   'linked': ['chain', 'bridge', 'connector', 'junction', 'hub'],
-  
+
   // Visual/design
   'styled': ['peacock', 'butterfly', 'rainbow', 'prism', 'palette'],
   'visual': ['eagle', 'hawk', 'observer', 'watcher', 'viewer'],
-  
+
   // Security related
   'secured': ['fortress', 'guardian', 'sentinel', 'shield', 'vault'],
   'protected': ['guardian', 'defender', 'armor', 'barrier', 'wall'],
-  
+
   // Problem/issue related
   'broken': ['puzzle', 'fracture', 'glitch', 'anomaly', 'defect'],
   'troubled': ['storm', 'tempest', 'chaos', 'turbulence', 'vortex'],
-  
+
   // Default animals
-  'default': ['wolf', 'bear', 'fox', 'raven', 'owl', 'tiger', 'lion', 'dragon']
+  'default': ['wolf', 'bear', 'fox', 'raven', 'owl', 'tiger', 'lion', 'dragon'],
 };
 
 /**
@@ -65,7 +65,7 @@ const nounGroups: Record<string, string[]> = {
 function extractKeywords(title: string): string[] {
   const words = title.toLowerCase().split(/\s+/);
   const keywords: string[] = [];
-  
+
   for (const word of words) {
     // Check if word or its stem matches any keyword
     for (const keyword of Object.keys(keywordMap)) {
@@ -74,7 +74,7 @@ function extractKeywords(title: string): string[] {
       }
     }
   }
-  
+
   return keywords.length > 0 ? keywords : ['default'];
 }
 
@@ -83,12 +83,12 @@ function extractKeywords(title: string): string[] {
  */
 function getDescriptor(keywords: string[]): string {
   const descriptors: string[] = [];
-  
+
   for (const keyword of keywords) {
     const mapped = keywordMap[keyword] || keywordMap['default'];
     descriptors.push(...mapped);
   }
-  
+
   // Remove duplicates and pick random
   const unique = [...new Set(descriptors)];
   return unique[Math.floor(Math.random() * unique.length)];
@@ -100,18 +100,18 @@ function getDescriptor(keywords: string[]): string {
 function getNoun(descriptor: string): string {
   // Find noun groups that match the descriptor
   const matchingGroups: string[] = [];
-  
+
   for (const [key, nouns] of Object.entries(nounGroups)) {
     if (descriptor.includes(key) || key.includes(descriptor)) {
       matchingGroups.push(...nouns);
     }
   }
-  
+
   // If no matches, use default
   if (matchingGroups.length === 0) {
     matchingGroups.push(...nounGroups['default']);
   }
-  
+
   // Remove duplicates and pick random
   const unique = [...new Set(matchingGroups)];
   return unique[Math.floor(Math.random() * unique.length)];
@@ -134,16 +134,16 @@ function generateHash(input: string): string {
 export function generateInvestigationName(title: string): string {
   // Extract keywords from title
   const keywords = extractKeywords(title);
-  
+
   // Get descriptor based on keywords
   const descriptor = getDescriptor(keywords);
-  
+
   // Get noun based on descriptor
   const noun = getNoun(descriptor);
-  
+
   // Add short hash for uniqueness
   const hash = generateHash(title);
-  
+
   return `trace-${descriptor}-${noun}-${hash}`;
 }
 
@@ -156,24 +156,24 @@ export async function generateUniqueName(
 ): Promise<string> {
   let attempts = 0;
   const maxAttempts = 10;
-  
+
   while (attempts < maxAttempts) {
     const name = generateInvestigationName(title);
     const exists = await checkExists(name);
-    
+
     if (!exists) {
       return name;
     }
-    
+
     attempts++;
   }
-  
+
   // Fallback with longer hash if we can't find a unique name
   const longHash = crypto
     .createHash('sha256')
     .update(title + Date.now().toString() + Math.random())
     .digest('hex')
     .substring(0, 8);
-    
+
   return `trace-investigation-${longHash}`;
 }
