@@ -68,18 +68,23 @@ Trace implements a structured incident management methodology that emphasizes in
 
 ### Lifecycle Example
 
-```
-Alert fires → Create investigation → Collect evidence → Assess severity
-  ↓                                                         ↓
-  └─→ Minor issue: Fix and close ←─────────────────────────┘
-                                                           ↓
-                                                    Major issue: Escalate to incident
-                                                           ↓
-                                                    Respond and resolve incident
-                                                           ↓
-                                                    Complete follow-up work
-                                                           ↓
-                                                    Close investigation
+```mermaid
+flowchart TD
+    A[Alert fires] --> B[Create investigation]
+    B --> C[Collect evidence]
+    C --> D{Assess severity}
+
+    D -->|Minor issue| E[Fix and close]
+    D -->|Major issue| F[Escalate to incident]
+
+    F --> G[Respond and resolve incident]
+    G --> H[Complete follow-up work]
+    H --> I[Close investigation]
+
+    style A fill:#fee2e2
+    style B fill:#dbeafe
+    style F fill:#fef3c7
+    style I fill:#d1fae5
 ```
 
 ## 🚀 Getting Started
@@ -238,6 +243,7 @@ When you "Add to Investigation", Trace only stores a link to the message - it ca
 ### Required Slack Permissions
 
 Trace uses only these minimal permissions:
+
 - `commands`: Respond to slash commands
 - `chat:write`: Post messages to channels
 - `channels:manage`: Create and archive investigation channels
