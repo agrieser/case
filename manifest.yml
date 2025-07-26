@@ -9,23 +9,15 @@ features:
   slash_commands:
     - command: /trace
       description: Manage events, investigations, and incidents
-      usage_hint: "[emergency|event|investigate|incident|help]"
+      usage_hint: "[event|investigate|incident|help]"
       should_escape: false
 oauth_config:
   scopes:
     bot:
-      - channels:history
-      - channels:read
-      - chat:write
       - commands
-      - groups:history
-      - groups:read
-      - im:history
-      - im:read
-      - im:write
-      - mpim:history
-      - mpim:read
-      - users:read
+      - chat:write
+      - channels:manage
+      - channels:write.invites
 settings:
   event_subscriptions:
     bot_events: []

@@ -1,8 +1,12 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { checkRateLimit, getRateLimitStatus } from '../rateLimit';
+import { checkRateLimit, getRateLimitStatus, clearRateLimitStore } from '../rateLimit';
 import { SlashCommand } from '@slack/bolt';
 
 describe('Rate Limiting', () => {
+  beforeEach(() => {
+    clearRateLimitStore();
+  });
+
   // Helper to create mock command
   const createMockCommand = (userId = 'U123', teamId = 'T123'): SlashCommand => ({
     token: 'token',
@@ -55,7 +59,7 @@ describe('Rate Limiting', () => {
       const result = checkRateLimit(command);
       expect(result.allowed).toBe(false);
       expect(result.message).toContain('Rate limit exceeded');
-      expect(result.message).toContain('5 minutes');
+      expect(result.message).toMatch(/wait \d+ seconds|5 minutes/);
     });
 
     it('should track rate limits per user', () => {

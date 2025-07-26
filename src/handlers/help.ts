@@ -25,11 +25,10 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '• `/trace investigate [title]` - Create new investigation (becomes current in channel)\n' +
-                '• `/trace event` - Add replied message as event to current investigation\n' +
-                '• `/trace status` - Show current investigation status\n' +
-                '• `/trace incident` - Escalate current investigation to incident\n' +
-                '• `/trace switch [name]` - Switch to different investigation in this channel\n' +
+          text: '• `/trace investigate [title]` - Create new investigation and dedicated channel\n' +
+                '• `/trace event` - Add replied message as event to this channel\'s investigation\n' +
+                '• `/trace status` - Show investigation status for this channel\n' +
+                '• `/trace incident` - Escalate this investigation to incident\n' +
                 '• `/trace help` - Show this help message',
         },
       },

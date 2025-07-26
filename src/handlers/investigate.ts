@@ -1,20 +1,27 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
+import { WebClient } from '@slack/web-api';
 import { PrismaClient } from '@prisma/client';
 import { generateUniqueName } from '../utils/nameGenerator';
-import { setCurrentInvestigation } from '../utils/channelState';
 import { validateTitle, createSafeErrorMessage } from '../middleware/validation';
 
 interface InvestigateContext {
   command: SlackCommandMiddlewareArgs['command'];
   respond: RespondFn;
   title: string;
+  client: WebClient;
 }
 
 export async function handleInvestigate(
-  { command, respond, title }: InvestigateContext,
+  { command, respond, title, client }: InvestigateContext,
   prisma: PrismaClient
 ): Promise<void> {
   try {
+    // Validate required fields
+    if (!command.user_id) {
+      throw new Error('User ID is required');
+    }
+    const userId = command.user_id;
+
     // Validate and sanitize title
     const validatedTitle = validateTitle(title);
 
@@ -26,18 +33,49 @@ export async function handleInvestigate(
       return !!existing;
     });
 
-    // Create investigation
+    // Create Slack channel for the investigation
+    const channelResult = await client.conversations.create({
+      name: name.replace(/^trace-/, ''), // Remove 'trace-' prefix for channel name
+      is_private: false,
+    });
+
+    if (!channelResult.ok || !channelResult.channel || !channelResult.channel.id) {
+      throw new Error('Failed to create Slack channel');
+    }
+
+    const channelId = channelResult.channel.id;
+
+    // Create investigation with the new channel ID
     await prisma.investigation.create({
       data: {
         name,
         title: validatedTitle,
-        channelId: command.channel_id,
-        createdBy: command.user_id,
+        channelId,
+        createdBy: userId,
       },
     });
 
-    // Set as current investigation for this channel
-    await setCurrentInvestigation(prisma, command.channel_id, name);
+    // Join the channel as the bot first
+    try {
+      await client.conversations.join({
+        channel: channelId,
+      });
+    } catch (error: any) {
+      console.error('Bot failed to join channel:', error?.data?.error || error);
+    }
+
+    // Invite the user who created the investigation to the channel
+    try {
+      await client.conversations.invite({
+        channel: channelId,
+        users: userId,
+      });
+    } catch (error: any) {
+      // Only log if it's not an already_in_channel error
+      if (error?.data?.error !== 'already_in_channel') {
+        console.error('Failed to add user to channel:', error?.data?.error || error);
+      }
+    }
 
     await respond({
       response_type: 'in_channel',
@@ -54,7 +92,7 @@ export async function handleInvestigate(
           text: {
             type: 'mrkdwn',
             // Title is already sanitized, safe to display
-            text: `*Title:* ${validatedTitle}\n*Channel:* <#${command.channel_id}>\n*Created by:* <@${command.user_id}>`,
+            text: `*Title:* ${validatedTitle}\n*Channel:* <#${channelId}>\n*Created by:* <@${userId}>`,
           },
         },
         {
@@ -62,7 +100,7 @@ export async function handleInvestigate(
           elements: [
             {
               type: 'mrkdwn',
-              text: 'Reply to any message with `/trace event` to add it to this investigation',
+              text: `Head to <#${channelId}> to collaborate on this investigation. Use \`/trace event\` to add evidence.`,
             },
           ],
         },

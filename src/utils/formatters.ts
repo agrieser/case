@@ -74,7 +74,7 @@ export function formatIncident(incident: IncidentWithRelations): SectionBlock {
     fields: [
       {
         type: 'mrkdwn',
-        text: `*Investigation:*\n${incident.investigationName}`,
+        text: `*Investigation:*\n${incident.investigation?.name || incident.investigationId}`,
       },
       {
         type: 'mrkdwn',

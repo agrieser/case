@@ -102,3 +102,8 @@ export function getRateLimitStatus(teamId: string, userId: string, command: stri
       : undefined,
   };
 }
+
+// For testing - allow clearing the store
+export function clearRateLimitStore(): void {
+  rateLimitStore.clear();
+}

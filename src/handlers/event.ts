@@ -1,6 +1,5 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
 import { PrismaClient } from '@prisma/client';
-import { getCurrentInvestigation } from '../utils/channelState';
 
 interface EventContext {
   command: SlackCommandMiddlewareArgs['command'];
@@ -12,12 +11,14 @@ export async function handleEvent(
   prisma: PrismaClient
 ): Promise<void> {
   try {
-    // Get current investigation for this channel
-    const currentInvestigation = await getCurrentInvestigation(prisma, command.channel_id);
+    // Find investigation by channel ID
+    const investigation = await prisma.investigation.findUnique({
+      where: { channelId: command.channel_id },
+    });
 
-    if (!currentInvestigation) {
+    if (!investigation) {
       await respond({
-        text: '⚠️ No active investigation in this channel. Create one with `/trace investigate [title]`',
+        text: '⚠️ This channel is not associated with an investigation. Create one with `/trace investigate [title]`',
         response_type: 'ephemeral',
       });
       return;
@@ -31,20 +32,15 @@ export async function handleEvent(
     // Create event
     await prisma.event.create({
       data: {
-        investigationName: currentInvestigation,
+        investigationId: investigation.id,
         slackMessageUrl,
         addedBy: command.user_id,
       },
     });
 
-    // Get investigation details
-    const investigation = await prisma.investigation.findUnique({
-      where: { name: currentInvestigation },
-      include: {
-        _count: {
-          select: { events: true },
-        },
-      },
+    // Get updated event count
+    const eventCount = await prisma.event.count({
+      where: { investigationId: investigation.id },
     });
 
     await respond({
@@ -54,7 +50,7 @@ export async function handleEvent(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Event added to investigation *${currentInvestigation}*`,
+            text: `✅ Event added to investigation *${investigation.name}*`,
           },
         },
         {
@@ -62,7 +58,7 @@ export async function handleEvent(
           elements: [
             {
               type: 'mrkdwn',
-              text: `Investigation: ${investigation?.title} • Events: ${investigation?._count.events || 0}`,
+              text: `Investigation: ${investigation.title} • Events: ${eventCount}`,
             },
           ],
         },

@@ -1,6 +1,5 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
 import { PrismaClient } from '@prisma/client';
-import { getCurrentInvestigation } from '../utils/channelState';
 
 interface StatusContext {
   command: SlackCommandMiddlewareArgs['command'];
@@ -12,20 +11,9 @@ export async function handleStatus(
   prisma: PrismaClient
 ): Promise<void> {
   try {
-    // Get current investigation for this channel
-    const currentInvestigation = await getCurrentInvestigation(prisma, command.channel_id);
-
-    if (!currentInvestigation) {
-      await respond({
-        text: '⚠️ No active investigation in this channel. Create one with `/trace investigate [title]`',
-        response_type: 'ephemeral',
-      });
-      return;
-    }
-
     // Get investigation details with event count
     const investigation = await prisma.investigation.findUnique({
-      where: { name: currentInvestigation },
+      where: { channelId: command.channel_id },
       include: {
         _count: {
           select: { events: true },
@@ -36,7 +24,7 @@ export async function handleStatus(
 
     if (!investigation) {
       await respond({
-        text: '⚠️ Investigation not found',
+        text: '⚠️ This channel is not associated with an investigation. Create one with `/trace investigate [title]`',
         response_type: 'ephemeral',
       });
       return;

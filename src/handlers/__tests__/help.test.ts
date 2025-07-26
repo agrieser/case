@@ -44,7 +44,6 @@ describe('handleHelp', () => {
     expect(helpText).toContain('/trace event');
     expect(helpText).toContain('/trace status');
     expect(helpText).toContain('/trace incident');
-    expect(helpText).toContain('/trace switch');
     expect(helpText).toContain('/trace help');
   });
 });

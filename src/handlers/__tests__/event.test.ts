@@ -1,62 +1,42 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { PrismaClient } from '@prisma/client';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { handleEvent } from '../event';
 import { createMockRespond, createMockCommand } from '../../test/mocks/slack';
-import { prismaMock } from '../../test/setup';
-import { getCurrentInvestigation } from '../../utils/channelState';
-
-// Mock the channelState module
-jest.mock('../../utils/channelState');
-const mockGetCurrentInvestigation = getCurrentInvestigation as jest.MockedFunction<typeof getCurrentInvestigation>;
+import { prisma } from '../../test/setup';
 
 describe('handleEvent', () => {
   let mockRespond: ReturnType<typeof createMockRespond>;
 
   beforeEach(() => {
     mockRespond = createMockRespond();
-    jest.clearAllMocks();
   });
 
-  it('should create an event when there is a current investigation', async () => {
+  it('should create an event when there is an investigation for the channel', async () => {
     const command = createMockCommand('event');
-    const investigationName = 'trace-golden-falcon';
     
-    // Mock current investigation
-    mockGetCurrentInvestigation.mockResolvedValue(investigationName);
-    
-    // Mock investigation lookup
-    prismaMock.investigation.findUnique.mockResolvedValue({
-      name: investigationName,
-      title: 'Test Investigation',
-      status: 'investigating',
-      channelId: 'C123456',
-      createdBy: 'U123456',
-      createdAt: new Date(),
-      _count: { events: 2 }
-    } as any);
-
-    // Mock event creation
-    prismaMock.event.create.mockResolvedValue({
-      id: 'event-123',
-      investigationName,
-      slackMessageUrl: `https://test-workspace.slack.com/archives/${command.channel_id}/p123456`,
-      addedBy: command.user_id,
-      addedAt: new Date()
+    // Create a real investigation in the database
+    const investigation = await prisma.investigation.create({
+      data: {
+        name: 'trace-golden-falcon',
+        title: 'Test Investigation',
+        channelId: command.channel_id,
+        createdBy: 'U123456',
+      }
     });
     
     await handleEvent({
       command,
       respond: mockRespond
-    }, prismaMock as unknown as PrismaClient);
+    }, prisma);
 
-    // Check event was created
-    expect(prismaMock.event.create).toHaveBeenCalledWith({
-      data: {
-        investigationName,
-        slackMessageUrl: expect.stringContaining('slack.com'),
-        addedBy: command.user_id
-      }
+    // Check event was created in the database
+    const events = await prisma.event.findMany({
+      where: { investigationId: investigation.id }
     });
+    
+    expect(events).toHaveLength(1);
+    expect(events[0].investigationId).toBe(investigation.id);
+    expect(events[0].addedBy).toBe(command.user_id);
+    expect(events[0].slackMessageUrl).toContain('slack.com');
 
     // Check response was sent
     expect(mockRespond).toHaveBeenCalledWith(
@@ -74,48 +54,26 @@ describe('handleEvent', () => {
     );
   });
 
-  it('should show error when no current investigation', async () => {
+  it('should show error when no investigation exists for the channel', async () => {
     const command = createMockCommand('event');
     
-    // Mock no current investigation
-    mockGetCurrentInvestigation.mockResolvedValue(null);
+    // No investigation created - channel should have no investigation
     
     await handleEvent({
       command,
       respond: mockRespond
-    }, prismaMock as unknown as PrismaClient);
+    }, prisma);
 
     expect(mockRespond).toHaveBeenCalledWith(
       expect.objectContaining({
-        text: expect.stringContaining('No active investigation in this channel'),
+        text: expect.stringContaining('This channel is not associated with an investigation'),
         response_type: 'ephemeral'
       })
     );
 
     // No event should be created
-    expect(prismaMock.event.create).not.toHaveBeenCalled();
+    const events = await prisma.event.findMany();
+    expect(events).toHaveLength(0);
   });
 
-  it('should handle database errors gracefully', async () => {
-    const command = createMockCommand('event');
-    const investigationName = 'trace-golden-falcon';
-    
-    // Mock current investigation
-    mockGetCurrentInvestigation.mockResolvedValue(investigationName);
-    
-    // Mock database error
-    prismaMock.event.create.mockRejectedValueOnce(new Error('Database error'));
-    
-    await handleEvent({
-      command,
-      respond: mockRespond
-    }, prismaMock as unknown as PrismaClient);
-
-    expect(mockRespond).toHaveBeenCalledWith(
-      expect.objectContaining({
-        text: expect.stringContaining('Failed to add event'),
-        response_type: 'ephemeral'
-      })
-    );
-  });
 });

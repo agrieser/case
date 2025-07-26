@@ -7,7 +7,7 @@ describe('formatters', () => {
     it('should format event correctly', () => {
       const event: Event = {
         id: 'event-123',
-        investigationName: 'trace-golden-falcon',
+        investigationId: 'inv-123',
         slackMessageUrl: 'https://slack.com/archives/C123/p123',
         addedBy: 'U123456',
         addedAt: new Date('2024-01-15T10:00:00Z')
@@ -26,6 +26,7 @@ describe('formatters', () => {
   describe('formatInvestigation', () => {
     it('should format investigation correctly', () => {
       const investigation: Investigation & { _count: { events: number } } = {
+        id: 'inv-123',
         name: 'trace-golden-falcon',
         title: 'API response times increasing',
         status: 'investigating' as InvestigationStatus,
@@ -48,10 +49,20 @@ describe('formatters', () => {
 
   describe('formatIncident', () => {
     it('should format incident correctly', () => {
-      const incident: Incident = {
-        investigationName: 'trace-golden-falcon',
+      const incident: Incident & { investigation?: Investigation } = {
+        id: 'inc-123',
+        investigationId: 'inv-123',
         incidentCommander: 'U789012',
-        escalatedAt: new Date('2024-01-15T11:00:00Z')
+        escalatedAt: new Date('2024-01-15T11:00:00Z'),
+        investigation: {
+          id: 'inv-123',
+          name: 'trace-golden-falcon',
+          title: 'Test Investigation',
+          status: 'escalated' as InvestigationStatus,
+          channelId: 'C123456',
+          createdBy: 'U123456',
+          createdAt: new Date('2024-01-15T10:00:00Z')
+        }
       };
 
       const formatted = formatIncident(incident);

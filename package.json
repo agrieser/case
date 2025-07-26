@@ -1,7 +1,7 @@
 {
-  "name": "track",
+  "name": "trace",
   "version": "1.0.0",
-  "description": "## Overview Build a Slack app called \"Trace\" that implements our incident management methodology. The app helps teams track the flow from events → investigations → incidents, with support for both methodical investigation workflows and emergency \"site is down\" situations.",
+  "description": "## Overview Build a Slack app called \"Trace\" that implements our incident management methodology. The app helps teams trace the flow from events → investigations → incidents, with support for both methodical investigation workflows and emergency \"site is down\" situations.",
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -11,21 +11,22 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "test": "jest",
+    "test:setup": "dotenv -e .env.test -- prisma migrate reset --force --skip-seed",
+    "test": "dotenv -e .env.test -- jest --forceExit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/agrieser/track.git"
+    "url": "git+https://github.com/agrieser/trace.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/agrieser/track/issues"
+    "url": "https://github.com/agrieser/trace/issues"
   },
-  "homepage": "https://github.com/agrieser/track#readme",
+  "homepage": "https://github.com/agrieser/trace#readme",
   "dependencies": {
     "@prisma/client": "^6.12.0",
     "@slack/bolt": "^4.4.0",
@@ -41,6 +42,7 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "dotenv-cli": "^9.0.0",
     "eslint": "^9.32.0",
     "jest": "^30.0.5",
     "jest-mock-extended": "^4.0.0",

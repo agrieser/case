@@ -4,7 +4,6 @@ import { handleInvestigate } from './handlers/investigate';
 import { handleEvent } from './handlers/event';
 import { handleStatus } from './handlers/status';
 import { handleIncident } from './handlers/incident';
-import { handleSwitch } from './handlers/switch';
 import { handleHelp } from './handlers/help';
 import { 
   validateCommandContext, 
@@ -16,7 +15,7 @@ import { checkRateLimit } from './middleware/rateLimit';
 
 export function registerCommands(app: App, prisma: PrismaClient): void {
   // Handle /trace command
-  app.command('/trace', async ({ command, ack, respond }) => {
+  app.command('/trace', async ({ command, ack, respond, client }) => {
     await ack();
 
     try {
@@ -41,7 +40,8 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
           await handleInvestigate({
             command,
             respond,
-            title: args // Will be validated in handler
+            title: args, // Will be validated in handler
+            client
           }, prisma);
           break;
 
@@ -66,13 +66,6 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
           }, prisma);
           break;
 
-        case 'switch':
-          await handleSwitch({
-            command,
-            respond,
-            investigationName: args // Will be validated in handler
-          }, prisma);
-          break;
 
         case 'help':
         case '':
