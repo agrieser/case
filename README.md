@@ -217,11 +217,34 @@ Trace is designed to be simple and reliable:
 
 ## 🔒 Security & Privacy
 
+### Zero Message Access
+
+**Trace cannot read your messages** - The app has no message reading permissions whatsoever. This design choice provides:
+
+- **Enhanced compliance**: No risk of exposing sensitive message content
+- **Privacy by design**: Cannot access, store, or process message contents
+- **Minimal permissions**: Only the permissions necessary for core functionality
+
+When you "Add to Investigation", Trace only stores a link to the message - it cannot see what the message says.
+
+### Additional Security Features
+
 - **External user protection**: Users from other Slack workspaces (via Slack Connect) are automatically blocked
 - **No message content storage**: Only stores links to messages, not the content itself
 - **Input validation**: All user input is sanitized
 - **Rate limiting**: Prevents abuse (60 requests/minute per user)
 - **Workspace isolation**: Investigations are completely isolated to your workspace
+
+### Required Slack Permissions
+
+Trace uses only these minimal permissions:
+- `commands`: Respond to slash commands
+- `chat:write`: Post messages to channels
+- `channels:manage`: Create and archive investigation channels
+- `channels:write.invites`: Add users to investigation channels
+- `channels:join`: Join the notification channel
+
+Notably absent: No `channels:read`, `channels:history`, `messages:read`, or any other message access permissions.
 
 ## 🛠️ Configuration Options
 
