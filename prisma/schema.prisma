@@ -53,6 +53,8 @@ model Incident {
   investigationId     String        @unique // Foreign key to Investigation
   incidentCommander   String        // Slack user ID
   escalatedAt         DateTime      @default(now())
+  resolvedAt          DateTime?     // When incident was resolved
+  resolvedBy          String?       // Slack user ID who resolved it
   
   investigation       Investigation @relation(fields: [investigationId], references: [id])
 }
