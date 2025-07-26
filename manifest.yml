@@ -1,0 +1,36 @@
+display_information:
+  name: Trace
+  description: Incident Management - Track events, investigations, and incidents
+  background_color: "#1f2937"
+features:
+  bot_user:
+    display_name: Trace
+    always_online: true
+  slash_commands:
+    - command: /trace
+      description: Manage events, investigations, and incidents
+      usage_hint: "[emergency|event|investigate|incident|help]"
+      should_escape: false
+oauth_config:
+  scopes:
+    bot:
+      - channels:history
+      - channels:read
+      - chat:write
+      - commands
+      - groups:history
+      - groups:read
+      - im:history
+      - im:read
+      - im:write
+      - mpim:history
+      - mpim:read
+      - users:read
+settings:
+  event_subscriptions:
+    bot_events: []
+  interactivity:
+    is_enabled: true
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false

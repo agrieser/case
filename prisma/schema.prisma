@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InvestigationStatus {
+  investigating
+  escalated
+  resolved
+}
+
+model Investigation {
+  name          String              @id // "trace-golden-falcon"
+  title         String              // "payment API issues"
+  status        InvestigationStatus @default(investigating)
+  channelId     String              // Slack channel where investigation is active
+  createdBy     String              // Slack user ID
+  createdAt     DateTime            @default(now())
+  
+  events        Event[]
+  incident      Incident?
+  
+  @@index([channelId])
+  @@index([status])
+}
+
+model Event {
+  id                  String        @id @default(uuid())
+  investigationName   String        // Foreign key to Investigation
+  slackMessageUrl     String        // Link to the Slack message
+  addedBy             String        // Slack user ID who added event
+  addedAt             DateTime      @default(now())
+  
+  investigation       Investigation @relation(fields: [investigationName], references: [name])
+  
+  @@index([investigationName])
+  @@index([addedAt])
+}
+
+model Incident {
+  investigationName   String        @id // Foreign key to Investigation
+  incidentCommander   String        // Slack user ID
+  escalatedAt         DateTime      @default(now())
+  
+  investigation       Investigation @relation(fields: [investigationName], references: [name])
+}
+
+// Channel state tracking - which investigation is current in each channel
+model ChannelState {
+  channelId           String        @id // Slack channel ID
+  currentInvestigation String?      // Current investigation name for this channel
+  updatedAt           DateTime      @updatedAt
+}
