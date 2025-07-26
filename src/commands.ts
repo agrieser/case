@@ -12,6 +12,7 @@ import {
   createSafeErrorMessage,
   sanitizeInput 
 } from './middleware/validation';
+import { checkRateLimit } from './middleware/rateLimit';
 
 export function registerCommands(app: App, prisma: PrismaClient): void {
   // Handle /trace command
@@ -19,6 +20,16 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
     await ack();
 
     try {
+      // Check rate limit first
+      const rateLimitCheck = checkRateLimit(command);
+      if (!rateLimitCheck.allowed) {
+        await respond({
+          text: rateLimitCheck.message || '⚠️ Rate limit exceeded. Please try again later.',
+          response_type: 'ephemeral'
+        });
+        return;
+      }
+
       // Validate command context
       validateCommandContext(command);
       
