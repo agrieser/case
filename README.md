@@ -1,75 +1,97 @@
 # Trace - Slack Incident Management App
 
-## Overview
-Build a Slack app called "Trace" that implements our incident management methodology. The app helps teams track the flow from events → investigations → incidents, with support for both methodical investigation workflows and emergency "site is down" situations.
+## Api
 
-## Core Methodology
-- **Events**: Initial signals (monitoring alerts, user reports, observations)
-- **Investigations**: Analyzing and connecting events to understand scope/impact
-- **Incidents**: Escalated situations requiring coordinated response
-- **Flow**: Events can open investigations, investigations can escalate to incidents
+```
+# Create new investigation (becomes current in channel)
+/trace investigate "payment API issues"
+# → Creates: trace-golden-falcon (memorable name)
+# → Sets as current investigation for this channel
 
-## Technical Requirements
+# Reply to any message to add it as an event
+/trace event
+# → Adds the message you replied to as an event to current investigation
+# → Must be used as a reply to capture message link
+
+# Show current investigation status
+/trace status
+# → Shows: name, title, event count, created time, current status
+
+# Escalate current investigation to incident
+/trace incident
+# → Escalates current investigation to incident status
+# → Creates incident record linked to investigation
+
+# Switch to different investigation in this channel
+/trace switch trace-silver-dolphin
+# → Makes trace-silver-dolphin the current investigation in this channel
+```
+
+## Schema:
+
+```
+-- Investigations table
+investigations:
+- name (text, PRIMARY KEY)           -- "trace-golden-falcon"
+- title (text)                       -- "payment API issues"
+- status (enum)                      -- 'investigating', 'escalated', 'resolved'
+- channel_id (text)                  -- Slack channel where investigation is active
+- created_by (text)                  -- Slack user ID
+- created_at (timestamp)
+
+-- Events table (always belong to investigations)
+events:
+- id (uuid, PRIMARY KEY)
+- investigation_name (text, FOREIGN KEY → investigations.name)
+- slack_message_url (text)           -- Link to the Slack message
+- added_by (text)                    -- Slack user ID who added event
+- added_at (timestamp)
+
+-- Incidents table (escalated investigations)
+incidents:
+- investigation_name (text, PRIMARY KEY, FOREIGN KEY → investigations.name)
+- incident_commander (text)          -- Slack user ID
+- escalated_at (timestamp)
+```
+
+## Tools
+
 - **Language**: TypeScript/Node.js
 - **Framework**: Slack Bolt framework
 - **Database**: PostgreSQL with Prisma ORM
-- **Deployment**: Ready for cloud deployment (Vercel/Railway/similar)
 
-## Key Features Needed
+Key Features
+Channel-Scoped Current Investigation
 
-### Slash Commands
-Primary command: `/trace`
+Each Slack channel remembers its "current investigation"
+Commands like /trace event and /trace incident operate on current investigation
+Use /trace switch to change current investigation in a channel
 
-**Emergency Usage:**
-```
-/trace site-down
-/trace critical-payment-outage
-/trace security-breach
-```
+Memorable Names
 
-**Methodical Usage:**
-```
-/trace event [description]
-/trace investigate [event-id or description]
-/trace incident [investigation-id or description]
-```
+Auto-generate memorable names like "trace-golden-falcon"
+Same name used for investigation → incident lifecycle
+Easy to reference in conversation
 
-### Database Schema
-Design tables for:
-- **events** (id, description, timestamp, reporter, status, metadata)
-- **investigations** (id, title, events[], status, assignee, created_at)
-- **incidents** (id, title, severity, investigations[], status, commander, created_at)
-- **incident_timeline** (entries linking events/investigations/incidents)
+Events as Message Links
 
-### Slack Integration
-- Slash command handling
-- Interactive buttons/modals for status updates
-- Channel notifications for escalations
-- Thread management for ongoing incidents
-- Rich formatting for status displays
+Events are always Slack message URLs
+Use reply pattern: reply to any message with /trace event
+Preserves full context in original message location
 
-## Project Structure
+Project Structure
 Set up a clean TypeScript project with:
-- Proper error handling and logging
-- Environment configuration
-- Database migrations
-- Slack app manifest
-- Development and production configs
 
-## Success Criteria
-1. `/trace` command works for both emergency and methodical workflows
-2. Clear progression from events → investigations → incidents
-3. Good reporting/tracking for post-incident analysis
-4. Intuitive Slack UX that doesn't get in the way during emergencies
-5. Solid data model that captures the relationship between all pieces
+Proper error handling and logging
+Environment configuration
+Database migrations with Prisma
+Slack app manifest
+Channel state management (current investigation per channel)
 
-## Next Steps
-1. Initialize the TypeScript project with Bolt and Prisma
-2. Set up basic slash command handling
-3. Design and implement the database schema
-4. Build the core event/investigation/incident creation flows
-5. Add Slack UI components (buttons, modals, etc.)
-6. Implement status tracking and updates
-7. Add reporting and timeline views
+Success Criteria
 
-Start with a minimal viable version that handles the basic `/trace` command and can create events/investigations/incidents in the database.
+Simple 5-command interface that's easy to remember
+Reply pattern for adding events feels natural
+Memorable investigation names reduce friction
+Channel-scoped context eliminates UUID juggling
+Clean data model supporting investigation → incident progression
