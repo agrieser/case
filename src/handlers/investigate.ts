@@ -62,7 +62,7 @@ export async function handleInvestigate(
           elements: [
             {
               type: 'mrkdwn',
-              text: `Reply to any message with \`/trace event\` to add it to this investigation`
+              text: 'Reply to any message with `/trace event` to add it to this investigation'
             }
           ]
         }

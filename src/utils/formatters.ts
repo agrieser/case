@@ -1,4 +1,5 @@
 import { Event, Investigation, Incident } from '@prisma/client';
+import { KnownBlock } from '@slack/types';
 
 type EventWithRelations = Event;
 type InvestigationWithRelations = Investigation & {
@@ -9,7 +10,7 @@ type IncidentWithRelations = Incident & {
   investigation?: Investigation;
 };
 
-export function formatEvent(event: EventWithRelations): any {
+export function formatEvent(event: EventWithRelations): KnownBlock {
   return {
     type: 'section',
     fields: [
@@ -33,7 +34,7 @@ export function formatEvent(event: EventWithRelations): any {
   };
 }
 
-export function formatInvestigation(investigation: InvestigationWithRelations): any {
+export function formatInvestigation(investigation: InvestigationWithRelations): KnownBlock {
   const eventCount = investigation._count?.events || investigation.events?.length || 0;
   
   return {
@@ -67,7 +68,7 @@ export function formatInvestigation(investigation: InvestigationWithRelations): 
   };
 }
 
-export function formatIncident(incident: IncidentWithRelations): any {
+export function formatIncident(incident: IncidentWithRelations): KnownBlock {
   return {
     type: 'section',
     fields: [
