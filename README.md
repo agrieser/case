@@ -1,182 +1,211 @@
 # Trace - Slack Incident Management
 
-A streamlined Slack app for tracking the flow from events → investigations → incidents.
+A lightweight Slack app that streamlines incident management by organizing the flow from events → investigations → incidents, with each investigation having its own dedicated Slack channel.
 
-## Key Features
+## What is Trace?
 
-- **Dedicated Investigation Channels**: Each investigation gets its own Slack channel
-- **Intuitive Channel Names**: Channels named after your description (e.g., `trace-api-down-a3f`)
-- **Simple Commands**: Just 5 intuitive slash commands
-- **Message Shortcuts**: Right-click any message to add it as evidence
-- **Central Notifications**: Investigation summaries posted to `#h-potential-issues`
-- **Smart Event Linking**: Add events from any channel to any investigation
+Trace helps teams manage incidents by:
 
-## Commands
+- Creating dedicated Slack channels for each investigation
+- Collecting evidence from across your workspace
+- Escalating investigations to incidents when needed
+- Tracking everything in one organized place
 
-All commands use the `/trace` prefix:
+## ✨ Key Features
 
-### `/trace create [title]`
-Creates a new investigation with a dedicated Slack channel
-- Generates investigation name (e.g., "trace-golden-falcon")
-- Creates a channel based on your title (e.g., #trace-api-down-a3f)
-- Posts summary to #h-potential-issues
-- Automatically adds you to the channel
-- Example: `/trace create API response times increasing`
+### 🔍 **Dedicated Investigation Channels**
 
-### `/trace list`
-Lists all active investigations
-- Shows investigations in a dropdown menu
-- Select one to see details and get a link to its channel
+Each investigation gets its own Slack channel (e.g., `#trace-api-down-a3f`), keeping discussions organized and focused.
 
-### `/trace status`
-Shows the current investigation details
-- **Only works within investigation channels**
-- Displays name, title, event count, duration
-- Shows if escalated to incident
+### 📎 **Easy Evidence Collection**
 
-### `/trace incident`
-Escalates the current investigation to an incident
-- **Only works within investigation channels**
-- Sets you as the incident commander
-- Updates investigation status to "escalated"
+Right-click any message in Slack to add it as evidence to an investigation - no copying and pasting required.
 
-### `/trace help`
-Shows available commands and usage
+### 🚨 **Simple Incident Escalation**
 
-### Adding Events
-To add a message as evidence:
-1. Right-click (or tap ⋯) on any message in any channel
-2. Select "Add to Investigation" from the shortcuts menu
-3. If multiple investigations exist, select from the dropdown
-4. The event is added to the investigation with a link back to the original message
+Escalate investigations to incidents with one command, automatically setting the incident commander.
 
-## Database Schema
+### 📊 **Central Visibility**
 
-```sql
--- Investigations (primary entity)
-investigations:
-- id (uuid, PRIMARY KEY)
-- name (text, UNIQUE)                -- "trace-golden-falcon"
-- title (text)                       -- User-provided description
-- status (enum)                      -- investigating/escalated/resolved
-- channelId (text, UNIQUE)           -- Dedicated Slack channel ID
-- createdBy (text)                   -- Slack user ID
-- createdAt (timestamp)
+All new investigations are announced in your designated channel (e.g., `#potential-issues`) for team awareness.
 
--- Events (Slack messages)
-events:
-- id (uuid, PRIMARY KEY)
-- investigationId (uuid, FK)         -- Links to investigation
-- slackMessageUrl (text)             -- Link to Slack message
-- addedBy (text)                     -- User who added event
-- addedAt (timestamp)
+### 🛡️ **Secure by Default**
 
--- Incidents (escalated investigations)
-incidents:
-- id (uuid, PRIMARY KEY)
-- investigationId (uuid, UNIQUE, FK) -- Links to investigation
-- incidentCommander (text)           -- Slack user ID
-- escalatedAt (timestamp)
-```
+External users from connected workspaces are automatically blocked from using commands, protecting your incident data.
 
-## Technical Stack
+## 🚀 Getting Started
 
-- **Runtime**: Node.js with TypeScript
-- **Framework**: Slack Bolt (Socket Mode)
-- **Database**: PostgreSQL with Prisma ORM
-- **Testing**: Jest with real database integration tests
-- **Architecture**: Clean separation of concerns with handlers, utilities, and middleware
+### Installation Requirements
 
-## Development
-
-### Prerequisites
-- Node.js 18+
+- A Slack workspace with admin permissions
 - PostgreSQL database
-- Slack app with Socket Mode enabled
+- Node.js 18+ (for self-hosting)
 
-### Setup
+### Quick Start
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Copy `.env.example` to `.env` and configure:
-   - `DATABASE_URL` - PostgreSQL connection string
-   - `SLACK_BOT_TOKEN` - Bot user OAuth token (xoxb-...)
-   - `SLACK_SIGNING_SECRET` - App signing secret
-   - `SLACK_APP_TOKEN` - Socket mode app token (xapp-...)
-4. Run database migrations: `npm run prisma:migrate`
-5. Start development: `npm run dev`
+1. **Create a Slack App**
 
-### Testing
+   - Go to [api.slack.com/apps](https://api.slack.com/apps)
+   - Click "Create New App" → "From manifest"
+   - Copy the manifest from `manifest.yml` in this repo
+   - Install the app to your workspace
 
-```bash
-# Run all tests
-npm test
+2. **Set up the database**
 
-# Run tests in watch mode
-npm run test:watch
+   ```bash
+   # Create a PostgreSQL database
+   createdb trace_production
+   ```
 
-# Generate coverage report
-npm run test:coverage
-```
+3. **Configure environment variables**
 
-Tests use a separate test database and include full integration testing.
+   ```bash
+   # Required
+   DATABASE_URL=postgresql://user:password@localhost:5432/trace_production
+   SLACK_BOT_TOKEN=xoxb-your-bot-token
+   SLACK_SIGNING_SECRET=your-signing-secret
+   SLACK_APP_TOKEN=xapp-your-app-token
+   POTENTIAL_ISSUES_CHANNEL_ID=C123456789  # Channel ID for notifications
 
-## Deployment
+   # Optional
+   ALLOWED_WORKSPACE_IDS=T123456,T789012  # Restrict to specific workspaces
+   ```
 
-The app runs in Socket Mode, which means:
-- No public URL required
-- Works behind firewalls
-- Can run anywhere (local, Railway, Heroku, etc.)
-- Just needs outbound HTTPS access
+4. **Deploy the app**
+   ```bash
+   npm install
+   npm run prisma:migrate deploy
+   npm run build
+   npm start
+   ```
 
-### Environment Variables
+## 📖 How to Use Trace
 
-Required for production:
-- `NODE_ENV=production`
-- `DATABASE_URL` - PostgreSQL connection
-- `SLACK_BOT_TOKEN` - From Slack app settings
-- `SLACK_SIGNING_SECRET` - From Slack app settings
-- `SLACK_APP_TOKEN` - From Slack app settings
+### Basic Commands
 
-## How It Works
+All commands start with `/trace`:
 
-1. **Investigation Creation**: `/trace create` creates a new investigation and dedicated Slack channel
-2. **Event Collection**: Team members use the "Add to Investigation" message shortcut to add evidence
-3. **Status Monitoring**: `/trace status` shows investigation progress within investigation channels
-4. **Incident Escalation**: `/trace incident` escalates when immediate action is needed
+| Command                       | Description                    | Where to Use                |
+| ----------------------------- | ------------------------------ | --------------------------- |
+| `/trace create [description]` | Create a new investigation     | Any channel                 |
+| `/trace list`                 | View all active investigations | Any channel                 |
+| `/trace status`               | Show investigation details     | Investigation channels only |
+| `/trace incident`             | Escalate to incident           | Investigation channels only |
+| `/trace resolve`              | Mark incident as resolved      | Investigation channels only |
+| `/trace close`                | Close the investigation        | Investigation channels only |
+| `/trace help`                 | Show available commands        | Any channel                 |
 
 ### Typical Workflow
 
-1. **Alert fires** in #monitoring channel
-2. **Create investigation**: `/trace create Database response times spiking`
-3. **Add evidence**: Right-click the alert message → "Add to Investigation"
-4. **Collaborate**: Team joins the investigation channel (e.g., #trace-database-res-a3f)
-5. **Track events**: Add relevant messages from various channels
-6. **Escalate if needed**: `/trace incident` if it requires immediate attention
+1. **Something happens** (alert, customer report, monitoring notification)
 
-## Security Features
+   ```
+   /trace create API response times increasing
+   ```
 
-- Input validation and sanitization
-- Rate limiting (60 requests/minute per user)
-- SQL injection protection via Prisma ORM
-- No storage of message content (only links)
-- Workspace isolation
-- Secure error handling
+2. **Trace creates a dedicated channel** (e.g., `#trace-api-respons-a3f`)
 
-## Slack App Configuration
+   - You're automatically added to the channel
+   - A summary is posted to your notification channel
 
-### Required Bot Token Scopes
-- `channels:manage` - Create channels
-- `channels:join` - Join channels
-- `chat:write` - Post messages
-- `commands` - Handle slash commands
-- `channels:read` - List channels
-- `groups:read` - Read private channels
-- `im:read` - Read DMs
-- `mpim:read` - Read group DMs
+3. **Collect evidence**
 
-### Required Features
-- Socket Mode enabled
-- Interactivity enabled
-- Slash commands configured
-- Message shortcuts configured
+   - Right-click any relevant message → "Add to Investigation"
+   - Messages are linked in the investigation channel
+
+4. **If it's serious, escalate**
+
+   ```
+   /trace incident
+   ```
+
+   - This marks it as an active incident
+   - Sets you as the incident commander
+
+5. **When service is restored**
+
+   ```
+   /trace resolve
+   ```
+
+6. **After follow-up is complete**
+   ```
+   /trace close
+   ```
+
+### Adding Evidence
+
+To add any Slack message as evidence:
+
+1. Hover over the message
+2. Click the three dots (⋯) menu
+3. Select "Add to Investigation"
+4. Choose the investigation (if multiple are active)
+
+The message will be linked in the investigation channel with context about who added it and when.
+
+## 🏗️ Architecture
+
+Trace is designed to be simple and reliable:
+
+- **Runs in Socket Mode**: No public URL needed, works behind firewalls
+- **Stateless handlers**: Each command is independent
+- **PostgreSQL storage**: Reliable data persistence
+- **TypeScript**: Type-safe and maintainable
+- **Comprehensive tests**: 80%+ code coverage
+
+## 🔒 Security & Privacy
+
+- **External user protection**: Users from other Slack workspaces (via Slack Connect) are automatically blocked
+- **No message content storage**: Only stores links to messages, not the content itself
+- **Input validation**: All user input is sanitized
+- **Rate limiting**: Prevents abuse (60 requests/minute per user)
+- **Workspace isolation**: Investigations are completely isolated to your workspace
+
+## 🛠️ Configuration Options
+
+### Environment Variables
+
+| Variable                      | Required | Description                                    |
+| ----------------------------- | -------- | ---------------------------------------------- |
+| `DATABASE_URL`                | Yes      | PostgreSQL connection string                   |
+| `SLACK_BOT_TOKEN`             | Yes      | Bot user OAuth token                           |
+| `SLACK_SIGNING_SECRET`        | Yes      | App signing secret                             |
+| `SLACK_APP_TOKEN`             | Yes      | Socket mode app token                          |
+| `POTENTIAL_ISSUES_CHANNEL_ID` | Yes      | Channel ID for investigation notifications     |
+| `ALLOWED_WORKSPACE_IDS`       | No       | Comma-separated list of allowed workspace IDs  |
+| `NODE_ENV`                    | No       | Set to `production` for production deployments |
+
+### Customization
+
+You can customize Trace by:
+
+- Changing the notification channel (set `POTENTIAL_ISSUES_CHANNEL_ID`)
+- Restricting to specific workspaces (set `ALLOWED_WORKSPACE_IDS`)
+- Modifying the channel naming pattern in `src/utils/nameGenerator.ts`
+
+## 📊 What Gets Tracked
+
+Trace stores minimal data:
+
+- Investigation metadata (title, status, timestamps)
+- Links to Slack messages (not the content)
+- User IDs of who created/modified investigations
+- Channel IDs for investigation channels
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🙋 Support
+
+- **Issues**: [GitHub Issues](https://github.com/agrieser/trace/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/agrieser/trace/discussions)
+
+---
+
+Built with ❤️ for incident responders who value organized, efficient investigations.

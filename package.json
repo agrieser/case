@@ -1,8 +1,8 @@
 {
-  "name": "trace",
+  "name": "trace-slack",
   "version": "1.0.0",
-  "description": "## Overview Build a Slack app called \"Trace\" that implements our incident management methodology. The app helps teams trace the flow from events → investigations → incidents, with support for both methodical investigation workflows and emergency \"site is down\" situations.",
-  "main": "index.js",
+  "description": "A lightweight Slack app for incident management that organizes the flow from events to investigations to incidents",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
@@ -20,9 +20,9 @@
     "type": "git",
     "url": "git+https://github.com/agrieser/trace.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["slack", "incident-management", "investigations", "slack-app", "typescript"],
+  "author": "Trace Contributors",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/agrieser/trace/issues"
   },

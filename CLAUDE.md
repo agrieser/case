@@ -7,10 +7,19 @@ Trace is a Slack app that implements a streamlined incident management workflow.
 ### Key Features
 - **Dedicated Channels**: Each investigation creates its own Slack channel
 - **Intuitive Channel Names**: Channels named after your description (e.g., `trace-api-down-a3f`)
-- **Simple Commands**: Just 5 intuitive slash commands  
+- **Simple Commands**: Just 9 intuitive slash commands  
 - **Message Shortcuts**: Right-click any message to add it as evidence
 - **Central Notifications**: Investigation summaries posted to #h-potential-issues
 - **Smart Event Linking**: Add events from any channel to any investigation
+
+### Investigation & Incident Lifecycle
+
+1. **Investigation Created** → Active investigation for tracking issues
+2. **Escalate to Incident** → When service is impacted (optional)
+3. **Resolve Incident** → When service is restored (incident only)
+4. **Close Investigation** → When all follow-up work is complete
+
+Key distinction: Incidents are resolved when service is restored, but investigations remain open for root cause analysis, post-mortems, and follow-up work.
 
 ## Architecture
 
@@ -118,14 +127,27 @@ All commands use the `/trace` prefix:
    - Lists up to 25 most recent investigations
    - Excludes closed investigations
 
-6. **`/trace close`** - Close investigation
+6. **`/trace resolve`** - Resolve incident
+   - **Only works for escalated incidents**
+   - Marks the incident as resolved (service restored)
+   - Investigation remains open for follow-up work
+   - Posts resolution notice to channel and #h-potential-issues
+   - Tracks who resolved it and when
+
+7. **`/trace transfer @user`** - Transfer incident commander role
+   - **Only works within investigation channels that have been escalated**
+   - Changes the incident commander to the mentioned user
+   - Posts public confirmation in the channel
+   - Example: `/trace transfer @sarah`
+
+8. **`/trace close`** - Close investigation
    - **Only works within investigation channels**
+   - Cannot close if incident is unresolved
    - Archives the Slack channel
    - Updates investigation status to "closed"
-   - Posts closure summary to #h-potential-issues
    - Tracks who closed it and when
 
-7. **`/trace help`** - Show available commands
+9. **`/trace help`** - Show available commands
 
 ## Development Workflow
 
@@ -221,12 +243,17 @@ src/
 
 ## Security Considerations
 
-1. **Input Validation**: All user input sanitized
-2. **Rate Limiting**: 60 requests/minute per user
-3. **SQL Injection**: Protected via Prisma parameterized queries
-4. **Error Handling**: Internal errors not exposed to users
-5. **Permissions**: Bot only joins channels it creates
-6. **Message Security**: Only stores links, not content
+1. **External User Blocking**: Users from connected workspaces (Slack Connect) are blocked from all commands
+   - External users identified by user ID patterns: `U123_T456` or `W` prefix
+   - Blocked users receive: "This command is not available for external users"
+   - All blocked attempts are logged for security monitoring
+2. **Input Validation**: All user input sanitized against XSS and injection
+3. **Rate Limiting**: 60 requests/minute per user
+4. **SQL Injection**: Protected via Prisma parameterized queries
+5. **Error Handling**: Internal errors not exposed to users
+6. **Permissions**: Bot only joins channels it creates
+7. **Message Security**: Only stores links, not content
+8. **Workspace Restrictions**: Optional `ALLOWED_WORKSPACE_IDS` environment variable to limit to specific workspaces
 
 ## Channel Naming Convention
 
