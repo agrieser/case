@@ -5,7 +5,7 @@
 ```
 # Create new investigation (becomes current in channel)
 /trace investigate "payment API issues"
-# → Creates: trace-golden-falcon (memorable name)
+# → Creates: trace-financial-eagle-a3f2 (contextual name based on title)
 # → Sets as current investigation for this channel
 
 # Reply to any message to add it as an event
@@ -23,8 +23,8 @@
 # → Creates incident record linked to investigation
 
 # Switch to different investigation in this channel
-/trace switch trace-silver-dolphin
-# → Makes trace-silver-dolphin the current investigation in this channel
+/trace switch trace-silver-dolphin-b4c1
+# → Makes trace-silver-dolphin-b4c1 the current investigation in this channel
 ```
 
 ## Schema:
@@ -32,7 +32,7 @@
 ```
 -- Investigations table
 investigations:
-- name (text, PRIMARY KEY)           -- "trace-golden-falcon"
+- name (text, PRIMARY KEY)           -- "trace-financial-eagle-a3f2"
 - title (text)                       -- "payment API issues"
 - status (enum)                      -- 'investigating', 'escalated', 'resolved'
 - channel_id (text)                  -- Slack channel where investigation is active
@@ -67,11 +67,13 @@ Each Slack channel remembers its "current investigation"
 Commands like /trace event and /trace incident operate on current investigation
 Use /trace switch to change current investigation in a channel
 
-Memorable Names
+Contextual Names
 
-Auto-generate memorable names like "trace-golden-falcon"
+Auto-generate names based on investigation title (e.g., "payment issue" → "trace-financial-eagle-a3f2")
+Keywords in title map to relevant descriptors (database → persistent, API → swift, etc.)
+Includes 4-character hash suffix for uniqueness
 Same name used for investigation → incident lifecycle
-Easy to reference in conversation
+Easy to reference and remember in conversation
 
 Events as Message Links
 
