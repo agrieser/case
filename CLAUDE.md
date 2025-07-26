@@ -6,9 +6,11 @@ Trace is a Slack app that implements a streamlined incident management workflow.
 
 ### Key Features
 - **Dedicated Channels**: Each investigation creates its own Slack channel
-- **Memorable Names**: Auto-generated investigation names like "trace-golden-falcon"
-- **Simple Commands**: Just 4 intuitive slash commands
-- **Message-based Events**: Reply to any message with `/trace event` to add it as evidence
+- **Intuitive Channel Names**: Channels named after your description (e.g., `trace-api-down-a3f`)
+- **Simple Commands**: Just 5 intuitive slash commands  
+- **Message Shortcuts**: Right-click any message to add it as evidence
+- **Central Notifications**: Investigation summaries posted to #h-potential-issues
+- **Smart Event Linking**: Add events from any channel to any investigation
 
 ## Architecture
 
@@ -29,12 +31,12 @@ src/
 │   └── client.ts      # Prisma client singleton
 ├── handlers/          # Command handlers
 │   ├── investigate.ts # Create new investigation & channel
-│   ├── event.ts       # Add event to investigation
 │   ├── status.ts      # Show investigation status
 │   ├── incident.ts    # Escalate to incident
+│   ├── list.ts        # List active investigations
 │   └── help.ts        # Show help message
 ├── utils/             # Utility functions
-│   ├── nameGenerator.ts   # Generate memorable names
+│   ├── nameGenerator.ts   # Generate investigation & channel names
 │   └── formatters.ts      # Format Slack messages
 ├── middleware/        # Middleware functions
 │   ├── validation.ts      # Input validation
@@ -42,7 +44,7 @@ src/
 ├── test/              # Test utilities
 │   ├── setup.ts           # Jest setup
 │   └── mocks/             # Mock objects
-└── listeners.ts       # Event listeners (placeholder)
+└── listeners.ts       # Event listeners & shortcuts
 ```
 
 ### Database Schema
@@ -85,28 +87,45 @@ model Incident {
 
 All commands use the `/trace` prefix:
 
-1. **`/trace investigate [title]`** - Create a new investigation
-   - Generates a memorable name (e.g., "trace-golden-falcon")
-   - Creates a dedicated Slack channel (#golden-falcon)
-   - Automatically adds the user and bot to the channel
-   - Example: `/trace investigate API response times increasing`
+1. **`/trace create [title]`** - Create a new investigation
+   - Generates investigation name (e.g., "trace-golden-falcon")
+   - Creates channel based on title (e.g., #trace-api-down-a3f)
+   - Posts summary to #h-potential-issues
+   - Automatically adds the user to the channel
+   - Example: `/trace create API response times increasing`
 
-2. **`/trace event`** - Add a message as evidence
-   - Must be used as a reply to capture the message
-   - Adds to the investigation associated with the current channel
-   - No arguments needed
+2. **Message Shortcut: "Add to Investigation"**
+   - Right-click (or tap ⋯) on any message
+   - Select "Add to Investigation" from shortcuts menu
+   - If multiple investigations exist, shows a modal to select
+   - Adds the message as evidence with a link back to original
 
 3. **`/trace status`** - Show investigation details
+   - **Only works within investigation channels**
    - Displays name, title, event count, duration
    - Shows if escalated to incident
    - Ephemeral response (only visible to user)
 
 4. **`/trace incident`** - Escalate to incident
+   - **Only works within investigation channels**
    - Converts investigation to incident
    - Sets the user as incident commander
    - Updates investigation status to "escalated"
 
-5. **`/trace help`** - Show available commands
+5. **`/trace list`** - List active investigations
+   - Shows a formatted list of all active investigations
+   - Displays title, channel link, event count, duration, and creator
+   - Lists up to 25 most recent investigations
+   - Excludes closed investigations
+
+6. **`/trace close`** - Close investigation
+   - **Only works within investigation channels**
+   - Archives the Slack channel
+   - Updates investigation status to "closed"
+   - Posts closure summary to #h-potential-issues
+   - Tracks who closed it and when
+
+7. **`/trace help`** - Show available commands
 
 ## Development Workflow
 
@@ -137,6 +156,9 @@ Required in `.env`:
 - `SLACK_SIGNING_SECRET` - App signing secret
 - `SLACK_APP_TOKEN` - Socket mode app token
 - `DATABASE_URL` - PostgreSQL connection string
+- `POTENTIAL_ISSUES_CHANNEL_ID` - Channel ID for #h-potential-issues (e.g., C0123456789)
+
+Test environment uses `.env.test` with separate database.
 
 ## Code Patterns
 
@@ -159,14 +181,24 @@ export async function handleCommand(
 ### Investigation-Channel Model
 - Each investigation has one dedicated channel (1:1 relationship)
 - Channel ID stored in investigation record
-- Commands work within the context of the channel
-- No need for channel state management
+- Channel name derived from investigation title
+- Status and incident commands only work within investigation channels
+
+### Event Addition Flow
+1. User right-clicks message in any channel
+2. Selects "Add to Investigation" shortcut
+3. If one investigation exists, adds immediately
+4. If multiple exist, shows modal to select
+5. Creates event record with message link
+6. Posts confirmation to investigation channel
+7. Shows ephemeral confirmation to user
 
 ### Error Handling
 - All handlers wrap operations in try-catch
 - User-friendly error messages via `respond()`
 - Sensitive errors logged but not exposed to users
 - Input validation before processing
+- Rate limiting to prevent abuse
 
 ## Testing Strategy
 
@@ -194,6 +226,29 @@ src/
 3. **SQL Injection**: Protected via Prisma parameterized queries
 4. **Error Handling**: Internal errors not exposed to users
 5. **Permissions**: Bot only joins channels it creates
+6. **Message Security**: Only stores links, not content
+
+## Channel Naming Convention
+
+Channels are named using the pattern: `trace-[description]-[random]`
+- Prefix: Always `trace-`
+- Description: Derived from user's title, max 11 chars
+- Random: 3 character hex string for uniqueness
+- Max length: 21 characters (Slack limit)
+
+Examples:
+- "API down" → `trace-api-down-a3f`
+- "Payment processing errors" → `trace-payment-pro-b2c`
+- "Database performance" → `trace-database-pe-d4e`
+
+## Slack App Manifest
+
+Key configuration in `manifest.yml`:
+- Socket mode enabled
+- Interactivity enabled
+- Message shortcut: "Add to Investigation"
+- Slash command: `/trace`
+- Required bot scopes
 
 ## Future Enhancements
 
@@ -202,6 +257,7 @@ src/
 3. **Metrics**: Track investigation duration, event counts
 4. **Archive**: Auto-archive old investigation channels
 5. **Permissions**: Role-based access control
+6. **Integration**: Webhook support for external systems
 
 ## Maintenance Notes
 
@@ -209,3 +265,4 @@ src/
 - Prisma schema in `prisma/schema.prisma`
 - All handlers are stateless and idempotent
 - Tests use `--forceExit` due to Prisma connection pooling
+- Socket mode requires persistent connection

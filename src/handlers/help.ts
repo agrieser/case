@@ -25,10 +25,11 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '• `/trace investigate [title]` - Create new investigation and dedicated channel\n' +
-                '• `/trace event` - Add replied message as event to this channel\'s investigation\n' +
-                '• `/trace status` - Show investigation status for this channel\n' +
-                '• `/trace incident` - Escalate this investigation to incident\n' +
+          text: '• `/trace create [title]` - Create new investigation with dedicated channel\n' +
+                '• `/trace list` - List all active investigations\n' +
+                '• `/trace status` - Show investigation status (in investigation channels)\n' +
+                '• `/trace incident` - Escalate to incident (in investigation channels)\n' +
+                '• `/trace close` - Close investigation and archive channel (in investigation channels)\n' +
                 '• `/trace help` - Show this help message',
         },
       },
@@ -36,13 +37,11 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'divider',
       },
       {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: '*Note:* Use `/trace event` as a reply to any message to add it to the current investigation',
-          },
-        ],
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: '*Adding Events:*\nTo add a message as evidence:\n1. Click the three dots (⋯) on any message\n2. Select "Add to Investigation" from the shortcuts menu',
+        },
       },
     ],
     response_type: 'ephemeral',

@@ -1,56 +1,55 @@
 import { describe, it, expect } from '@jest/globals';
-import { generateInvestigationName, generateUniqueName } from '../nameGenerator';
+import { generateInvestigationName, generateUniqueName, generateChannelName } from '../nameGenerator';
 
 describe('nameGenerator', () => {
   describe('generateInvestigationName', () => {
-    it('should generate contextual names for database issues', () => {
-      const dbTitles = [
-        'Database connection timeout',
-        'DB performance degradation',
-        'PostgreSQL query issues'
+    it('should generate names using channel name logic', () => {
+      const title = 'Database connection timeout';
+      const name = generateInvestigationName(title);
+      
+      // Should match channel name format: trace-[title]-[3char-hex]
+      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+      expect(name.startsWith('trace-')).toBeTruthy();
+      expect(name.length).toBeLessThanOrEqual(21);
+    });
+
+    it('should use same format as channel name', () => {
+      const titles = [
+        'API response times',
+        'Database performance',
+        'User authentication'
       ];
       
-      for (const title of dbTitles) {
-        const name = generateInvestigationName(title);
-        expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
+      for (const title of titles) {
+        const investigationName = generateInvestigationName(title);
+        const channelName = generateChannelName(title);
         
-        // The important thing is that it generates valid, consistent names
-        expect(name).toBeTruthy();
+        // Both should have same format but different random suffixes
+        expect(investigationName).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+        expect(channelName).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+        
+        // Same prefix (without random suffix)
+        const invPrefix = investigationName.substring(0, investigationName.lastIndexOf('-'));
+        const chanPrefix = channelName.substring(0, channelName.lastIndexOf('-'));
+        expect(invPrefix).toBe(chanPrefix);
       }
     });
 
-    it('should generate contextual names for API issues', () => {
-      const apiTitles = [
-        'API response times increasing',
-        'REST API authentication failure',
-        'GraphQL API errors'
+    it('should handle various title types', () => {
+      const testCases = [
+        { title: 'API down', expected: /^trace-api-down-[a-f0-9]{3}$/ },
+        { title: 'Payment processing errors', expected: /^trace-payment-pro-[a-f0-9]{3}$/ },
+        { title: 'Database is slow', expected: /^trace-database-is-[a-f0-9]{3}$/ }
       ];
       
-      for (const title of apiTitles) {
+      for (const { title, expected } of testCases) {
         const name = generateInvestigationName(title);
-        expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
-        
-        // Name should be well-formed
-        expect(name.startsWith('trace-')).toBeTruthy();
-        expect(name.split('-').length).toBeGreaterThanOrEqual(4);
-      }
-    });
-
-    it('should generate contextual names for security issues', () => {
-      const securityTitles = [
-        'Security vulnerability detected',
-        'Authentication bypass found',
-        'Auth system broken'
-      ];
-      
-      for (const title of securityTitles) {
-        const name = generateInvestigationName(title);
-        expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
+        expect(name).toMatch(expected);
       }
     });
 
     it('should generate unique names for the same title', () => {
-      const title = 'Database performance issue';
+      const title = 'Database performance';
       const names = new Set();
       
       // Generate multiple names
@@ -58,69 +57,21 @@ describe('nameGenerator', () => {
         names.add(generateInvestigationName(title));
       }
       
-      // All should be unique due to hash
+      // All should be unique due to random suffix
       expect(names.size).toBeGreaterThanOrEqual(9); // Allow for rare collisions
       
       // All should follow the pattern
       names.forEach(name => {
-        expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
+        expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
       });
     });
 
-    it('should handle titles without specific keywords', () => {
-      const genericTitles = [
-        'Something is wrong',
-        'User reported issue',
-        'General investigation'
-      ];
-      
-      for (const title of genericTitles) {
-        const name = generateInvestigationName(title);
-        expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
-        
-        // Should still generate valid names
-        expect(name.startsWith('trace-')).toBeTruthy();
-        expect(name.split('-').length).toBeGreaterThanOrEqual(4);
-      }
-    });
-
-    it('should include hash for uniqueness', () => {
-      const title = 'API performance issue';
+    it('should truncate long titles', () => {
+      const title = 'This is a very long investigation title that exceeds the limit';
       const name = generateInvestigationName(title);
-      const parts = name.split('-');
       
-      // Should have at least 4 parts: trace, descriptor, noun, hash
-      expect(parts.length).toBeGreaterThanOrEqual(4);
-      
-      // Last part should be a 4-character hex hash
-      const hash = parts[parts.length - 1];
-      expect(hash).toMatch(/^[a-f0-9]{4}$/);
-    });
-
-    it('should create meaningful connections between title and name', () => {
-      // Test that specific keywords produce related descriptors
-      const testCases = [
-        { title: 'Database is slow', expectedTerms: ['slow', 'sluggish', 'delayed', 'lagging', 'crawling', 'persistent', 'indexed', 'stored', 'cached'] },
-        { title: 'API performance issue', expectedTerms: ['swift', 'responsive', 'connected', 'networked', 'performance', 'rapid', 'optimized', 'efficient'] },
-        { title: 'Security breach detected', expectedTerms: ['secured', 'protected', 'guarded', 'shielded', 'fortress', 'guardian', 'sentinel', 'shield', 'vault'] },
-        { title: 'Payment system error', expectedTerms: ['financial', 'monetary', 'transacted', 'charged', 'broken', 'failed', 'crashed', 'glitched'] }
-      ];
-      
-      for (const { title, expectedTerms } of testCases) {
-        const name = generateInvestigationName(title);
-        const nameWithoutHash = name.substring(0, name.lastIndexOf('-')).toLowerCase();
-        
-        // At least one expected term should appear
-        const hasExpectedTerm = expectedTerms.some(term => nameWithoutHash.includes(term.toLowerCase()));
-        
-        // Log for debugging if needed
-        if (!hasExpectedTerm) {
-          console.log(`Title: "${title}" generated name: "${name}"`);
-        }
-        
-        // We expect some contextual relevance, but not 100% guarantee due to randomness
-        expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
-      }
+      expect(name.length).toBeLessThanOrEqual(21);
+      expect(name).toMatch(/^trace-this-is-a-v-[a-f0-9]{3}$/);
     });
   });
 
@@ -131,7 +82,7 @@ describe('nameGenerator', () => {
       
       const name = await generateUniqueName(title, checkExists);
       
-      expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
+      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
       expect(checkExists).toHaveBeenCalledTimes(1);
     });
 
@@ -144,7 +95,7 @@ describe('nameGenerator', () => {
       
       const name = await generateUniqueName(title, checkExists);
       
-      expect(name).toMatch(/^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?-[a-f0-9]{4}$/);
+      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
       expect(checkExists).toHaveBeenCalledTimes(3);
     });
 
@@ -154,8 +105,77 @@ describe('nameGenerator', () => {
       
       const name = await generateUniqueName(title, checkExists);
       
-      expect(name).toMatch(/^trace-investigation-[a-f0-9]{8}$/);
-      expect(checkExists).toHaveBeenCalledTimes(10); // maxAttempts
+      expect(name).toMatch(/^trace-inv-[a-f0-9]{8}$/);
+      expect(checkExists).toHaveBeenCalledTimes(11); // 1 initial + 10 retry attempts
+    });
+  });
+
+  describe('generateChannelName', () => {
+    it('should generate channel name with trace prefix', () => {
+      const title = 'API response times';
+      const name = generateChannelName(title);
+      
+      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+      expect(name.startsWith('trace-')).toBeTruthy();
+      expect(name.length).toBeLessThanOrEqual(21);
+    });
+
+    it('should handle special characters and spaces', () => {
+      const title = 'Database @ Performance! Issue #123';
+      const name = generateChannelName(title);
+      
+      // With 11 chars for title, "database-pe" is what we expect
+      expect(name).toMatch(/^trace-database-pe-[a-f0-9]{3}$/);
+      expect(name).not.toContain('@');
+      expect(name).not.toContain('!');
+      expect(name).not.toContain('#');
+      expect(name).not.toContain(' ');
+    });
+
+    it('should truncate long titles', () => {
+      const title = 'This is a very long investigation title that exceeds the limit';
+      const name = generateChannelName(title);
+      
+      expect(name.length).toBeLessThanOrEqual(21);
+      expect(name).toMatch(/^trace-this-is-a-v-[a-f0-9]{3}$/);
+    });
+
+    it('should handle empty or invalid titles', () => {
+      const emptyTitles = ['', '   ', '!!!', '@#$%'];
+      
+      for (const title of emptyTitles) {
+        const name = generateChannelName(title);
+        // "investigation" is 13 chars, truncated to 11 = "investigati"
+        expect(name).toMatch(/^trace-investigati-[a-f0-9]{3}$/);
+        expect(name.length).toBeLessThanOrEqual(21);
+      }
+    });
+
+    it('should generate unique names for same title', () => {
+      const title = 'Same title';
+      const names = new Set();
+      
+      // Generate multiple names
+      for (let i = 0; i < 10; i++) {
+        names.add(generateChannelName(title));
+      }
+      
+      // All should be unique due to random suffix
+      expect(names.size).toBeGreaterThanOrEqual(9); // Allow for rare collisions
+    });
+
+    it('should create sensible channel names', () => {
+      const testCases = [
+        { title: 'API down', expected: /^trace-api-down-[a-f0-9]{3}$/ },
+        { title: 'Payment processing errors', expected: /^trace-payment-pro-[a-f0-9]{3}$/ }, // 11 char limit
+        { title: 'User login issues', expected: /^trace-user-login-[a-f0-9]{3}$/ },
+        { title: 'DB connection timeout', expected: /^trace-db-connecti-[a-f0-9]{3}$/ }
+      ];
+      
+      for (const { title, expected } of testCases) {
+        const name = generateChannelName(title);
+        expect(name).toMatch(expected);
+      }
     });
   });
 });

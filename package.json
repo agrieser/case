@@ -11,8 +11,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "test:setup": "dotenv -e .env.test -- prisma migrate reset --force --skip-seed",
-    "test": "dotenv -e .env.test -- jest --forceExit",
+    "test:setup": "dotenv -e .env.test -o -- prisma migrate reset --force --skip-seed",
+    "test": "dotenv -e .env.test -o -- jest --forceExit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },

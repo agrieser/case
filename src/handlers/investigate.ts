@@ -1,7 +1,7 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
 import { WebClient } from '@slack/web-api';
 import { PrismaClient } from '@prisma/client';
-import { generateUniqueName } from '../utils/nameGenerator';
+import { generateUniqueName, generateChannelName } from '../utils/nameGenerator';
 import { validateTitle, createSafeErrorMessage } from '../middleware/validation';
 
 interface InvestigateContext {
@@ -33,9 +33,12 @@ export async function handleInvestigate(
       return !!existing;
     });
 
+    // Generate channel name based on title
+    const channelName = generateChannelName(validatedTitle);
+    
     // Create Slack channel for the investigation
     const channelResult = await client.conversations.create({
-      name: name.replace(/^trace-/, ''), // Remove 'trace-' prefix for channel name
+      name: channelName,
       is_private: false,
     });
 
@@ -77,8 +80,31 @@ export async function handleInvestigate(
       }
     }
 
-    await respond({
-      response_type: 'in_channel',
+    // Get the potential issues channel ID from environment variable
+    const potentialIssuesChannelId = process.env.POTENTIAL_ISSUES_CHANNEL_ID;
+    
+    if (!potentialIssuesChannelId) {
+      throw new Error('POTENTIAL_ISSUES_CHANNEL_ID environment variable not set');
+    }
+
+    // Try to join the channel first (in case bot isn't already in it)
+    try {
+      await client.conversations.join({
+        channel: potentialIssuesChannelId,
+      });
+    } catch (error: any) {
+      // Log the error but continue - we'll get a better error from postMessage if needed
+      console.error('Failed to join potential issues channel:', error?.data?.error || error);
+      
+      // If it's a missing_scope error, we need to add channels:join
+      if (error?.data?.error === 'missing_scope') {
+        throw new Error(`Bot missing required scope to join channels. Error: ${JSON.stringify(error.data)}`);
+      }
+    }
+
+    // Post to #h-potential-issues
+    await client.chat.postMessage({
+      channel: potentialIssuesChannelId,
       blocks: [
         {
           type: 'section',
@@ -91,7 +117,6 @@ export async function handleInvestigate(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            // Title is already sanitized, safe to display
             text: `*Title:* ${validatedTitle}\n*Channel:* <#${channelId}>\n*Created by:* <@${userId}>`,
           },
         },
@@ -100,11 +125,17 @@ export async function handleInvestigate(
           elements: [
             {
               type: 'mrkdwn',
-              text: `Head to <#${channelId}> to collaborate on this investigation. Use \`/trace event\` to add evidence.`,
+              text: `Head to <#${channelId}> to collaborate on this investigation. Add evidence by right-clicking any message and selecting "Add to Investigation".`,
             },
           ],
         },
       ],
+    });
+
+    // Send ephemeral confirmation to the user
+    await respond({
+      response_type: 'ephemeral',
+      text: `✅ Investigation *${name}* created successfully!\n\nChannel: <#${channelId}>\nSummary posted to: <#${potentialIssuesChannelId}>`,
     });
   } catch (error) {
     // Log error safely without exposing sensitive details

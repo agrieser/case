@@ -8,9 +8,14 @@ features:
     always_online: true
   slash_commands:
     - command: /trace
-      description: Manage events, investigations, and incidents
-      usage_hint: "[event|investigate|incident|help]"
+      description: Create and manage investigations for incidents
+      usage_hint: "create [description] | list | status | incident | help"
       should_escape: false
+  shortcuts:
+    - name: Add to Investigation
+      type: message
+      callback_id: add_event_to_investigation
+      description: Add this message as an event to the current investigation
 oauth_config:
   scopes:
     bot:
@@ -18,6 +23,7 @@ oauth_config:
       - chat:write
       - channels:manage
       - channels:write.invites
+      - channels:join
 settings:
   event_subscriptions:
     bot_events: []

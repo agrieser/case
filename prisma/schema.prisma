@@ -13,7 +13,7 @@ datasource db {
 enum InvestigationStatus {
   investigating
   escalated
-  resolved
+  closed
 }
 
 model Investigation {
@@ -24,6 +24,8 @@ model Investigation {
   channelId     String              @unique // Slack channel ID created for this investigation
   createdBy     String              // Slack user ID
   createdAt     DateTime            @default(now())
+  closedBy      String?             // Slack user ID who closed the investigation
+  closedAt      DateTime?           // When investigation was closed
   
   events        Event[]
   incident      Incident?

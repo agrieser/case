@@ -33,6 +33,8 @@ describe('formatters', () => {
         channelId: 'C123456',
         createdBy: 'U123456',
         createdAt: new Date('2024-01-15T10:00:00Z'),
+        closedBy: null,
+        closedAt: null,
         _count: { events: 3 }
       };
 
@@ -61,7 +63,9 @@ describe('formatters', () => {
           status: 'escalated' as InvestigationStatus,
           channelId: 'C123456',
           createdBy: 'U123456',
-          createdAt: new Date('2024-01-15T10:00:00Z')
+          createdAt: new Date('2024-01-15T10:00:00Z'),
+          closedBy: null,
+          closedAt: null
         }
       };
 

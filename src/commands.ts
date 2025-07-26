@@ -1,10 +1,11 @@
 import { App } from '@slack/bolt';
 import { PrismaClient } from '@prisma/client';
 import { handleInvestigate } from './handlers/investigate';
-import { handleEvent } from './handlers/event';
 import { handleStatus } from './handlers/status';
 import { handleIncident } from './handlers/incident';
 import { handleHelp } from './handlers/help';
+import { handleList } from './handlers/list';
+import { handleClose } from './handlers/close';
 import { 
   validateCommandContext, 
   parseCommandArgs, 
@@ -36,7 +37,7 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
       const { subcommand, args } = parseCommandArgs(command.text);
 
       switch (subcommand) {
-        case 'investigate':
+        case 'create':
           await handleInvestigate({
             command,
             respond,
@@ -45,12 +46,6 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
           }, prisma);
           break;
 
-        case 'event':
-          await handleEvent({
-            command,
-            respond
-          }, prisma);
-          break;
 
         case 'status':
           await handleStatus({
@@ -66,12 +61,34 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
           }, prisma);
           break;
 
+        case 'list':
+          await handleList({
+            respond,
+            userId: command.user_id!
+          }, prisma);
+          break;
+
+        case 'close':
+          await handleClose({
+            respond,
+            channelId: command.channel_id!,
+            userId: command.user_id!,
+            client
+          }, prisma);
+          break;
 
         case 'help':
-        case '':
           await handleHelp({
             respond
           });
+          break;
+
+        case '':
+          // No subcommand - show interactive list instead of help
+          await handleList({
+            respond,
+            userId: command.user_id!
+          }, prisma);
           break;
 
         default:

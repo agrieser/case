@@ -1,150 +1,11 @@
 import crypto from 'crypto';
 
-// Keywords mapped to relevant descriptors
-const keywordMap: Record<string, string[]> = {
-  // Technical issues
-  'api': ['swift', 'responsive', 'connected', 'networked'],
-  'database': ['persistent', 'indexed', 'stored', 'cached'],
-  'db': ['persistent', 'indexed', 'stored', 'cached'],
-  'css': ['styled', 'visual', 'designed', 'formatted'],
-  'style': ['styled', 'visual', 'designed', 'formatted'],
-  'performance': ['swift', 'rapid', 'optimized', 'efficient'],
-  'slow': ['sluggish', 'delayed', 'lagging', 'crawling'],
-  'error': ['broken', 'failed', 'crashed', 'glitched'],
-  'bug': ['broken', 'failed', 'crashed', 'glitched'],
-  'security': ['secured', 'protected', 'guarded', 'shielded'],
-  'auth': ['secured', 'protected', 'locked', 'gated'],
-  'payment': ['financial', 'monetary', 'transacted', 'charged'],
-  'network': ['connected', 'linked', 'routed', 'transmitted'],
-  'memory': ['cached', 'stored', 'allocated', 'buffered'],
-  'cpu': ['processed', 'computed', 'calculated', 'executed'],
-
-  // General descriptors
-  'issue': ['troubled', 'problematic', 'affected', 'impacted'],
-  'problem': ['troubled', 'problematic', 'affected', 'impacted'],
-  'investigation': ['curious', 'searching', 'hunting', 'tracking'],
-  'incident': ['urgent', 'critical', 'alerted', 'escalated'],
-
-  // Default fallbacks
-  'default': ['mysterious', 'unknown', 'general', 'standard'],
-};
-
-// Animals/nouns grouped by characteristics
-const nounGroups: Record<string, string[]> = {
-  // Fast/performance related
-  'swift': ['falcon', 'cheetah', 'hawk', 'eagle', 'gazelle'],
-  'rapid': ['falcon', 'cheetah', 'hawk', 'eagle', 'gazelle'],
-
-  // Strong/reliable
-  'persistent': ['elephant', 'tortoise', 'oak', 'mountain', 'boulder'],
-  'stored': ['squirrel', 'bear', 'vault', 'archive', 'cache'],
-
-  // Network/connected
-  'connected': ['spider', 'web', 'network', 'mesh', 'grid'],
-  'linked': ['chain', 'bridge', 'connector', 'junction', 'hub'],
-
-  // Visual/design
-  'styled': ['peacock', 'butterfly', 'rainbow', 'prism', 'palette'],
-  'visual': ['eagle', 'hawk', 'observer', 'watcher', 'viewer'],
-
-  // Security related
-  'secured': ['fortress', 'guardian', 'sentinel', 'shield', 'vault'],
-  'protected': ['guardian', 'defender', 'armor', 'barrier', 'wall'],
-
-  // Problem/issue related
-  'broken': ['puzzle', 'fracture', 'glitch', 'anomaly', 'defect'],
-  'troubled': ['storm', 'tempest', 'chaos', 'turbulence', 'vortex'],
-
-  // Default animals
-  'default': ['wolf', 'bear', 'fox', 'raven', 'owl', 'tiger', 'lion', 'dragon'],
-};
-
-/**
- * Extract keywords from investigation title
- */
-function extractKeywords(title: string): string[] {
-  const words = title.toLowerCase().split(/\s+/);
-  const keywords: string[] = [];
-
-  for (const word of words) {
-    // Check if word or its stem matches any keyword
-    for (const keyword of Object.keys(keywordMap)) {
-      if (word.includes(keyword) || keyword.includes(word)) {
-        keywords.push(keyword);
-      }
-    }
-  }
-
-  return keywords.length > 0 ? keywords : ['default'];
-}
-
-/**
- * Get descriptor based on keywords
- */
-function getDescriptor(keywords: string[]): string {
-  const descriptors: string[] = [];
-
-  for (const keyword of keywords) {
-    const mapped = keywordMap[keyword] || keywordMap['default'];
-    descriptors.push(...mapped);
-  }
-
-  // Remove duplicates and pick random
-  const unique = [...new Set(descriptors)];
-  return unique[Math.floor(Math.random() * unique.length)];
-}
-
-/**
- * Get noun based on descriptor
- */
-function getNoun(descriptor: string): string {
-  // Find noun groups that match the descriptor
-  const matchingGroups: string[] = [];
-
-  for (const [key, nouns] of Object.entries(nounGroups)) {
-    if (descriptor.includes(key) || key.includes(descriptor)) {
-      matchingGroups.push(...nouns);
-    }
-  }
-
-  // If no matches, use default
-  if (matchingGroups.length === 0) {
-    matchingGroups.push(...nounGroups['default']);
-  }
-
-  // Remove duplicates and pick random
-  const unique = [...new Set(matchingGroups)];
-  return unique[Math.floor(Math.random() * unique.length)];
-}
-
-/**
- * Generate a short hash for uniqueness
- */
-function generateHash(input: string): string {
-  return crypto
-    .createHash('sha256')
-    .update(input + Date.now().toString())
-    .digest('hex')
-    .substring(0, 4);
-}
-
 /**
  * Generate investigation name based on title
+ * Uses the same logic as channel name generation for consistency
  */
 export function generateInvestigationName(title: string): string {
-  // Extract keywords from title
-  const keywords = extractKeywords(title);
-
-  // Get descriptor based on keywords
-  const descriptor = getDescriptor(keywords);
-
-  // Get noun based on descriptor
-  const noun = getNoun(descriptor);
-
-  // Add short hash for uniqueness
-  const hash = generateHash(title);
-
-  return `trace-${descriptor}-${noun}-${hash}`;
+  return generateChannelName(title);
 }
 
 /**
@@ -154,14 +15,30 @@ export async function generateUniqueName(
   title: string,
   checkExists: (name: string) => Promise<boolean>
 ): Promise<string> {
+  // First try the standard name
+  const baseName = generateInvestigationName(title);
+  const exists = await checkExists(baseName);
+  
+  if (!exists) {
+    return baseName;
+  }
+
+  // If it exists, try with different random suffixes
   let attempts = 0;
   const maxAttempts = 10;
 
   while (attempts < maxAttempts) {
-    const name = generateInvestigationName(title);
-    const exists = await checkExists(name);
+    // Generate a new random suffix
+    const randomSuffix = crypto.randomBytes(2).toString('hex').substring(0, 3);
+    
+    // Extract the base part without the original suffix
+    const parts = baseName.split('-');
+    parts[parts.length - 1] = randomSuffix; // Replace the last part (the suffix)
+    
+    const name = parts.join('-');
+    const nameExists = await checkExists(name);
 
-    if (!exists) {
+    if (!nameExists) {
       return name;
     }
 
@@ -175,5 +52,43 @@ export async function generateUniqueName(
     .digest('hex')
     .substring(0, 8);
 
-  return `trace-investigation-${longHash}`;
+  return `trace-inv-${longHash}`;
+}
+
+/**
+ * Generate a Slack channel name from a title
+ * Channel names must be 21 characters or less, lowercase, and contain only letters, numbers, hyphens, and underscores
+ */
+export function generateChannelName(title: string): string {
+  // Convert to lowercase and replace non-allowed characters with hyphens
+  let channelName = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')          // Replace spaces with hyphens
+    .replace(/-+/g, '-')           // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, '');        // Remove leading/trailing hyphens
+
+  // If empty after sanitization, use a default
+  if (!channelName) {
+    channelName = 'investigation';
+  }
+
+  // Add trace prefix
+  const prefix = 'trace-';
+  
+  // Generate random suffix (3 characters)
+  const randomSuffix = crypto.randomBytes(2).toString('hex').substring(0, 3);
+  
+  // Calculate available length for the title part
+  // Max 21 chars - 6 for "trace-" - 4 for "-xxx" suffix = 11 chars for title
+  const maxTitleLength = 21 - prefix.length - randomSuffix.length - 1;
+  
+  // Truncate channel name if needed
+  if (channelName.length > maxTitleLength) {
+    channelName = channelName.substring(0, maxTitleLength);
+    // Remove trailing hyphen if any
+    channelName = channelName.replace(/-$/, '');
+  }
+  
+  return `${prefix}${channelName}-${randomSuffix}`;
 }

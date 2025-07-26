@@ -19,7 +19,7 @@ export async function handleIncident(
 
     if (!investigation) {
       await respond({
-        text: '⚠️ This channel is not associated with an investigation. Create one with `/trace investigate [title]`',
+        text: '⚠️ The `/trace incident` command can only be used within investigation channels.',
         response_type: 'ephemeral',
       });
       return;
