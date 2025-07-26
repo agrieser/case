@@ -1,15 +1,17 @@
 # Trace - Slack Incident Management
 
-A lightweight Slack app that streamlines incident management by organizing the flow from events → investigations → incidents, with each investigation having its own dedicated Slack channel.
+A lightweight Slack app that implements a structured methodology for incident management, organizing the flow from events → investigations → incidents, with comprehensive tracking and reporting.
 
 ## What is Trace?
 
-Trace helps teams manage incidents by:
+Trace implements a structured approach to incident management that provides:
 
-- Creating dedicated Slack channels for each investigation
-- Collecting evidence from across your workspace
-- Escalating investigations to incidents when needed
-- Tracking everything in one organized place
+- **Clear stages**: Events → Investigations → Incidents
+- **Dedicated spaces**: Each investigation gets its own channel
+- **Evidence collection**: Link related messages and alerts
+- **Complete tracking**: Who did what, when, and for how long
+
+This methodology creates accountability, enables better reporting, and ensures nothing falls through the cracks.
 
 ## ✨ Key Features
 
@@ -32,6 +34,53 @@ All new investigations are announced in your designated channel (e.g., `#potenti
 ### 🛡️ **Secure by Default**
 
 External users from connected workspaces are automatically blocked from using commands, protecting your incident data.
+
+## 📚 Methodology
+
+Trace implements a structured incident management methodology that emphasizes investigation before escalation:
+
+### The Flow: Events → Investigations → Incidents
+
+1. **Events**: Things that happen (alerts, errors, customer reports)
+
+   - Exist as messages across your Slack workspace
+   - Can be linked to investigations as evidence
+
+2. **Investigations**: Organized efforts to understand what's happening
+
+   - Created when events need deeper analysis
+   - Have dedicated channels for focused discussion
+   - Collect related events as evidence
+   - May or may not become incidents
+
+3. **Incidents**: Investigations that require immediate action
+   - Escalated from investigations when severity is confirmed
+   - Have an assigned incident commander
+   - Must be resolved before investigation can close
+
+### Why This Approach?
+
+- **Not everything is an incident**: Many issues can be investigated and resolved without declaring an incident
+- **Evidence-based decisions**: Collect information before escalating
+- **Clear accountability**: Track who did what and when
+- **Better post-mortems**: All evidence is already collected and timestamped
+- **Reduced noise**: Only real incidents trigger full incident response
+
+### Lifecycle Example
+
+```
+Alert fires → Create investigation → Collect evidence → Assess severity
+  ↓                                                         ↓
+  └─→ Minor issue: Fix and close ←─────────────────────────┘
+                                                           ↓
+                                                    Major issue: Escalate to incident
+                                                           ↓
+                                                    Respond and resolve incident
+                                                           ↓
+                                                    Complete follow-up work
+                                                           ↓
+                                                    Close investigation
+```
 
 ## 🚀 Getting Started
 
@@ -103,15 +152,20 @@ All commands start with `/trace`:
    /trace create API response times increasing
    ```
 
+   📊 **Tracked**: Investigation created by @user at 2:45 PM
+
 2. **Trace creates a dedicated channel** (e.g., `#trace-api-respons-a3f`)
 
    - You're automatically added to the channel
    - A summary is posted to your notification channel
+   - Clock starts for investigation duration
 
 3. **Collect evidence**
 
    - Right-click any relevant message → "Add to Investigation"
    - Messages are linked in the investigation channel
+
+   📊 **Tracked**: Each event added with timestamp and who added it
 
 4. **If it's serious, escalate**
 
@@ -122,16 +176,23 @@ All commands start with `/trace`:
    - This marks it as an active incident
    - Sets you as the incident commander
 
+   📊 **Tracked**: Escalation time, incident commander assigned
+
 5. **When service is restored**
 
    ```
    /trace resolve
    ```
 
+   📊 **Tracked**: Resolution time, resolved by whom, total incident duration
+
 6. **After follow-up is complete**
+
    ```
    /trace close
    ```
+
+   📊 **Tracked**: Investigation closed, total duration, complete timeline available
 
 ### Adding Evidence
 
@@ -186,12 +247,46 @@ You can customize Trace by:
 
 ## 📊 What Gets Tracked
 
-Trace stores minimal data:
+### Comprehensive Audit Trail
 
-- Investigation metadata (title, status, timestamps)
-- Links to Slack messages (not the content)
-- User IDs of who created/modified investigations
-- Channel IDs for investigation channels
+Trace automatically tracks:
+
+- **Investigation Timeline**
+
+  - When created and by whom
+  - Duration (time from creation to closure)
+  - All linked events with timestamps
+  - Status changes (investigating → escalated → closed)
+
+- **Incident Details** (when escalated)
+
+  - Who declared the incident
+  - Incident commander assignments
+  - Time to resolution
+  - Who resolved it
+
+- **Evidence Collection**
+  - Every message added as evidence
+  - Who added each piece of evidence
+  - Original message location and timestamp
+  - Direct links back to source messages
+
+### Reporting Benefits
+
+This tracking enables:
+
+- **Accurate timelines**: Know exactly when issues started and actions were taken
+- **Response metrics**: Measure time to detection, escalation, and resolution
+- **Accountability**: Clear record of who did what and when
+- **Learning**: Data-driven post-mortems with complete evidence trails
+- **Compliance**: Audit trail for incident response procedures
+
+### Privacy-Conscious Design
+
+- Only stores message links, not content
+- No PII beyond Slack user IDs
+- All data confined to your workspace
+- Investigations isolated in dedicated channels
 
 ## 🤝 Contributing
 
