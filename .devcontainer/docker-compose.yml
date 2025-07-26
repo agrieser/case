@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm
+    volumes:
+      - ../..:/workspaces:cached
+      - ../:/workspace:cached
+    environment:
+      DATABASE_URL: "postgresql://trace:trace_password@db:5432/trace?schema=public"
+      NODE_ENV: development
+    command: sleep infinity
+    networks:
+      - trace-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: trace
+      POSTGRES_PASSWORD: trace_password
+      POSTGRES_DB: trace
+    ports:
+      - "5432:5432"
+    networks:
+      - trace-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trace"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  postgres-data:
+
+networks:
+  trace-network:
+    driver: bridge
