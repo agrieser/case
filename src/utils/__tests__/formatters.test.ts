@@ -56,6 +56,8 @@ describe('formatters', () => {
         investigationId: 'inv-123',
         incidentCommander: 'U789012',
         escalatedAt: new Date('2024-01-15T11:00:00Z'),
+        resolvedAt: null,
+        resolvedBy: null,
         investigation: {
           id: 'inv-123',
           name: 'trace-golden-falcon',

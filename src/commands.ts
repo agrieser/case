@@ -6,6 +6,8 @@ import { handleIncident } from './handlers/incident';
 import { handleHelp } from './handlers/help';
 import { handleList } from './handlers/list';
 import { handleClose } from './handlers/close';
+import { handleTransfer } from './handlers/transfer';
+import { handleResolve } from './handlers/resolve';
 import { 
   validateCommandContext, 
   parseCommandArgs, 
@@ -13,6 +15,7 @@ import {
   sanitizeInput 
 } from './middleware/validation';
 import { checkRateLimit } from './middleware/rateLimit';
+import { validateUserAccess, getUserContext } from './middleware/security';
 
 export function registerCommands(app: App, prisma: PrismaClient): void {
   // Handle /trace command
@@ -20,7 +23,25 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
     await ack();
 
     try {
-      // Check rate limit first
+      // Check user access (block external users)
+      const accessError = validateUserAccess(command);
+      if (accessError) {
+        await respond({
+          text: accessError,
+          response_type: 'ephemeral'
+        });
+        
+        // Log blocked attempt for security monitoring
+        const userContext = getUserContext(command);
+        console.log('Blocked external user attempt:', {
+          ...userContext,
+          command: command.text,
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      // Check rate limit
       const rateLimitCheck = checkRateLimit(command);
       if (!rateLimitCheck.allowed) {
         await respond({
@@ -70,6 +91,24 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
 
         case 'close':
           await handleClose({
+            respond,
+            channelId: command.channel_id!,
+            userId: command.user_id!,
+            client
+          }, prisma);
+          break;
+
+        case 'transfer':
+          await handleTransfer({
+            respond,
+            channelId: command.channel_id!,
+            userId: command.user_id!,
+            newCommander: args
+          }, prisma);
+          break;
+
+        case 'resolve':
+          await handleResolve({
             respond,
             channelId: command.channel_id!,
             userId: command.user_id!,

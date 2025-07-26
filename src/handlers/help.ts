@@ -29,6 +29,8 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
                 '• `/trace list` - List all active investigations\n' +
                 '• `/trace status` - Show investigation status (in investigation channels)\n' +
                 '• `/trace incident` - Escalate to incident (in investigation channels)\n' +
+                '• `/trace resolve` - Resolve incident when service is restored (for incidents only)\n' +
+                '• `/trace transfer @user` - Transfer incident commander role (for incidents only)\n' +
                 '• `/trace close` - Close investigation and archive channel (in investigation channels)\n' +
                 '• `/trace help` - Show this help message',
         },

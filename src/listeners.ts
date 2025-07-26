@@ -1,5 +1,6 @@
 import { App } from '@slack/bolt';
 import { PrismaClient } from '@prisma/client';
+import { isExternalUser } from './middleware/security';
 
 export function registerListeners(app: App, prisma: PrismaClient): void {
   // Handle message shortcut to add event to investigation
@@ -15,6 +16,27 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
       const messageTs = shortcut.message.ts;
       const userId = shortcut.user.id;
       const triggerId = shortcut.trigger_id;
+      const teamId = shortcut.team?.id || '';
+      const enterpriseId = shortcut.enterprise?.id;
+
+      // Check if user is external
+      if (isExternalUser(userId, teamId, enterpriseId)) {
+        await client.chat.postEphemeral({
+          channel: channelId,
+          user: userId,
+          text: '⚠️ This action is not available for external users.',
+        });
+        
+        console.log('Blocked external user shortcut attempt:', {
+          userId,
+          teamId,
+          enterpriseId,
+          isExternal: true,
+          action: 'add_event_to_investigation',
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
 
       // Get all active investigations (exclude closed)
       const investigations = await prisma.investigation.findMany({

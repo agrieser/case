@@ -68,7 +68,7 @@ export async function handleStatus(
             },
             {
               type: 'mrkdwn',
-              text: `*Incident:*\n${investigation.incident ? '🚨 Escalated' : 'None'}`,
+              text: `*Incident:*\n${getIncidentStatus(investigation.incident)}`,
             },
           ],
         },
@@ -99,4 +99,16 @@ function formatDuration(ms: number): string {
   } else {
     return `${seconds}s`;
   }
+}
+
+function getIncidentStatus(incident: any): string {
+  if (!incident) {
+    return 'None';
+  }
+  
+  if (incident.resolvedAt) {
+    return '✅ Resolved';
+  }
+  
+  return '🚨 Active';
 }

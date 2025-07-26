@@ -25,7 +25,8 @@ export async function handleList(
       include: {
         _count: {
           select: { events: true }
-        }
+        },
+        incident: true
       }
     });
 
@@ -44,7 +45,30 @@ export async function handleList(
       const minutes = duration % 60;
       const durationText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
       
-      return `${index + 1}. *${inv.name}*\n   • Title: ${inv.title}\n   • Channel: <#${inv.channelId}>\n   • Events: ${inv._count.events}\n   • Duration: ${durationText}\n   • Created by: <@${inv.createdBy}>`;
+      // Add status indicator
+      let statusEmoji = '🔍';
+      
+      if (inv.status === 'escalated' && inv.incident) {
+        if (inv.incident.resolvedAt) {
+          statusEmoji = '✅';
+        } else {
+          statusEmoji = '🚨';
+        }
+      }
+      
+      let entry = `${index + 1}. ${statusEmoji} *${inv.name}*\n`;
+      entry += `   • Title: ${inv.title}\n`;
+      entry += `   • Channel: <#${inv.channelId}>\n`;
+      entry += `   • Events: ${inv._count.events}\n`;
+      entry += `   • Duration: ${durationText}\n`;
+      entry += `   • Created by: <@${inv.createdBy}>`;
+      
+      // Add incident commander if escalated
+      if (inv.incident) {
+        entry += `\n   • Incident Commander: <@${inv.incident.incidentCommander}>`;
+      }
+      
+      return entry;
     }).join('\n\n');
 
     await respond({

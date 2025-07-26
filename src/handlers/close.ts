@@ -20,7 +20,8 @@ export async function handleClose(
       include: {
         _count: {
           select: { events: true }
-        }
+        },
+        incident: true
       }
     });
 
@@ -36,6 +37,15 @@ export async function handleClose(
     if (investigation.status === 'closed') {
       await respond({
         text: '⚠️ This investigation is already closed.',
+        response_type: 'ephemeral',
+      });
+      return;
+    }
+
+    // Check if there's an unresolved incident
+    if (investigation.incident && !investigation.incident.resolvedAt) {
+      await respond({
+        text: '⚠️ This investigation has an active incident that must be resolved first. Use `/trace resolve` to resolve the incident.',
         response_type: 'ephemeral',
       });
       return;
@@ -59,39 +69,6 @@ export async function handleClose(
     } catch (error: any) {
       console.error('Failed to archive channel:', error?.data?.error || error);
       // Continue even if archive fails - the investigation is still closed
-    }
-
-    // Post to #h-potential-issues about the closure
-    const potentialIssuesChannelId = process.env.POTENTIAL_ISSUES_CHANNEL_ID;
-    if (potentialIssuesChannelId) {
-      try {
-        const duration = Math.floor((Date.now() - investigation.createdAt.getTime()) / (1000 * 60));
-        const hours = Math.floor(duration / 60);
-        const minutes = duration % 60;
-        const durationText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-
-        await client.chat.postMessage({
-          channel: potentialIssuesChannelId,
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `🔒 Investigation closed: *${investigation.name}*`,
-              },
-            },
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `*Title:* ${investigation.title}\n*Duration:* ${durationText}\n*Events collected:* ${investigation._count.events}\n*Closed by:* <@${userId}>`,
-              },
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Failed to post closure to potential issues channel:', error);
-      }
     }
 
     // Send confirmation

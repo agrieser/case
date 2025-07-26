@@ -445,7 +445,7 @@ describe('registerCommands', () => {
     });
 
     it('should log blocked external user attempts', async () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
       
       validateUserAccess.mockReturnValueOnce('⚠️ This command is not available for external users. Please contact a member of this workspace for assistance.');
       getUserContext.mockReturnValueOnce({
