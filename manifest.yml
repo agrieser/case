@@ -9,7 +9,7 @@ features:
   slash_commands:
     - command: /trace
       description: Create and manage investigations for incidents
-      usage_hint: "create [description] | list | status | incident | help"
+      usage_hint: "create [description] | list | status | incident | transfer @user | resolve | close | help"
       should_escape: false
   shortcuts:
     - name: Add to Investigation

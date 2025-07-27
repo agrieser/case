@@ -139,15 +139,16 @@ flowchart TD
 
 All commands start with `/trace`:
 
-| Command                       | Description                    | Where to Use                |
-| ----------------------------- | ------------------------------ | --------------------------- |
-| `/trace create [description]` | Create a new investigation     | Any channel                 |
-| `/trace list`                 | View all active investigations | Any channel                 |
-| `/trace status`               | Show investigation details     | Investigation channels only |
-| `/trace incident`             | Escalate to incident           | Investigation channels only |
-| `/trace resolve`              | Mark incident as resolved      | Investigation channels only |
-| `/trace close`                | Close the investigation        | Investigation channels only |
-| `/trace help`                 | Show available commands        | Any channel                 |
+| Command                       | Description                       | Where to Use                |
+| ----------------------------- | --------------------------------- | --------------------------- |
+| `/trace create [description]` | Create a new investigation        | Any channel                 |
+| `/trace list`                 | View all active investigations    | Any channel                 |
+| `/trace status`               | Show investigation details        | Investigation channels only |
+| `/trace incident`             | Escalate to incident              | Investigation channels only |
+| `/trace transfer @user`       | Transfer incident commander role  | Investigation channels only |
+| `/trace resolve`              | Mark incident as resolved         | Investigation channels only |
+| `/trace close`                | Close the investigation           | Investigation channels only |
+| `/trace help`                 | Show available commands           | Any channel                 |
 
 ### Typical Workflow
 
@@ -180,10 +181,22 @@ All commands start with `/trace`:
 
    - This marks it as an active incident
    - Sets you as the incident commander
+   - Automatically adds incident response team (if configured)
 
    📊 **Tracked**: Escalation time, incident commander assigned
 
-5. **When service is restored**
+5. **If you need to hand off command** (optional)
+
+   ```
+   /trace transfer @alice
+   ```
+
+   - Transfers incident commander role to another user
+   - Useful for shift changes or expertise handoffs
+
+   📊 **Tracked**: Commander changes with timestamps
+
+6. **When service is restored**
 
    ```
    /trace resolve
@@ -191,7 +204,7 @@ All commands start with `/trace`:
 
    📊 **Tracked**: Resolution time, resolved by whom, total incident duration
 
-6. **After follow-up is complete**
+7. **After follow-up is complete**
 
    ```
    /trace close
@@ -247,24 +260,25 @@ Trace uses only these minimal permissions:
 - `commands`: Respond to slash commands
 - `chat:write`: Post messages to channels
 - `channels:manage`: Create and archive investigation channels
-- `channels:write.invites`: Add users to investigation channels
+- `channels:write.invites`: Add users to investigation channels (including user groups)
 - `channels:join`: Join the notification channel
 
-Notably absent: No `channels:read`, `channels:history`, `messages:read`, or any other message access permissions.
+Notably absent: No `channels:read`, `channels:history`, `messages:read`, `usergroups:read`, or any other message access permissions.
 
 ## 🛠️ Configuration Options
 
 ### Environment Variables
 
-| Variable                      | Required | Description                                    |
-| ----------------------------- | -------- | ---------------------------------------------- |
-| `DATABASE_URL`                | Yes      | PostgreSQL connection string                   |
-| `SLACK_BOT_TOKEN`             | Yes      | Bot user OAuth token                           |
-| `SLACK_SIGNING_SECRET`        | Yes      | App signing secret                             |
-| `SLACK_APP_TOKEN`             | Yes      | Socket mode app token                          |
-| `POTENTIAL_ISSUES_CHANNEL_ID` | Yes      | Channel ID for investigation notifications     |
-| `ALLOWED_WORKSPACE_IDS`       | No       | Comma-separated list of allowed workspace IDs  |
-| `NODE_ENV`                    | No       | Set to `production` for production deployments |
+| Variable                      | Required | Description                                           |
+| ----------------------------- | -------- | ----------------------------------------------------- |
+| `DATABASE_URL`                | Yes      | PostgreSQL connection string                          |
+| `SLACK_BOT_TOKEN`             | Yes      | Bot user OAuth token                                  |
+| `SLACK_SIGNING_SECRET`        | Yes      | App signing secret                                    |
+| `SLACK_APP_TOKEN`             | Yes      | Socket mode app token                                 |
+| `POTENTIAL_ISSUES_CHANNEL_ID` | Yes      | Channel ID for investigation notifications            |
+| `INCIDENT_RESPONSE_GROUP_ID`  | No       | User group ID - members auto-added on escalation     |
+| `ALLOWED_WORKSPACE_IDS`       | No       | Comma-separated list of allowed workspace IDs         |
+| `NODE_ENV`                    | No       | Set to `production` for production deployments        |
 
 ### Customization
 
