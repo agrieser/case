@@ -38,6 +38,13 @@ describe('handleInvestigate', () => {
       channelId: 'C999NEWCHANNEL',
       createdBy: 'U123456',
       createdAt: new Date(),
+      issuesMessageTs: '1234567890.123456',
+    });
+    
+    // Mock the postMessage response with timestamp
+    mockClient.chat.postMessage.mockResolvedValue({
+      ok: true,
+      ts: '1234567890.123456',
     });
   });
 
@@ -67,6 +74,7 @@ describe('handleInvestigate', () => {
           title: 'API response times increasing',
           channelId: 'C999NEWCHANNEL',
           createdBy: 'U123456',
+          issuesMessageTs: '1234567890.123456',
         },
       });
 

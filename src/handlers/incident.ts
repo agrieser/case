@@ -73,6 +73,36 @@ export async function handleIncident(
       }
     }
 
+    // Post to issues channel as a reply to the original message
+    const issuesChannelId = process.env.ISSUES_CHANNEL_ID;
+    if (issuesChannelId && investigation.issuesMessageTs) {
+      try {
+        await client.chat.postMessage({
+          channel: issuesChannelId,
+          thread_ts: investigation.issuesMessageTs,
+          reply_broadcast: true, // Also send to channel
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `🚨 *Escalated to incident*`,
+              },
+            },
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `*Incident Commander:* <@${command.user_id}>\n*Channel:* <#${command.channel_id}>`,
+              },
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Failed to post incident escalation to issues channel:', error);
+      }
+    }
+
     await respond({
       response_type: 'in_channel',
       blocks: [

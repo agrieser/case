@@ -26,6 +26,7 @@ model Investigation {
   createdAt     DateTime            @default(now())
   closedBy      String?             // Slack user ID who closed the investigation
   closedAt      DateTime?           // When investigation was closed
+  issuesMessageTs String            // Timestamp of the message posted to issues channel
   
   events        Event[]
   incident      Incident?

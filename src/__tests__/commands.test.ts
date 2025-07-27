@@ -238,8 +238,7 @@ describe('registerCommands', () => {
       expect(handleResolve).toHaveBeenCalledWith({
         respond: mockRespond,
         channelId: 'C123456',
-        userId: 'U123456',
-        client: mockClient
+        userId: 'U123456'
       }, mockPrisma);
     });
   });

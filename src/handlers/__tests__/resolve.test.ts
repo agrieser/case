@@ -60,8 +60,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -98,23 +97,9 @@ describe('handleResolve', () => {
           }),
         ]),
       });
-
-      // Verify notification to issues channel
-      expect(mockClient.chat.postMessage).toHaveBeenCalledWith({
-        channel: 'C123ISSUES',
-        blocks: expect.arrayContaining([
-          expect.objectContaining({
-            text: expect.objectContaining({
-              text: '✅ Incident resolved: *trace-api-issue-abc*',
-            }),
-          }),
-          expect.objectContaining({
-            text: expect.objectContaining({
-              text: expect.stringContaining('API issues critical'),
-            }),
-          }),
-        ]),
-      });
+      
+      // Should not post to issues channel
+      expect(mockClient.chat.postMessage).not.toHaveBeenCalled();
     });
 
     it('should handle short duration incidents', async () => {
@@ -150,8 +135,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -202,8 +186,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -214,6 +197,9 @@ describe('handleResolve', () => {
         response_type: 'in_channel',
         blocks: expect.any(Array),
       });
+      
+      // Should not post to issues channel on failure
+      expect(mockClient.chat.postMessage).not.toHaveBeenCalled();
     });
 
     it('should handle missing ISSUES_CHANNEL_ID', async () => {
@@ -251,8 +237,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -271,8 +256,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999GENERAL', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -305,8 +289,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -346,8 +329,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -392,8 +374,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -413,8 +394,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );
@@ -461,8 +441,7 @@ describe('handleResolve', () => {
         { 
           respond: mockRespond, 
           channelId: 'C999INVEST', 
-          userId: 'U123456',
-          client: mockClient 
+          userId: 'U123456' 
         },
         mockPrisma
       );

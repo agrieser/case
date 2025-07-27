@@ -15,6 +15,7 @@ describe('handleIncident', () => {
     
     // Set up environment
     process.env = { ...originalEnv };
+    process.env.ISSUES_CHANNEL_ID = 'C123ISSUES';
 
     // Initialize mocks
     mockPrisma = createMockPrismaClient();
@@ -43,6 +44,7 @@ describe('handleIncident', () => {
         closedBy: null,
         closedAt: null,
         incident: null,
+        issuesMessageTs: '1234567890.123456',
       };
 
       mockPrisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
@@ -73,6 +75,20 @@ describe('handleIncident', () => {
       expect(mockPrisma.investigation.update).toHaveBeenCalledWith({
         where: { id: 'inv-123' },
         data: { status: 'escalated' },
+      });
+
+      // Verify message posted to issues channel as reply
+      expect(mockClient.chat.postMessage).toHaveBeenCalledWith({
+        channel: 'C123ISSUES',
+        thread_ts: '1234567890.123456',
+        reply_broadcast: true,
+        blocks: expect.arrayContaining([
+          expect.objectContaining({
+            text: expect.objectContaining({
+              text: expect.stringContaining('Escalated to incident'),
+            }),
+          }),
+        ]),
       });
 
       // Verify response
@@ -178,6 +194,7 @@ describe('handleIncident', () => {
         closedBy: null,
         closedAt: null,
         incident: null,
+        issuesMessageTs: '1234567890.123456',
       };
 
       mockPrisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
@@ -205,6 +222,7 @@ describe('handleIncident', () => {
         closedBy: null,
         closedAt: null,
         incident: null,
+        issuesMessageTs: '1234567890.123456',
       };
 
       mockPrisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
@@ -242,6 +260,7 @@ describe('handleIncident', () => {
         closedBy: null,
         closedAt: null,
         incident: null,
+        issuesMessageTs: '1234567890.123456',
       };
 
       mockPrisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
@@ -284,6 +303,7 @@ describe('handleIncident', () => {
         closedBy: null,
         closedAt: null,
         incident: null,
+        issuesMessageTs: '1234567890.123456',
       };
 
       mockPrisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
@@ -335,6 +355,7 @@ describe('handleIncident', () => {
         closedBy: null,
         closedAt: null,
         incident: null,
+        issuesMessageTs: '1234567890.123456',
       };
 
       mockPrisma.investigation.findUnique.mockResolvedValue(mockInvestigation);

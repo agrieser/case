@@ -48,16 +48,6 @@ export async function handleInvestigate(
 
     const channelId = channelResult.channel.id;
 
-    // Create investigation with the new channel ID
-    await prisma.investigation.create({
-      data: {
-        name,
-        title: validatedTitle,
-        channelId,
-        createdBy: userId,
-      },
-    });
-
     // Join the channel as the bot first
     try {
       await client.conversations.join({
@@ -102,8 +92,8 @@ export async function handleInvestigate(
       }
     }
 
-    // Post to issues channel
-    await client.chat.postMessage({
+    // Post to issues channel first to get the message timestamp
+    const issuesMessage = await client.chat.postMessage({
       channel: issuesChannelId,
       blocks: [
         {
@@ -130,6 +120,21 @@ export async function handleInvestigate(
           ],
         },
       ],
+    });
+
+    if (!issuesMessage.ts) {
+      throw new Error('Failed to get message timestamp from issues channel');
+    }
+
+    // Create investigation with the message timestamp
+    await prisma.investigation.create({
+      data: {
+        name,
+        title: validatedTitle,
+        channelId,
+        createdBy: userId,
+        issuesMessageTs: issuesMessage.ts,
+      },
     });
 
     // Send ephemeral confirmation to the user

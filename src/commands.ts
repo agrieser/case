@@ -112,8 +112,7 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
           await handleResolve({
             respond,
             channelId: command.channel_id!,
-            userId: command.user_id!,
-            client
+            userId: command.user_id!
           }, prisma);
           break;
 

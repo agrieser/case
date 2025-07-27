@@ -1,16 +1,14 @@
 import { RespondFn } from '@slack/bolt';
-import { WebClient } from '@slack/web-api';
 import { PrismaClient } from '@prisma/client';
 
 interface ResolveContext {
   respond: RespondFn;
   channelId: string;
   userId: string;
-  client: WebClient;
 }
 
 export async function handleResolve(
-  { respond, channelId, userId, client }: ResolveContext,
+  { respond, channelId, userId }: ResolveContext,
   prisma: PrismaClient
 ): Promise<void> {
   try {
@@ -95,34 +93,6 @@ export async function handleResolve(
         },
       ],
     });
-
-    // Post to issues channel about the resolution
-    const issuesChannelId = process.env.ISSUES_CHANNEL_ID;
-    if (issuesChannelId) {
-      try {
-        await client.chat.postMessage({
-          channel: issuesChannelId,
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `✅ Incident resolved: *${investigation.name}*`,
-              },
-            },
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `*Title:* ${investigation.title}\n*Duration:* ${durationText}\n*Events collected:* ${investigation._count.events}\n*Resolved by:* <@${userId}>\n*Channel:* <#${channelId}>`,
-              },
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Failed to post resolution to issues channel:', error);
-      }
-    }
   } catch (error) {
     console.error('Error in handleResolve:', error);
     await respond({
