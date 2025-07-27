@@ -60,7 +60,7 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
       const { subcommand, args } = parseCommandArgs(command.text);
 
       switch (subcommand) {
-        case 'create':
+        case 'open':
           await handleInvestigate({
             command,
             respond,

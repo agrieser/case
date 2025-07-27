@@ -96,12 +96,12 @@ model Incident {
 
 All commands use the `/case` prefix:
 
-1. **`/case create [title]`** - Create a new investigation
+1. **`/case open [title]`** - Open a new investigation
    - Generates investigation name (e.g., "case-golden-falcon")
    - Creates channel based on title (e.g., #case-api-down-a3f)
    - Posts summary to issues channel
    - Automatically adds the user to the channel
-   - Example: `/case create API response times increasing`
+   - Example: `/case open API response times increasing`
 
 2. **Message Shortcut: "Add to Investigation"**
    - Right-click (or tap ⋯) on any message

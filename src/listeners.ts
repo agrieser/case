@@ -55,7 +55,7 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
         await client.chat.postEphemeral({
           channel: channelId,
           user: userId,
-          text: '⚠️ No active investigations found. Create one with `/case create [title]`',
+          text: '⚠️ No active investigations found. Open one with `/case open [title]`',
         });
         return;
       }

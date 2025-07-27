@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(npm run prisma:generate:*)",
+      "Bash(dotenv -e .env.test -- npx prisma migrate:*)",
+      "Bash(npx dotenv -e .env.test -- npx prisma migrate deploy:*)",
+      "Bash(npm test)",
+      "Bash(npm test:*)",
+      "Bash(grep:*)",
+      "Bash(npx tsc:*)"
+    ],
+    "deny": []
+  }
+}

@@ -26,7 +26,7 @@ describe('handleHelp', () => {
             type: 'section',
             text: expect.objectContaining({
               type: 'mrkdwn',
-              text: expect.stringContaining('/case create')
+              text: expect.stringContaining('/case open')
             })
           })
         ])
@@ -40,7 +40,7 @@ describe('handleHelp', () => {
     const call = mockRespond.mock.calls[0][0];
     const helpText = JSON.stringify(call);
 
-    expect(helpText).toContain('/case create');
+    expect(helpText).toContain('/case open');
     expect(helpText).toContain('/case status');
     expect(helpText).toContain('/case incident');
     expect(helpText).toContain('/case list');

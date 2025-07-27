@@ -25,7 +25,7 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '• `/case create [title]` - Create new investigation with dedicated channel\n' +
+          text: '• `/case open [title]` - Open new investigation with dedicated channel\n' +
                 '• `/case list` - List all active investigations\n' +
                 '• `/case stats` - View investigation and incident statistics\n' +
                 '• `/case export` - Export all investigations to CSV\n' +

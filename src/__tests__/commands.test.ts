@@ -101,9 +101,9 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/case create', () => {
+  describe('/case open', () => {
     it('should call handleInvestigate with title', async () => {
-      const mockCommand = createMockCommand({ text: 'create API issues' });
+      const mockCommand = createMockCommand({ text: 'open API issues' });
       const mockRespond = createMockRespond();
       const ack = jest.fn();
 
@@ -577,7 +577,7 @@ describe('registerCommands', () => {
 
   describe('command parsing', () => {
     it('should handle multiple word arguments', async () => {
-      const mockCommand = createMockCommand({ text: 'create API response times increasing' });
+      const mockCommand = createMockCommand({ text: 'open API response times increasing' });
       const mockRespond = createMockRespond();
       const ack = jest.fn();
 
@@ -597,7 +597,7 @@ describe('registerCommands', () => {
     });
 
     it('should handle extra whitespace', async () => {
-      const mockCommand = createMockCommand({ text: '  create    API   issues  ' });
+      const mockCommand = createMockCommand({ text: '  open    API   issues  ' });
       const mockRespond = createMockRespond();
       const ack = jest.fn();
 

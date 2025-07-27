@@ -200,7 +200,7 @@ describe('registerListeners', () => {
       expect(mockClient.chat.postEphemeral).toHaveBeenCalledWith({
         channel: 'C123456',
         user: 'U123456',
-        text: '⚠️ No active investigations found. Create one with `/case create [title]`',
+        text: '⚠️ No active investigations found. Open one with `/case open [title]`',
       });
     });
 

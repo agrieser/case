@@ -265,7 +265,7 @@ describe('handleList', () => {
       await handleList({ respond: mockRespond, userId: 'U123456' }, mockPrisma);
 
       expect(mockRespond).toHaveBeenCalledWith({
-        text: 'No active investigations found. Create one with `/case create [title]`',
+        text: 'No active investigations found. Open one with `/case open [title]`',
         response_type: 'ephemeral',
       });
     });
