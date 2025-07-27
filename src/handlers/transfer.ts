@@ -16,7 +16,7 @@ export async function handleTransfer(
     // Find the investigation for this channel
     const investigation = await prisma.investigation.findUnique({
       where: { channelId },
-      include: { incident: true }
+      include: { incident: true },
     });
 
     if (!investigation) {
@@ -62,8 +62,8 @@ export async function handleTransfer(
     await prisma.incident.update({
       where: { id: investigation.incident.id },
       data: { 
-        incidentCommander: newCommanderId
-      }
+        incidentCommander: newCommanderId,
+      },
     });
 
     // Send confirmation
@@ -74,7 +74,7 @@ export async function handleTransfer(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `🔄 Incident commander role transferred`,
+            text: '🔄 Incident commander role transferred',
           },
         },
         {

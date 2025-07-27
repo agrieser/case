@@ -15,19 +15,19 @@ export async function handleList(
     const investigations = await prisma.investigation.findMany({
       where: {
         status: {
-          not: 'closed'
-        }
+          not: 'closed',
+        },
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
       take: 25, // Slack select menu limit
       include: {
         _count: {
-          select: { events: true }
+          select: { events: true },
         },
-        incident: true
-      }
+        incident: true,
+      },
     });
 
     if (investigations.length === 0) {
@@ -78,27 +78,27 @@ export async function handleList(
           type: 'header',
           text: {
             type: 'plain_text',
-            text: '📋 Active Case Files'
-          }
+            text: '📋 Active Case Files',
+          },
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `Found *${investigations.length} open case${investigations.length !== 1 ? 's' : ''}*:`
-          }
+            text: `Found *${investigations.length} open case${investigations.length !== 1 ? 's' : ''}*:`,
+          },
         },
         {
-          type: 'divider'
+          type: 'divider',
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: investigationsList
-          }
-        }
-      ]
+            text: investigationsList,
+          },
+        },
+      ],
     });
   } catch (error) {
     console.error('Error in handleList:', error);

@@ -13,17 +13,28 @@ export async function handleExport(
   prisma: PrismaClient
 ): Promise<void> {
   try {
+    // Check if user is authorized to export
+    const authorizedUsers = process.env.EXPORT_AUTHORIZED_USERS?.split(',').map(u => u.trim()) || [];
+    
+    if (authorizedUsers.length > 0 && !authorizedUsers.includes(userId)) {
+      await respond({
+        text: '🔒 You are not authorized to export data. Please contact your administrator.',
+        response_type: 'ephemeral',
+      });
+      return;
+    }
+    
     // Fetch all investigations with related data
     const investigations = await prisma.investigation.findMany({
       include: {
         incident: true,
         _count: {
-          select: { events: true }
-        }
+          select: { events: true },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
     if (investigations.length === 0) {
@@ -54,7 +65,7 @@ export async function handleExport(
       'Escalated At',
       'Resolved By',
       'Resolved At',
-      'Resolution Time (hours)'
+      'Resolution Time (hours)',
     ].join(','));
 
     // Data rows
@@ -83,7 +94,7 @@ export async function handleExport(
         inv.incident?.escalatedAt.toISOString() || '',
         inv.incident?.resolvedBy || '',
         inv.incident?.resolvedAt?.toISOString() || '',
-        resolutionTime?.toFixed(2) || ''
+        resolutionTime?.toFixed(2) || '',
       ].join(',');
 
       csvRows.push(row);
@@ -101,7 +112,7 @@ export async function handleExport(
       channel_id: userId, // Send as DM to the user
       filename,
       file: buffer,
-      initial_comment: `📊 Case Export - ${investigations.length} investigations`
+      initial_comment: `📊 Case Export - ${investigations.length} investigations`,
     });
 
     if (!uploadResult.ok) {
@@ -116,17 +127,17 @@ export async function handleExport(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Export complete! I've sent you the CSV file as a direct message.`
-          }
+            text: '✅ Export complete! I\'ve sent you the CSV file as a direct message.',
+          },
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Export Summary:*\n• Total investigations: ${investigations.length}\n• File: ${filename}\n• Check your DMs for the download link`
-          }
-        }
-      ]
+            text: `*Export Summary:*\n• Total investigations: ${investigations.length}\n• File: ${filename}\n• Check your DMs for the download link`,
+          },
+        },
+      ],
     });
   } catch (error) {
     console.error('Error in handleExport:', error);

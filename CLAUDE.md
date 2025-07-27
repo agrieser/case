@@ -127,12 +127,12 @@ All commands use the `/case` prefix:
    - Lists up to 25 most recent investigations
    - Excludes closed investigations
 
-6. **`/case stats`** - View investigation statistics
-   - Shows all-time metrics and key performance indicators
-   - Total investigations (active vs total)
-   - Incident escalation rate
-   - Average resolution time
-   - Top investigators and incident commanders
+6. **`/case stats`** - View operational dashboard
+   - Shows real-time operational metrics
+   - Current active investigations and incidents
+   - 7-day activity metrics (cases opened, time spent)
+   - Average investigation close and incident resolution times
+   - Updates timestamp for freshness
 
 7. **`/case export`** - Export all investigations to CSV
    - Exports complete investigation history
@@ -192,6 +192,13 @@ Required in `.env`:
 - `SLACK_APP_TOKEN` - Socket mode app token
 - `DATABASE_URL` - PostgreSQL connection string
 - `ISSUES_CHANNEL_ID` - Channel ID for issues notifications (e.g., C0123456789)
+
+Optional:
+- `EXPORT_AUTHORIZED_USERS` - Comma-separated list of Slack user IDs who can export data (e.g., U123456,U789012,U345678)
+  - If not set, all users can export
+  - If set, only listed users can use `/case export`
+  - Spaces around IDs are automatically trimmed
+  - To find a user's ID: Click their profile → More → Copy member ID
 
 Test environment uses `.env.test` with separate database.
 

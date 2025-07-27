@@ -6,9 +6,14 @@ describe('handleExport', () => {
   let mockPrisma: any;
   let mockClient: any;
   let mockRespond: any;
+  const originalEnv = process.env;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Reset environment
+    process.env = { ...originalEnv };
+    delete process.env.EXPORT_AUTHORIZED_USERS;
     
     // Initialize mocks
     mockPrisma = createMockPrismaClient();
@@ -17,6 +22,10 @@ describe('handleExport', () => {
     
     // Default mock implementations
     mockPrisma.investigation.findMany.mockResolvedValue([]);
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
   });
 
   describe('successful export', () => {
@@ -256,6 +265,123 @@ describe('handleExport', () => {
         text: '⚠️ Failed to export data. Please try again.',
         response_type: 'ephemeral',
       });
+    });
+  });
+
+  describe('authorization', () => {
+    it('should allow export when no authorized users are configured', async () => {
+      // No EXPORT_AUTHORIZED_USERS env var set
+      mockPrisma.investigation.findMany.mockResolvedValue([{
+        id: 'inv-123',
+        name: 'case-test-abc',
+        title: 'Test issue',
+        status: 'closed',
+        channelId: 'C999INVEST',
+        createdBy: 'U123456',
+        createdAt: new Date(),
+        closedBy: 'U123456',
+        closedAt: new Date(),
+        issuesMessageTs: '1234567890.123456',
+        _count: { events: 1 },
+        incident: null
+      }]);
+
+      mockClient.files.uploadV2.mockResolvedValue({ ok: true });
+
+      await handleExport(
+        { 
+          respond: mockRespond, 
+          userId: 'U999999', // Any user
+          client: mockClient 
+        },
+        mockPrisma
+      );
+
+      expect(mockClient.files.uploadV2).toHaveBeenCalled();
+    });
+
+    it('should allow authorized users to export', async () => {
+      process.env.EXPORT_AUTHORIZED_USERS = 'U123456,U789012,U345678';
+      
+      mockPrisma.investigation.findMany.mockResolvedValue([{
+        id: 'inv-123',
+        name: 'case-test-abc',
+        title: 'Test issue',
+        status: 'closed',
+        channelId: 'C999INVEST',
+        createdBy: 'U123456',
+        createdAt: new Date(),
+        closedBy: 'U123456',
+        closedAt: new Date(),
+        issuesMessageTs: '1234567890.123456',
+        _count: { events: 1 },
+        incident: null
+      }]);
+
+      mockClient.files.uploadV2.mockResolvedValue({ ok: true });
+
+      await handleExport(
+        { 
+          respond: mockRespond, 
+          userId: 'U789012', // Authorized user
+          client: mockClient 
+        },
+        mockPrisma
+      );
+
+      expect(mockClient.files.uploadV2).toHaveBeenCalled();
+    });
+
+    it('should block unauthorized users from exporting', async () => {
+      process.env.EXPORT_AUTHORIZED_USERS = 'U123456,U789012,U345678';
+
+      await handleExport(
+        { 
+          respond: mockRespond, 
+          userId: 'U999999', // Unauthorized user
+          client: mockClient 
+        },
+        mockPrisma
+      );
+
+      expect(mockRespond).toHaveBeenCalledWith({
+        text: '🔒 You are not authorized to export data. Please contact your administrator.',
+        response_type: 'ephemeral',
+      });
+      expect(mockPrisma.investigation.findMany).not.toHaveBeenCalled();
+      expect(mockClient.files.uploadV2).not.toHaveBeenCalled();
+    });
+
+    it('should handle whitespace in authorized users list', async () => {
+      process.env.EXPORT_AUTHORIZED_USERS = ' U123456 , U789012 , U345678 ';
+      
+      mockPrisma.investigation.findMany.mockResolvedValue([{
+        id: 'inv-123',
+        name: 'case-test-abc',
+        title: 'Test issue',
+        status: 'closed',
+        channelId: 'C999INVEST',
+        createdBy: 'U123456',
+        createdAt: new Date(),
+        closedBy: 'U123456',
+        closedAt: new Date(),
+        issuesMessageTs: '1234567890.123456',
+        _count: { events: 1 },
+        incident: null
+      }]);
+
+      mockClient.files.uploadV2.mockResolvedValue({ ok: true });
+
+      await handleExport(
+        { 
+          respond: mockRespond, 
+          userId: 'U123456', // Authorized user (with spaces trimmed)
+          client: mockClient 
+        },
+        mockPrisma
+      );
+
+      expect(mockClient.files.uploadV2).toHaveBeenCalled();
     });
   });
 });

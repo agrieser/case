@@ -15,51 +15,22 @@ describe('handleStats', () => {
     
     // Default mock implementations
     mockPrisma.investigation.count.mockResolvedValue(0);
+    mockPrisma.investigation.findMany.mockResolvedValue([]);
     mockPrisma.incident.count.mockResolvedValue(0);
     mockPrisma.incident.findMany.mockResolvedValue([]);
-    mockPrisma.event.count.mockResolvedValue(0);
-    mockPrisma.investigation.groupBy.mockResolvedValue([]);
-    mockPrisma.incident.groupBy.mockResolvedValue([]);
   });
 
-  describe('basic statistics', () => {
-    it('should display statistics when data exists', async () => {
-      // Mock investigation counts
+  describe('operational metrics', () => {
+    it('should display current status', async () => {
+      // Mock current state
       mockPrisma.investigation.count
-        .mockResolvedValueOnce(25) // total
-        .mockResolvedValueOnce(5);  // active
+        .mockResolvedValueOnce(3)  // current investigations
+        .mockResolvedValueOnce(1)  // current incidents
+        .mockResolvedValueOnce(8)  // 7-day investigations
+        .mockResolvedValue(0);
       
-      // Mock incident count
-      mockPrisma.incident.count.mockResolvedValue(8);
+      mockPrisma.incident.count.mockResolvedValueOnce(4); // 7-day incidents
       
-      // Mock resolved incidents for average resolution time
-      mockPrisma.incident.findMany.mockResolvedValue([
-        {
-          escalatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
-          resolvedAt: new Date(Date.now() - 1 * 60 * 60 * 1000)   // 1 hour ago
-        },
-        {
-          escalatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-          resolvedAt: new Date(Date.now() - 30 * 60 * 1000)       // 30 minutes ago
-        }
-      ]);
-      
-      // Mock event count
-      mockPrisma.event.count.mockResolvedValue(150);
-      
-      // Mock top investigators
-      mockPrisma.investigation.groupBy.mockResolvedValue([
-        { createdBy: 'U123456', _count: { createdBy: 10 } },
-        { createdBy: 'U789012', _count: { createdBy: 8 } },
-        { createdBy: 'U345678', _count: { createdBy: 5 } }
-      ]);
-      
-      // Mock top commanders
-      mockPrisma.incident.groupBy.mockResolvedValue([
-        { incidentCommander: 'U123456', _count: { incidentCommander: 4 } },
-        { incidentCommander: 'U789012', _count: { incidentCommander: 3 } }
-      ]);
-
       await handleStats({ respond: mockRespond }, mockPrisma);
 
       expect(mockRespond).toHaveBeenCalledWith({
@@ -68,23 +39,17 @@ describe('handleStats', () => {
           expect.objectContaining({
             type: 'header',
             text: expect.objectContaining({
-              text: '📊 Case Statistics'
+              text: '📊 Operational Dashboard'
             })
           }),
           expect.objectContaining({
             type: 'section',
             fields: expect.arrayContaining([
               expect.objectContaining({
-                text: expect.stringContaining('25 (5 active)')
+                text: expect.stringContaining('Active Investigations:*\n3')
               }),
               expect.objectContaining({
-                text: expect.stringContaining('8 incidents (32.0%)')
-              }),
-              expect.objectContaining({
-                text: expect.stringContaining('1h 45m') // Average of 2h and 1.5h
-              }),
-              expect.objectContaining({
-                text: expect.stringContaining('150 total')
+                text: expect.stringContaining('Active Incidents:*\n1')
               })
             ])
           })
@@ -92,76 +57,161 @@ describe('handleStats', () => {
       });
     });
 
-    it('should handle empty statistics gracefully', async () => {
-      await handleStats({ respond: mockRespond }, mockPrisma);
-
-      expect(mockRespond).toHaveBeenCalledWith({
-        response_type: 'ephemeral',
-        blocks: expect.arrayContaining([
-          expect.objectContaining({
-            fields: expect.arrayContaining([
-              expect.objectContaining({
-                text: expect.stringContaining('0 (0 active)')
-              }),
-              expect.objectContaining({
-                text: expect.stringContaining('0 incidents (0.0%)')
-              }),
-              expect.objectContaining({
-                text: expect.stringContaining('0m')
-              })
-            ])
-          }),
-          expect.objectContaining({
-            text: expect.objectContaining({
-              text: '_No investigations yet_'
-            })
-          }),
-          expect.objectContaining({
-            text: expect.objectContaining({
-              text: '_No incidents yet_'
-            })
-          })
-        ])
-      });
-    });
-
-    it('should calculate correct average resolution time', async () => {
-      mockPrisma.incident.findMany.mockResolvedValue([
-        {
-          escalatedAt: new Date('2024-01-01T10:00:00Z'),
-          resolvedAt: new Date('2024-01-01T12:30:00Z') // 2.5 hours
-        },
-        {
-          escalatedAt: new Date('2024-01-01T14:00:00Z'),
-          resolvedAt: new Date('2024-01-01T14:30:00Z') // 30 minutes
-        },
-        {
-          escalatedAt: new Date('2024-01-01T16:00:00Z'),
-          resolvedAt: new Date('2024-01-01T17:00:00Z') // 1 hour
-        }
-      ]);
-
-      await handleStats({ respond: mockRespond }, mockPrisma);
-
-      // Average: (150 + 30 + 60) / 3 = 80 minutes = 1h 20m
-      expect(mockRespond).toHaveBeenCalledWith({
-        response_type: 'ephemeral',
-        blocks: expect.arrayContaining([
-          expect.objectContaining({
-            fields: expect.arrayContaining([
-              expect.objectContaining({
-                text: expect.stringContaining('1h 20m')
-              })
-            ])
-          })
-        ])
-      });
-    });
-
-    it('should handle division by zero for escalation rate', async () => {
+    it('should display 7-day activity metrics', async () => {
+      const now = new Date();
+      
+      // Mock 7-day counts
       mockPrisma.investigation.count
-        .mockResolvedValueOnce(0)  // total
-        .mockResolvedValueOnce(0); // active
+        .mockResolvedValueOnce(0)  // current investigations
+        .mockResolvedValueOnce(0)  // current incidents
+        .mockResolvedValueOnce(15); // 7-day investigations
+      
+      mockPrisma.incident.count.mockResolvedValueOnce(5); // 7-day incidents
+      
+      // Mock investigation time data
+      mockPrisma.investigation.findMany
+        .mockResolvedValueOnce([
+          {
+            createdAt: new Date(now.getTime() - 6 * 60 * 60 * 1000), // 6 hours ago
+            closedAt: new Date(now.getTime() - 4 * 60 * 60 * 1000), // 4 hours ago (2 hours)
+            status: 'closed'
+          },
+          {
+            createdAt: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
+            closedAt: null, // Still open (3 hours)
+            status: 'investigating'
+          }
+        ])
+        .mockResolvedValueOnce([]); // closed investigations
+      
+      // Mock incident time data
+      mockPrisma.incident.findMany
+        .mockResolvedValueOnce([
+          {
+            escalatedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000), // 5 hours ago
+            resolvedAt: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago (2 hours)
+          },
+          {
+            escalatedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+            resolvedAt: null // Still active (2 hours)
+          }
+        ])
+        .mockResolvedValueOnce([]); // resolved incidents
+
+      await handleStats({ respond: mockRespond }, mockPrisma);
+
+      expect(mockRespond).toHaveBeenCalledWith({
+        response_type: 'ephemeral',
+        blocks: expect.arrayContaining([
+          expect.objectContaining({
+            type: 'section',
+            fields: expect.arrayContaining([
+              expect.objectContaining({
+                text: '*Cases Opened:*\n15'
+              }),
+              expect.objectContaining({
+                text: '*Incidents Declared:*\n5'
+              }),
+              expect.objectContaining({
+                text: '*Investigation Time:*\n5h 0m' // 2 + 3 hours
+              }),
+              expect.objectContaining({
+                text: '*Incident Time:*\n4h 0m' // 2 + 2 hours
+              })
+            ])
+          })
+        ])
+      });
+    });
+
+    it('should calculate average resolution times', async () => {
+      // Mock closed investigations
+      mockPrisma.investigation.findMany
+        .mockResolvedValueOnce([]) // 7-day data
+        .mockResolvedValueOnce([
+          {
+            createdAt: new Date('2024-01-01T10:00:00Z'),
+            closedAt: new Date('2024-01-01T14:00:00Z') // 4 hours
+          },
+          {
+            createdAt: new Date('2024-01-01T12:00:00Z'),
+            closedAt: new Date('2024-01-01T13:30:00Z') // 1.5 hours
+          },
+          {
+            createdAt: new Date('2024-01-01T15:00:00Z'),
+            closedAt: new Date('2024-01-01T17:30:00Z') // 2.5 hours
+          }
+        ]);
+      
+      // Mock resolved incidents
+      mockPrisma.incident.findMany
+        .mockResolvedValueOnce([]) // 7-day data
+        .mockResolvedValueOnce([
+          {
+            escalatedAt: new Date('2024-01-01T10:00:00Z'),
+            resolvedAt: new Date('2024-01-01T11:00:00Z') // 1 hour
+          },
+          {
+            escalatedAt: new Date('2024-01-01T14:00:00Z'),
+            resolvedAt: new Date('2024-01-01T16:00:00Z') // 2 hours
+          }
+        ]);
+
+      await handleStats({ respond: mockRespond }, mockPrisma);
+
+      expect(mockRespond).toHaveBeenCalledWith({
+        response_type: 'ephemeral',
+        blocks: expect.arrayContaining([
+          expect.objectContaining({
+            type: 'section',
+            fields: expect.arrayContaining([
+              expect.objectContaining({
+                text: '*Investigation Close:*\n2h 40m' // Average of 4, 1.5, 2.5 hours = 160 minutes
+              }),
+              expect.objectContaining({
+                text: '*Incident Resolve:*\n1h 30m' // Average of 1, 2 hours = 90 minutes
+              })
+            ])
+          })
+        ])
+      });
+    });
+
+    it('should handle no data gracefully', async () => {
+      await handleStats({ respond: mockRespond }, mockPrisma);
+
+      expect(mockRespond).toHaveBeenCalledWith({
+        response_type: 'ephemeral',
+        blocks: expect.arrayContaining([
+          expect.objectContaining({
+            fields: expect.arrayContaining([
+              expect.objectContaining({
+                text: '*Investigation Close:*\nNo data'
+              }),
+              expect.objectContaining({
+                text: '*Incident Resolve:*\nNo data'
+              })
+            ])
+          })
+        ])
+      });
+    });
+
+    it('should format long durations correctly', async () => {
+      const now = new Date();
+      
+      // Mock investigation with very long duration
+      mockPrisma.investigation.findMany
+        .mockResolvedValueOnce([
+          {
+            createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+            closedAt: null, // Still open
+            status: 'investigating'
+          }
+        ])
+        .mockResolvedValueOnce([]); // closed investigations
+      
+      mockPrisma.incident.findMany.mockResolvedValue([]);
 
       await handleStats({ respond: mockRespond }, mockPrisma);
 
@@ -171,7 +221,7 @@ describe('handleStats', () => {
           expect.objectContaining({
             fields: expect.arrayContaining([
               expect.objectContaining({
-                text: expect.stringContaining('0 incidents (0.0%)')
+                text: expect.stringContaining('3d 0h') // 3 days duration
               })
             ])
           })
@@ -195,43 +245,16 @@ describe('handleStats', () => {
     });
   });
 
-  describe('leaderboards', () => {
-    it('should display top 3 investigators', async () => {
-      mockPrisma.investigation.groupBy.mockResolvedValue([
-        { createdBy: 'U111111', _count: { createdBy: 15 } },
-        { createdBy: 'U222222', _count: { createdBy: 12 } },
-        { createdBy: 'U333333', _count: { createdBy: 10 } }
-      ]);
-
+  describe('timestamp display', () => {
+    it('should include update timestamp', async () => {
       await handleStats({ respond: mockRespond }, mockPrisma);
 
       const response = mockRespond.mock.calls[0][0];
-      const leaderboardBlock = response.blocks.find((block: any) => 
-        block.text?.text?.includes('<@U111111>')
+      const contextBlock = response.blocks.find((block: any) => 
+        block.type === 'context'
       );
 
-      expect(leaderboardBlock.text.text).toContain('1. <@U111111> - 15 investigations');
-      expect(leaderboardBlock.text.text).toContain('2. <@U222222> - 12 investigations');
-      expect(leaderboardBlock.text.text).toContain('3. <@U333333> - 10 investigations');
-    });
-
-    it('should display top 3 incident commanders', async () => {
-      mockPrisma.incident.groupBy.mockResolvedValue([
-        { incidentCommander: 'U555555', _count: { incidentCommander: 8 } },
-        { incidentCommander: 'U666666', _count: { incidentCommander: 6 } },
-        { incidentCommander: 'U777777', _count: { incidentCommander: 4 } }
-      ]);
-
-      await handleStats({ respond: mockRespond }, mockPrisma);
-
-      const response = mockRespond.mock.calls[0][0];
-      const commanderBlock = response.blocks.find((block: any) => 
-        block.text?.text?.includes('<@U555555>')
-      );
-
-      expect(commanderBlock.text.text).toContain('1. <@U555555> - 8 incidents');
-      expect(commanderBlock.text.text).toContain('2. <@U666666> - 6 incidents');
-      expect(commanderBlock.text.text).toContain('3. <@U777777> - 4 incidents');
+      expect(contextBlock.elements[0].text).toMatch(/_Updated \d{1,2}:\d{2}:\d{2}/);
     });
   });
 });

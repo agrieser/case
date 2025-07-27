@@ -19,10 +19,10 @@ export async function handleClose(
       where: { channelId },
       include: {
         _count: {
-          select: { events: true }
+          select: { events: true },
         },
-        incident: true
-      }
+        incident: true,
+      },
     });
 
     if (!investigation) {
@@ -57,8 +57,8 @@ export async function handleClose(
       data: { 
         status: 'closed',
         closedAt: new Date(),
-        closedBy: userId
-      }
+        closedBy: userId,
+      },
     });
 
     // Archive the Slack channel

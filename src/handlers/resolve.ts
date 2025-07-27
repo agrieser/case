@@ -18,9 +18,9 @@ export async function handleResolve(
       include: { 
         incident: true,
         _count: {
-          select: { events: true }
-        }
-      }
+          select: { events: true },
+        },
+      },
     });
 
     if (!investigation) {
@@ -60,8 +60,8 @@ export async function handleResolve(
       where: { id: investigation.incident.id },
       data: { 
         resolvedAt: new Date(),
-        resolvedBy: userId
-      }
+        resolvedBy: userId,
+      },
     });
 
     // Post resolution message in channel
@@ -87,7 +87,7 @@ export async function handleResolve(
           elements: [
             {
               type: 'mrkdwn',
-              text: `The investigation remains open for follow-up analysis and post-mortem. Use \`/case close\` when all follow-up work is complete.`,
+              text: 'The investigation remains open for follow-up analysis and post-mortem. Use `/case close` when all follow-up work is complete.',
             },
           ],
         },

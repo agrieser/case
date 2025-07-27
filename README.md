@@ -96,15 +96,18 @@ For detailed setup instructions, see [INSTALLATION.md](INSTALLATION.md).
 
 All commands start with `/case`:
 
-| Command                      | What it does              | Where to use          |
-| ---------------------------- | ------------------------- | --------------------- |
-| `/case open [description]`   | Open new investigation    | Any channel           |
-| `/case list`                 | See active investigations | Any channel           |
-| `/case stats`                | View metrics and KPIs     | Any channel           |
-| `/case export`               | Export all data to CSV    | Any channel           |
-| `/case incident`             | Escalate to incident      | Investigation channel |
-| `/case resolve`              | Mark incident resolved    | Investigation channel |
-| `/case close`                | Close investigation       | Investigation channel |
+| Command                     | What it does                    | Where to use          |
+| --------------------------- | ------------------------------- | --------------------- |
+| `/case open [description]`  | Open new investigation          | Any channel           |
+| `/case list`                | See active investigations       | Any channel           |
+| `/case stats`               | View operational dashboard      | Any channel           |
+| `/case export`              | Export all data to CSV          | Any channel           |
+| `/case help`                | Show available commands         | Any channel           |
+| `/case status`              | Show investigation details      | Investigation channel |
+| `/case incident`            | Escalate to incident            | Investigation channel |
+| `/case resolve`             | Mark incident resolved          | Investigation channel |
+| `/case transfer @user`      | Transfer incident commander     | Investigation channel |
+| `/case close`               | Close investigation             | Investigation channel |
 
 ### Typical Workflow Example
 
@@ -217,10 +220,10 @@ Get insights into your incident management:
 
 Shows:
 
-- Total investigations (active vs all-time)
-- Escalation rate to incidents
-- Mean time to resolution
-- Top responders
+- Current active investigations and incidents
+- 7-day activity (cases opened, time spent)
+- Average resolution times
+- Real-time operational status
 
 ```
 /case export
@@ -251,6 +254,7 @@ Exports CSV with:
 | ---------------------------- | ---------------------------------- |
 | `INCIDENT_RESPONSE_GROUP_ID` | User group auto-added to incidents |
 | `ALLOWED_WORKSPACE_IDS`      | Restrict to specific workspaces    |
+| `EXPORT_AUTHORIZED_USERS`    | Comma-separated Slack user IDs who can export data |
 
 ## 🏗️ Technical Details
 

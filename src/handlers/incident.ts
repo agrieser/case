@@ -86,7 +86,7 @@ export async function handleIncident(
               type: 'section',
               text: {
                 type: 'mrkdwn',
-                text: `🚨 *Escalated to incident*`,
+                text: '🚨 *Escalated to incident*',
               },
             },
             {

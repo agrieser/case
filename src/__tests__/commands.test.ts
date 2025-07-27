@@ -5,39 +5,39 @@ import { createMockRespond, createMockCommand, createMockPrismaClient, createMoc
 
 // Mock all handlers
 jest.mock('../handlers/investigate', () => ({
-  handleInvestigate: jest.fn()
+  handleInvestigate: jest.fn(),
 }));
 jest.mock('../handlers/status', () => ({
-  handleStatus: jest.fn()
+  handleStatus: jest.fn(),
 }));
 jest.mock('../handlers/incident', () => ({
-  handleIncident: jest.fn()
+  handleIncident: jest.fn(),
 }));
 jest.mock('../handlers/help', () => ({
-  handleHelp: jest.fn()
+  handleHelp: jest.fn(),
 }));
 jest.mock('../handlers/list', () => ({
-  handleList: jest.fn()
+  handleList: jest.fn(),
 }));
 jest.mock('../handlers/close', () => ({
-  handleClose: jest.fn()
+  handleClose: jest.fn(),
 }));
 jest.mock('../handlers/transfer', () => ({
-  handleTransfer: jest.fn()
+  handleTransfer: jest.fn(),
 }));
 jest.mock('../handlers/resolve', () => ({
-  handleResolve: jest.fn()
+  handleResolve: jest.fn(),
 }));
 jest.mock('../handlers/stats', () => ({
-  handleStats: jest.fn()
+  handleStats: jest.fn(),
 }));
 jest.mock('../handlers/export', () => ({
-  handleExport: jest.fn()
+  handleExport: jest.fn(),
 }));
 
 // Mock middleware
 jest.mock('../middleware/rateLimit', () => ({
-  checkRateLimit: jest.fn().mockReturnValue({ allowed: true })
+  checkRateLimit: jest.fn().mockReturnValue({ allowed: true }),
 }));
 jest.mock('../middleware/validation', () => ({
   validateCommandContext: jest.fn(),
@@ -46,7 +46,7 @@ jest.mock('../middleware/validation', () => ({
     return { subcommand: subcommand || '', args: args.join(' ') };
   }),
   createSafeErrorMessage: jest.fn(() => '⚠️ An error occurred. Please try again.'),
-  sanitizeInput: jest.fn((input: string) => input.replace(/[<>]/g, ''))
+  sanitizeInput: jest.fn((input: string) => input.replace(/[<>]/g, '')),
 }));
 jest.mock('../middleware/security', () => ({
   validateUserAccess: jest.fn().mockReturnValue(null),
@@ -54,8 +54,8 @@ jest.mock('../middleware/security', () => ({
     userId: command.user_id,
     teamId: command.team_id,
     isExternal: false,
-    channelId: command.channel_id
-  }))
+    channelId: command.channel_id,
+  })),
 }));
 
 describe('registerCommands', () => {
@@ -88,7 +88,7 @@ describe('registerCommands', () => {
     mockApp = {
       command: jest.fn((_cmd: string, handler: any) => {
         commandHandler = handler;
-      })
+      }),
     };
     
     // Register commands
@@ -111,7 +111,7 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(ack).toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe('registerCommands', () => {
         command: mockCommand,
         respond: mockRespond,
         title: 'API issues',
-        client: mockClient
+        client: mockClient,
       }, mockPrisma);
     });
   });
@@ -134,12 +134,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleStatus).toHaveBeenCalledWith({
         command: mockCommand,
-        respond: mockRespond
+        respond: mockRespond,
       }, mockPrisma);
     });
   });
@@ -154,13 +154,13 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleIncident).toHaveBeenCalledWith({
         command: mockCommand,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       }, mockPrisma);
     });
   });
@@ -175,12 +175,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleList).toHaveBeenCalledWith({
         respond: mockRespond,
-        userId: 'U123456'
+        userId: 'U123456',
       }, mockPrisma);
     });
   });
@@ -195,14 +195,14 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleClose).toHaveBeenCalledWith({
         respond: mockRespond,
         channelId: 'C123456',
         userId: 'U123456',
-        client: mockClient
+        client: mockClient,
       }, mockPrisma);
     });
   });
@@ -217,14 +217,14 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleTransfer).toHaveBeenCalledWith({
         respond: mockRespond,
         channelId: 'C123456',
         userId: 'U123456',
-        newCommander: '<@U789012>'
+        newCommander: '<@U789012>',
       }, mockPrisma);
     });
   });
@@ -239,13 +239,13 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleResolve).toHaveBeenCalledWith({
         respond: mockRespond,
         channelId: 'C123456',
-        userId: 'U123456'
+        userId: 'U123456',
       }, mockPrisma);
     });
   });
@@ -260,12 +260,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       const { handleStats } = jest.requireMock('../handlers/stats') as any;
       expect(handleStats).toHaveBeenCalledWith({
-        respond: mockRespond
+        respond: mockRespond,
       }, mockPrisma);
     });
   });
@@ -280,14 +280,14 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       const { handleExport } = jest.requireMock('../handlers/export') as any;
       expect(handleExport).toHaveBeenCalledWith({
         respond: mockRespond,
         userId: 'U123456',
-        client: mockClient
+        client: mockClient,
       }, mockPrisma);
     });
   });
@@ -302,11 +302,11 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleHelp).toHaveBeenCalledWith({
-        respond: mockRespond
+        respond: mockRespond,
       });
     });
   });
@@ -321,12 +321,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleList).toHaveBeenCalledWith({
         respond: mockRespond,
-        userId: 'U123456'
+        userId: 'U123456',
       }, mockPrisma);
     });
 
@@ -339,12 +339,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleList).toHaveBeenCalledWith({
         respond: mockRespond,
-        userId: 'U123456'
+        userId: 'U123456',
       }, mockPrisma);
     });
   });
@@ -359,12 +359,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ Unknown command: `unknown`. Use `/case help` for available commands.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
     });
 
@@ -377,12 +377,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ Unknown command: `scriptalert("xss")/script`. Use `/case help` for available commands.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
     });
   });
@@ -391,7 +391,7 @@ describe('registerCommands', () => {
     it('should reject command when rate limited', async () => {
       checkRateLimit.mockReturnValueOnce({ 
         allowed: false, 
-        message: '⚠️ You are sending too many requests. Please wait 30 seconds.' 
+        message: '⚠️ You are sending too many requests. Please wait 30 seconds.', 
       });
 
       const mockCommand = createMockCommand({ text: 'status' });
@@ -402,13 +402,13 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(checkRateLimit).toHaveBeenCalledWith(mockCommand);
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ You are sending too many requests. Please wait 30 seconds.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
       expect(handleStatus).not.toHaveBeenCalled();
     });
@@ -424,12 +424,12 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ Rate limit exceeded. Please try again later.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
     });
   });
@@ -441,12 +441,12 @@ describe('registerCommands', () => {
         userId: 'U123_T456',
         teamId: 'T999999',
         isExternal: true,
-        channelId: 'C123456'
+        channelId: 'C123456',
       });
 
       const mockCommand = createMockCommand({ 
         text: 'create API issue',
-        user_id: 'U123_T456'
+        user_id: 'U123_T456',
       });
       const mockRespond = createMockRespond();
       const ack = jest.fn();
@@ -455,13 +455,13 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(validateUserAccess).toHaveBeenCalledWith(mockCommand);
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ This command is not available for external users. Please contact a member of this workspace for assistance.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
       expect(handleInvestigate).not.toHaveBeenCalled();
     });
@@ -472,12 +472,12 @@ describe('registerCommands', () => {
         userId: 'W123456',
         teamId: 'T999999',
         isExternal: true,
-        channelId: 'C123456'
+        channelId: 'C123456',
       });
 
       const mockCommand = createMockCommand({ 
         text: 'status',
-        user_id: 'W123456'
+        user_id: 'W123456',
       });
       const mockRespond = createMockRespond();
       const ack = jest.fn();
@@ -486,7 +486,7 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleStatus).not.toHaveBeenCalled();
@@ -500,12 +500,12 @@ describe('registerCommands', () => {
         userId: 'U123_T456',
         teamId: 'T999999',
         isExternal: true,
-        channelId: 'C123456'
+        channelId: 'C123456',
       });
 
       const mockCommand = createMockCommand({ 
         text: 'incident',
-        user_id: 'U123_T456'
+        user_id: 'U123_T456',
       });
       const mockRespond = createMockRespond();
       const ack = jest.fn();
@@ -514,7 +514,7 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(consoleSpy).toHaveBeenCalledWith('Blocked external user attempt:', expect.objectContaining({
@@ -522,7 +522,7 @@ describe('registerCommands', () => {
         teamId: 'T999999',
         isExternal: true,
         command: 'incident',
-        timestamp: expect.any(String)
+        timestamp: expect.any(String),
       }));
 
       consoleSpy.mockRestore();
@@ -543,13 +543,13 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(createSafeErrorMessage).toHaveBeenCalledWith(expect.any(Error));
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ An error occurred. Please try again.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
     });
 
@@ -564,13 +564,13 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(createSafeErrorMessage).toHaveBeenCalledWith(expect.any(Error));
       expect(mockRespond).toHaveBeenCalledWith({
         text: '⚠️ An error occurred. Please try again.',
-        response_type: 'ephemeral'
+        response_type: 'ephemeral',
       });
     });
   });
@@ -585,14 +585,14 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleInvestigate).toHaveBeenCalledWith({
         command: mockCommand,
         respond: mockRespond,
         title: 'API response times increasing',
-        client: mockClient
+        client: mockClient,
       }, mockPrisma);
     });
 
@@ -605,14 +605,14 @@ describe('registerCommands', () => {
         command: mockCommand,
         ack,
         respond: mockRespond,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(handleInvestigate).toHaveBeenCalledWith({
         command: mockCommand,
         respond: mockRespond,
         title: 'API issues',
-        client: mockClient
+        client: mockClient,
       }, mockPrisma);
     });
   });

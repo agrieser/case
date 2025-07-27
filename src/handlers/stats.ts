@@ -10,64 +10,133 @@ export async function handleStats(
   prisma: PrismaClient
 ): Promise<void> {
   try {
-    // Get all investigations
-    const totalInvestigations = await prisma.investigation.count();
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     
-    // Get active investigations (not closed)
-    const activeInvestigations = await prisma.investigation.count({
-      where: { status: { not: 'closed' } }
+    // Current state metrics
+    const currentInvestigations = await prisma.investigation.count({
+      where: { 
+        status: 'investigating',
+      },
     });
     
-    // Get escalated investigations
-    const escalatedCount = await prisma.incident.count();
+    const currentIncidents = await prisma.investigation.count({
+      where: { 
+        status: 'escalated',
+        incident: {
+          resolvedAt: null,
+        },
+      },
+    });
     
-    // Calculate escalation rate
-    const escalationRate = totalInvestigations > 0 
-      ? ((escalatedCount / totalInvestigations) * 100).toFixed(1)
-      : '0.0';
+    // 7-day activity metrics
+    const investigationsLast7Days = await prisma.investigation.count({
+      where: {
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+    });
     
-    // Get average resolution time for incidents
+    const incidentsLast7Days = await prisma.incident.count({
+      where: {
+        escalatedAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+    });
+    
+    // Calculate time spent in investigations (7 days)
+    const investigationsLast7DaysData = await prisma.investigation.findMany({
+      where: {
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+      select: {
+        createdAt: true,
+        closedAt: true,
+        status: true,
+      },
+    });
+    
+    let totalInvestigationMinutes = 0;
+    investigationsLast7DaysData.forEach(inv => {
+      const endTime = inv.closedAt || now;
+      const duration = endTime.getTime() - inv.createdAt.getTime();
+      totalInvestigationMinutes += duration / (1000 * 60);
+    });
+    
+    // Calculate time spent in incidents (7 days)
+    const incidentsLast7DaysData = await prisma.incident.findMany({
+      where: {
+        escalatedAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+      select: {
+        escalatedAt: true,
+        resolvedAt: true,
+      },
+    });
+    
+    let totalIncidentMinutes = 0;
+    incidentsLast7DaysData.forEach(inc => {
+      const endTime = inc.resolvedAt || now;
+      const duration = endTime.getTime() - inc.escalatedAt.getTime();
+      totalIncidentMinutes += duration / (1000 * 60);
+    });
+    
+    // Calculate average close times (all time for better data)
+    const closedInvestigations = await prisma.investigation.findMany({
+      where: { 
+        closedAt: { not: null },
+      },
+      select: {
+        createdAt: true,
+        closedAt: true,
+      },
+    });
+    
+    let avgInvestigationCloseMinutes = 0;
+    if (closedInvestigations.length > 0) {
+      const totalMinutes = closedInvestigations.reduce((sum, inv) => {
+        const duration = inv.closedAt!.getTime() - inv.createdAt.getTime();
+        return sum + (duration / (1000 * 60));
+      }, 0);
+      avgInvestigationCloseMinutes = Math.round(totalMinutes / closedInvestigations.length);
+    }
+    
     const resolvedIncidents = await prisma.incident.findMany({
       where: { resolvedAt: { not: null } },
       select: {
         escalatedAt: true,
-        resolvedAt: true
-      }
+        resolvedAt: true,
+      },
     });
     
-    let avgResolutionMinutes = 0;
+    let avgIncidentResolveMinutes = 0;
     if (resolvedIncidents.length > 0) {
       const totalMinutes = resolvedIncidents.reduce((sum, inc) => {
         const duration = inc.resolvedAt!.getTime() - inc.escalatedAt.getTime();
-        return sum + (duration / (1000 * 60)); // Convert to minutes
+        return sum + (duration / (1000 * 60));
       }, 0);
-      avgResolutionMinutes = Math.round(totalMinutes / resolvedIncidents.length);
+      avgIncidentResolveMinutes = Math.round(totalMinutes / resolvedIncidents.length);
     }
     
-    const avgHours = Math.floor(avgResolutionMinutes / 60);
-    const avgMinutes = avgResolutionMinutes % 60;
-    const avgResolutionTime = avgHours > 0 ? `${avgHours}h ${avgMinutes}m` : `${avgMinutes}m`;
+    // Format time displays
+    const formatMinutes = (minutes: number): string => {
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.round(minutes % 60);
+      if (hours > 24) {
+        const days = Math.floor(hours / 24);
+        const remainingHours = hours % 24;
+        return `${days}d ${remainingHours}h`;
+      }
+      return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+    };
     
-    // Get total events collected
-    const totalEvents = await prisma.event.count();
-    
-    // Get most active investigators (by investigations created)
-    const topInvestigators = await prisma.investigation.groupBy({
-      by: ['createdBy'],
-      _count: { createdBy: true },
-      orderBy: { _count: { createdBy: 'desc' } },
-      take: 3
-    });
-    
-    // Get most active incident commanders
-    const topCommanders = await prisma.incident.groupBy({
-      by: ['incidentCommander'],
-      _count: { incidentCommander: true },
-      orderBy: { _count: { incidentCommander: 'desc' } },
-      take: 3
-    });
-    
-    // Format the response
+    // Format the response with operational focus
     await respond({
       response_type: 'ephemeral',
       blocks: [
@@ -75,83 +144,94 @@ export async function handleStats(
           type: 'header',
           text: {
             type: 'plain_text',
-            text: '📊 Case Statistics',
-            emoji: true
-          }
+            text: '📊 Operational Dashboard',
+            emoji: true,
+          },
         },
         {
-          type: 'divider'
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '*Current Status*',
+          },
         },
         {
           type: 'section',
           fields: [
             {
               type: 'mrkdwn',
-              text: `*Total Investigations:*\n${totalInvestigations} (${activeInvestigations} active)`
+              text: `🔍 *Active Investigations:*\n${currentInvestigations}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Escalation Rate:*\n${escalatedCount} incidents (${escalationRate}%)`
+              text: `🚨 *Active Incidents:*\n${currentIncidents}`,
+            },
+          ],
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '*7-Day Activity*',
+          },
+        },
+        {
+          type: 'section',
+          fields: [
+            {
+              type: 'mrkdwn',
+              text: `*Cases Opened:*\n${investigationsLast7Days}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Avg Resolution Time:*\n${avgResolutionTime}`
+              text: `*Incidents Declared:*\n${incidentsLast7Days}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Events Collected:*\n${totalEvents} total`
-            }
-          ]
+              text: `*Investigation Time:*\n${formatMinutes(totalInvestigationMinutes)}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Incident Time:*\n${formatMinutes(totalIncidentMinutes)}`,
+            },
+          ],
         },
         {
-          type: 'divider'
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: '*🏆 Top Investigators:*'
-          }
+          type: 'divider',
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: topInvestigators.length > 0
-              ? topInvestigators.map((inv, i) => 
-                  `${i + 1}. <@${inv.createdBy}> - ${inv._count.createdBy} investigations`
-                ).join('\n')
-              : '_No investigations yet_'
-          }
+            text: '*Average Resolution Times*',
+          },
         },
         {
           type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: '*🚨 Top Incident Commanders:*'
-          }
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: topCommanders.length > 0
-              ? topCommanders.map((cmd, i) => 
-                  `${i + 1}. <@${cmd.incidentCommander}> - ${cmd._count.incidentCommander} incidents`
-                ).join('\n')
-              : '_No incidents yet_'
-          }
+          fields: [
+            {
+              type: 'mrkdwn',
+              text: `*Investigation Close:*\n${closedInvestigations.length > 0 ? formatMinutes(avgInvestigationCloseMinutes) : 'No data'}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Incident Resolve:*\n${resolvedIncidents.length > 0 ? formatMinutes(avgIncidentResolveMinutes) : 'No data'}`,
+            },
+          ],
         },
         {
           type: 'context',
           elements: [
             {
               type: 'mrkdwn',
-              text: '_All-time statistics. Time-based filtering coming soon._'
-            }
-          ]
-        }
-      ]
+              text: `_Updated ${now.toLocaleTimeString()}_`,
+            },
+          ],
+        },
+      ],
     });
   } catch (error) {
     console.error('Error in handleStats:', error);

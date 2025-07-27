@@ -5,7 +5,7 @@ import { createMockPrismaClient, createMockWebClient } from '../test/utils/testH
 
 // Mock the handlers
 jest.mock('../handlers/help', () => ({
-  handleHelp: jest.fn()
+  handleHelp: jest.fn(),
 }));
 
 describe('registerListeners', () => {
@@ -38,7 +38,7 @@ describe('registerListeners', () => {
       }),
       action: jest.fn((name: string, handler: any) => {
         actions.set(name, handler);
-      })
+      }),
     };
     
     // Register all listeners
@@ -74,10 +74,10 @@ describe('registerListeners', () => {
           message: { ts: '1234567890.123456' },
           user: { id: 'U123456' },
           trigger_id: 'trigger123',
-          team: { domain: 'workspace' }
+          team: { domain: 'workspace' },
         },
         ack,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(ack).toHaveBeenCalled();
@@ -86,22 +86,22 @@ describe('registerListeners', () => {
           investigationId: 'inv-123',
           slackMessageUrl: 'https://workspace.slack.com/archives/C123456/p1234567890123456',
           addedBy: 'U123456',
-        }
+        },
       });
       expect(mockClient.chat.postMessage).toHaveBeenCalledWith({
         channel: 'C999INVEST',
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('case-api-issue-abc')
-            })
-          })
-        ])
+              text: expect.stringContaining('case-api-issue-abc'),
+            }),
+          }),
+        ]),
       });
       expect(mockClient.chat.postEphemeral).toHaveBeenCalledWith({
         channel: 'C123456',
         user: 'U123456',
-        text: expect.stringContaining('Event added to investigation')
+        text: expect.stringContaining('Event added to investigation'),
       });
     });
 
@@ -120,7 +120,7 @@ describe('registerListeners', () => {
           title: 'Database issues',
           status: 'investigating',
           channelId: 'C999INVEST2',
-        }
+        },
       ];
 
       mockPrisma.investigation.findMany.mockResolvedValue(mockInvestigations);
@@ -135,10 +135,10 @@ describe('registerListeners', () => {
           message: { ts: '1234567890.123456' },
           user: { id: 'U123456' },
           trigger_id: 'trigger123',
-          team: { domain: 'workspace' }
+          team: { domain: 'workspace' },
         },
         ack,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(mockClient.views.open).toHaveBeenCalledWith({
@@ -149,7 +149,7 @@ describe('registerListeners', () => {
           private_metadata: JSON.stringify({
             channelId: 'C123456',
             messageTs: '1234567890.123456',
-            teamDomain: 'workspace'
+            teamDomain: 'workspace',
           }),
           blocks: expect.arrayContaining([
             expect.objectContaining({
@@ -160,22 +160,22 @@ describe('registerListeners', () => {
                   {
                     text: {
                       type: 'plain_text',
-                      text: 'case-api-issue-abc - API issues that are very long ...'
+                      text: 'case-api-issue-abc - API issues that are very long ...',
                     },
-                    value: 'inv-123'
+                    value: 'inv-123',
                   },
                   {
                     text: {
                       type: 'plain_text',
-                      text: 'case-db-issue-def - Database issues'
+                      text: 'case-db-issue-def - Database issues',
                     },
-                    value: 'inv-456'
-                  }
-                ]
-              })
-            })
-          ])
-        })
+                    value: 'inv-456',
+                  },
+                ],
+              }),
+            }),
+          ]),
+        }),
       });
     });
 
@@ -194,7 +194,7 @@ describe('registerListeners', () => {
           trigger_id: 'trigger123',
         },
         ack,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(mockClient.chat.postEphemeral).toHaveBeenCalledWith({
@@ -215,7 +215,7 @@ describe('registerListeners', () => {
           trigger_id: 'trigger123',
         },
         ack,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(ack).toHaveBeenCalled();
@@ -237,7 +237,7 @@ describe('registerListeners', () => {
           trigger_id: 'trigger123',
         },
         ack,
-        client: mockClient
+        client: mockClient,
       });
 
       expect(mockClient.chat.postEphemeral).toHaveBeenCalledWith({
@@ -276,29 +276,29 @@ describe('registerListeners', () => {
           private_metadata: JSON.stringify({
             channelId: 'C123456',
             messageTs: '1234567890.123456',
-            teamDomain: 'workspace'
+            teamDomain: 'workspace',
           }),
           state: {
             values: {
               investigation_select: {
                 selected_investigation: {
                   selected_option: {
-                    value: 'inv-123'
-                  }
-                }
-              }
-            }
-          }
+                    value: 'inv-123',
+                  },
+                },
+              },
+            },
+          },
         },
         client: mockClient,
         body: {
-          user: { id: 'U123456' }
-        }
+          user: { id: 'U123456' },
+        },
       });
 
       expect(ack).toHaveBeenCalled();
       expect(mockPrisma.investigation.findUnique).toHaveBeenCalledWith({
-        where: { id: 'inv-123' }
+        where: { id: 'inv-123' },
       });
       expect(mockPrisma.event.create).toHaveBeenCalled();
       expect(mockClient.chat.postMessage).toHaveBeenCalled();
@@ -315,22 +315,22 @@ describe('registerListeners', () => {
           private_metadata: JSON.stringify({
             channelId: 'C123456',
             messageTs: '1234567890.123456',
-            teamDomain: 'workspace'
+            teamDomain: 'workspace',
           }),
           state: {
             values: {
               investigation_select: {
                 selected_investigation: {
-                  selected_option: null
-                }
-              }
-            }
-          }
+                  selected_option: null,
+                },
+              },
+            },
+          },
         },
         client: mockClient,
         body: {
-          user: { id: 'U123456' }
-        }
+          user: { id: 'U123456' },
+        },
       });
 
       expect(ack).toHaveBeenCalled();
@@ -349,24 +349,24 @@ describe('registerListeners', () => {
           private_metadata: JSON.stringify({
             channelId: 'C123456',
             messageTs: '1234567890.123456',
-            teamDomain: 'workspace'
+            teamDomain: 'workspace',
           }),
           state: {
             values: {
               investigation_select: {
                 selected_investigation: {
                   selected_option: {
-                    value: 'inv-999'
-                  }
-                }
-              }
-            }
-          }
+                    value: 'inv-999',
+                  },
+                },
+              },
+            },
+          },
         },
         client: mockClient,
         body: {
-          user: { id: 'U123456' }
-        }
+          user: { id: 'U123456' },
+        },
       });
 
       expect(ack).toHaveBeenCalled();
@@ -383,8 +383,8 @@ describe('registerListeners', () => {
         ack,
         client: mockClient,
         body: {
-          trigger_id: 'trigger123'
-        }
+          trigger_id: 'trigger123',
+        },
       });
 
       expect(ack).toHaveBeenCalled();
@@ -395,9 +395,9 @@ describe('registerListeners', () => {
           callback_id: 'create_investigation_modal',
           title: {
             type: 'plain_text',
-            text: 'Create Investigation'
-          }
-        })
+            text: 'Create Investigation',
+          },
+        }),
       });
     });
 
@@ -408,7 +408,7 @@ describe('registerListeners', () => {
       await handler({
         ack,
         client: mockClient,
-        body: {}
+        body: {},
       });
 
       expect(ack).toHaveBeenCalled();
@@ -420,8 +420,8 @@ describe('registerListeners', () => {
       const errorClient = {
         ...mockClient,
         views: {
-          open: jest.fn(() => Promise.reject(new Error('API error')))
-        }
+          open: jest.fn(() => Promise.reject(new Error('API error'))),
+        },
       };
 
       const handler = actions.get('create_investigation_button');
@@ -431,8 +431,8 @@ describe('registerListeners', () => {
         ack,
         client: errorClient,
         body: {
-          trigger_id: 'trigger123'
-        }
+          trigger_id: 'trigger123',
+        },
       });
 
       expect(ack).toHaveBeenCalled();
@@ -450,7 +450,7 @@ describe('registerListeners', () => {
       
       await handler({
         ack,
-        respond
+        respond,
       });
 
       expect(ack).toHaveBeenCalled();
@@ -482,14 +482,14 @@ describe('registerListeners', () => {
         action: {
           type: 'static_select',
           selected_option: {
-            value: 'inv-123'
-          }
+            value: 'inv-123',
+          },
         },
         ack,
         respond,
         body: {
-          team: { id: 'T123456' }
-        }
+          team: { id: 'T123456' },
+        },
       });
 
       expect(ack).toHaveBeenCalled();
@@ -497,10 +497,10 @@ describe('registerListeners', () => {
         where: { id: 'inv-123' },
         include: {
           _count: {
-            select: { events: true }
+            select: { events: true },
           },
-          incident: true
-        }
+          incident: true,
+        },
       });
       expect(respond).toHaveBeenCalledWith({
         response_type: 'ephemeral',
@@ -509,8 +509,8 @@ describe('registerListeners', () => {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: 'case-api-issue-abc'
-            }
+              text: 'case-api-issue-abc',
+            },
           }),
           expect.objectContaining({
             type: 'actions',
@@ -519,12 +519,12 @@ describe('registerListeners', () => {
                 type: 'button',
                 text: {
                   type: 'plain_text',
-                  text: 'Go to Channel'
-                }
-              })
-            ])
-          })
-        ])
+                  text: 'Go to Channel',
+                },
+              }),
+            ]),
+          }),
+        ]),
       });
     });
 
@@ -555,14 +555,14 @@ describe('registerListeners', () => {
         action: {
           type: 'static_select',
           selected_option: {
-            value: 'inv-123'
-          }
+            value: 'inv-123',
+          },
         },
         ack,
         respond,
         body: {
-          team: { id: 'T123456' }
-        }
+          team: { id: 'T123456' },
+        },
       });
 
       expect(respond).toHaveBeenCalledWith({
@@ -572,10 +572,10 @@ describe('registerListeners', () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: '*Incident Commander:* <@U789012>'
-            }
-          })
-        ])
+              text: '*Incident Commander:* <@U789012>',
+            },
+          }),
+        ]),
       });
     });
 
@@ -590,12 +590,12 @@ describe('registerListeners', () => {
         action: {
           type: 'static_select',
           selected_option: {
-            value: 'inv-999'
-          }
+            value: 'inv-999',
+          },
         },
         ack,
         respond,
-        body: {}
+        body: {},
       });
 
       expect(respond).toHaveBeenCalledWith({
@@ -615,7 +615,7 @@ describe('registerListeners', () => {
         },
         ack,
         respond,
-        body: {}
+        body: {},
       });
 
       expect(ack).toHaveBeenCalled();
@@ -633,12 +633,12 @@ describe('registerListeners', () => {
         action: {
           type: 'static_select',
           selected_option: {
-            value: 'inv-123'
-          }
+            value: 'inv-123',
+          },
         },
         ack,
         respond,
-        body: {}
+        body: {},
       });
 
       expect(respond).toHaveBeenCalledWith({
