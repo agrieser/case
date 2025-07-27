@@ -97,7 +97,7 @@ describe('handleIncident', () => {
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('Investigation escalated to incident'),
+              text: expect.stringContaining('Case escalated to active incident'),
             }),
           }),
           expect.objectContaining({
@@ -334,7 +334,7 @@ describe('handleIncident', () => {
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('Investigation escalated to incident'),
+              text: expect.stringContaining('Case escalated to active incident'),
             }),
           }),
         ]),

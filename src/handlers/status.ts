@@ -40,7 +40,7 @@ export async function handleStatus(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Current Investigation: ${investigation.name}*`,
+            text: `*Case File: ${investigation.name}*`,
           },
         },
         {
@@ -56,7 +56,7 @@ export async function handleStatus(
             },
             {
               type: 'mrkdwn',
-              text: `*Events:*\n${investigation._count.events}`,
+              text: `*Evidence Collected:*\n${investigation._count.events} pieces`,
             },
             {
               type: 'mrkdwn',

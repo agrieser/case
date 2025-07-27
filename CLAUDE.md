@@ -103,9 +103,9 @@ All commands use the `/case` prefix:
    - Automatically adds the user to the channel
    - Example: `/case open API response times increasing`
 
-2. **Message Shortcut: "Add to Investigation"**
+2. **Message Shortcut: "Collect Evidence"**
    - Right-click (or tap ⋯) on any message
-   - Select "Add to Investigation" from shortcuts menu
+   - Select "Collect Evidence" from shortcuts menu
    - If multiple investigations exist, shows a modal to select
    - Adds the message as evidence with a link back to original
 
@@ -221,7 +221,7 @@ export async function handleCommand(
 
 ### Event Addition Flow
 1. User right-clicks message in any channel
-2. Selects "Add to Investigation" shortcut
+2. Selects "Collect Evidence" shortcut
 3. If one investigation exists, adds immediately
 4. If multiple exist, shows modal to select
 5. Creates event record with message link
@@ -281,12 +281,33 @@ Examples:
 - "Payment processing errors" → `case-payment-pro-b2c`
 - "Database performance" → `case-database-pe-d4e`
 
+## Branding & Theme
+
+Case uses a subtle detective/investigation theme throughout the user experience while maintaining professionalism suitable for incident management:
+
+### Language Choices
+- **Commands**: "open" instead of "create" to pair with "close" 
+- **Terminology**: "case files", "evidence", "investigation toolkit"
+- **Emojis**: 🔍 for investigations, 🚨 for incidents, ✅ for resolved, 📋 for lists
+
+### User-Facing Messages
+- Headers use "Case - Incident Investigation Platform"
+- Status displays show "Case File" instead of "Investigation"
+- Events are referred to as "Evidence Collected"
+- Message shortcuts use "Collect Evidence" language
+
+### Design Philosophy
+- Professional first - this is for serious incident management
+- Subtle thematic elements enhance the experience without being distracting
+- Consistent terminology reinforces the investigation metaphor
+- Clear visual indicators (emojis) for different states
+
 ## Slack App Manifest
 
 Key configuration in `manifest.yml`:
 - Socket mode enabled
 - Interactivity enabled
-- Message shortcut: "Add to Investigation"
+- Message shortcut: "Collect Evidence"
 - Slash command: `/case`
 - Required bot scopes
 

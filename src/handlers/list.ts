@@ -78,14 +78,14 @@ export async function handleList(
           type: 'header',
           text: {
             type: 'plain_text',
-            text: 'Active Case Investigations'
+            text: '📋 Active Case Files'
           }
         },
         {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `Found *${investigations.length} active investigation${investigations.length !== 1 ? 's' : ''}*:`
+            text: `Found *${investigations.length} open case${investigations.length !== 1 ? 's' : ''}*:`
           }
         },
         {

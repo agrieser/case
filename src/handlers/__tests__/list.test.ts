@@ -75,13 +75,13 @@ describe('handleList', () => {
           expect.objectContaining({
             type: 'header',
             text: expect.objectContaining({
-              text: 'Active Case Investigations'
+              text: '📋 Active Case Files'
             })
           }),
           expect.objectContaining({
             type: 'section',
             text: expect.objectContaining({
-              text: 'Found *2 active investigations*:'
+              text: 'Found *2 open cases*:'
             })
           }),
           expect.objectContaining({
@@ -294,7 +294,7 @@ describe('handleList', () => {
       const responseBlocks = mockRespond.mock.calls[0][0].blocks;
       const sectionText = responseBlocks[1].text.text;
       
-      expect(sectionText).toBe('Found *1 active investigation*:'); // Singular form
+      expect(sectionText).toBe('Found *1 open case*:'); // Singular form
     });
   });
 

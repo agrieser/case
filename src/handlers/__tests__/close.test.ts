@@ -68,7 +68,7 @@ describe('handleClose', () => {
       // Verify response
       expect(mockRespond).toHaveBeenCalledWith({
         response_type: 'ephemeral',
-        text: expect.stringContaining('has been closed'),
+        text: expect.stringContaining('is now closed'),
       });
     });
 
@@ -291,7 +291,7 @@ describe('handleClose', () => {
       expect(mockPrisma.investigation.update).toHaveBeenCalled();
       expect(mockRespond).toHaveBeenCalledWith({
         response_type: 'ephemeral',
-        text: expect.stringContaining('has been closed'),
+        text: expect.stringContaining('is now closed'),
       });
     });
   });

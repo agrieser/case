@@ -50,7 +50,7 @@ export async function handleEvent(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Event added to investigation *${investigation.name}*`,
+            text: `🗜️ Evidence logged in case *${investigation.name}*`,
           },
         },
         {
@@ -58,7 +58,7 @@ export async function handleEvent(
           elements: [
             {
               type: 'mrkdwn',
-              text: `Investigation: ${investigation.title} • Events: ${eventCount}`,
+              text: `Case: ${investigation.title} • Evidence count: ${eventCount}`,
             },
           ],
         },

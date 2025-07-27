@@ -9,14 +9,14 @@ See Case in action - here's how it works:
 ### 1. Something happens (alert fires, customer complains, metrics spike)
 
 ```
-/case create API response times increasing
+/case open API response times increasing
 ```
 
-→ Creates `#case-api-respons-a3f` channel and adds you to it
+→ Opens `#case-api-respons-a3f` channel and adds you to it
 
 ### 2. Collect evidence by right-clicking any message
 
-Right-click any Slack message → "Add to Investigation" → Links it to your investigation channel
+Right-click any Slack message → "Collect Evidence" → Links it to your investigation channel
 
 ### 3. If it's serious, escalate to incident
 
@@ -98,7 +98,7 @@ All commands start with `/case`:
 
 | Command                      | What it does              | Where to use          |
 | ---------------------------- | ------------------------- | --------------------- |
-| `/case create [description]` | Start new investigation   | Any channel           |
+| `/case open [description]`   | Open new investigation    | Any channel           |
 | `/case list`                 | See active investigations | Any channel           |
 | `/case stats`                | View metrics and KPIs     | Any channel           |
 | `/case export`               | Export all data to CSV    | Any channel           |
@@ -110,21 +110,21 @@ All commands start with `/case`:
 
 **Scenario**: Your monitoring alerts that API response times are degrading.
 
-1. **Create Investigation** (2:45 PM)
+1. **Open Investigation** (2:45 PM)
 
    ```
-   /case create API response times degrading
+   /case open API response times degrading
    ```
 
-   - Creates `#case-api-respons-3f2` channel
+   - Opens `#case-api-respons-3f2` channel
    - Posts notification to your incidents channel
    - Investigation timer starts
 
 2. **Gather Evidence** (2:46 PM - 2:55 PM)
 
-   - Right-click the monitoring alert → "Add to Investigation"
-   - Right-click customer complaint → "Add to Investigation"
-   - Right-click relevant error logs → "Add to Investigation"
+   - Right-click the monitoring alert → "Collect Evidence"
+   - Right-click customer complaint → "Collect Evidence"
+   - Right-click relevant error logs → "Collect Evidence"
    - All evidence is linked in the investigation channel
 
 3. **Escalate to Incident** (2:55 PM)
@@ -164,7 +164,7 @@ Case implements a proven incident management methodology:
 
 ```mermaid
 flowchart TD
-    A[Event Occurs] --> B[Create Investigation]
+    A[Event Occurs] --> B[Open Investigation]
     B --> C[Collect Evidence]
     C --> D{Assess Severity}
 

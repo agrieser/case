@@ -100,7 +100,7 @@ export async function handleInvestigate(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ Investigation created: *${name}*`,
+            text: `🔍 New case opened: *${name}*`,
           },
         },
         {
@@ -115,7 +115,7 @@ export async function handleInvestigate(
           elements: [
             {
               type: 'mrkdwn',
-              text: `Head to <#${channelId}> to collaborate on this investigation. Add evidence by right-clicking any message and selecting "Add to Investigation".`,
+              text: `Head to <#${channelId}> to collaborate on this case. Gather evidence by right-clicking any message and selecting "Add to Investigation".`,
             },
           ],
         },

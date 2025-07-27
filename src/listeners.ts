@@ -80,14 +80,14 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
           }),
           title: {
             type: 'plain_text',
-            text: 'Add Event'
+            text: 'Collect Evidence'
           },
           blocks: [
             {
               type: 'section',
               text: {
                 type: 'mrkdwn',
-                text: 'Select the investigation to add this message to:'
+                text: 'Select the case to add this evidence to:'
               }
             },
             {
@@ -95,14 +95,14 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
               block_id: 'investigation_select',
               label: {
                 type: 'plain_text',
-                text: 'Investigation'
+                text: 'Case'
               },
               element: {
                 type: 'static_select',
                 action_id: 'selected_investigation',
                 placeholder: {
                   type: 'plain_text',
-                  text: 'Choose an investigation'
+                  text: 'Select a case'
                 },
                 options: investigations.map(inv => ({
                   text: {
@@ -116,7 +116,7 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
           ],
           submit: {
             type: 'plain_text',
-            text: 'Add Event'
+            text: 'Add Evidence'
           }
         }
       });

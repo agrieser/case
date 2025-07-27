@@ -19,7 +19,7 @@ describe('handleHelp', () => {
           expect.objectContaining({
             type: 'header',
             text: expect.objectContaining({
-              text: '🔍 Case - Incident Management'
+              text: '🔍 Case - Incident Investigation Platform'
             })
           }),
           expect.objectContaining({

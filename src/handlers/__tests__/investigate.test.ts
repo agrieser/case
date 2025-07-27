@@ -95,7 +95,7 @@ describe('handleInvestigate', () => {
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('Investigation created'),
+              text: expect.stringContaining('New case opened'),
             }),
           }),
         ]),

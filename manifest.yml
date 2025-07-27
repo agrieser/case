@@ -8,14 +8,14 @@ features:
     always_online: true
   slash_commands:
     - command: /case
-      description: Create and manage investigations for incidents
-      usage_hint: "create [description] | list | status | incident | transfer @user | resolve | close | help"
+      description: Open cases and manage incident investigations
+      usage_hint: "open [description] | list | status | incident | transfer @user | resolve | close | help"
       should_escape: false
   shortcuts:
-    - name: Add to Investigation
+    - name: Collect Evidence
       type: message
       callback_id: add_event_to_investigation
-      description: Add this message as an event to the current investigation
+      description: Collect this message as evidence for a case
 oauth_config:
   scopes:
     bot:

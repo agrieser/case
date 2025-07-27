@@ -74,7 +74,7 @@ export async function handleClose(
     // Send confirmation
     await respond({
       response_type: 'ephemeral',
-      text: `✅ Investigation *${investigation.name}* has been closed and the channel will be archived.`,
+      text: `📁 Case *${investigation.name}* is now closed. Evidence has been preserved and the channel will be archived.`,
     });
   } catch (error) {
     console.error('Error in handleClose:', error);
