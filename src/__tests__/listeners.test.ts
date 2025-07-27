@@ -49,7 +49,7 @@ describe('registerListeners', () => {
     it('should handle single investigation - add event directly', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -93,7 +93,7 @@ describe('registerListeners', () => {
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('trace-api-issue-abc')
+              text: expect.stringContaining('case-api-issue-abc')
             })
           })
         ])
@@ -109,14 +109,14 @@ describe('registerListeners', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-api-issue-abc',
+          name: 'case-api-issue-abc',
           title: 'API issues that are very long and need to be truncated',
           status: 'investigating',
           channelId: 'C999INVEST1',
         },
         {
           id: 'inv-456',
-          name: 'trace-db-issue-def',
+          name: 'case-db-issue-def',
           title: 'Database issues',
           status: 'investigating',
           channelId: 'C999INVEST2',
@@ -160,14 +160,14 @@ describe('registerListeners', () => {
                   {
                     text: {
                       type: 'plain_text',
-                      text: 'trace-api-issue-abc - API issues that are very long ...'
+                      text: 'case-api-issue-abc - API issues that are very long ...'
                     },
                     value: 'inv-123'
                   },
                   {
                     text: {
                       type: 'plain_text',
-                      text: 'trace-db-issue-def - Database issues'
+                      text: 'case-db-issue-def - Database issues'
                     },
                     value: 'inv-456'
                   }
@@ -200,7 +200,7 @@ describe('registerListeners', () => {
       expect(mockClient.chat.postEphemeral).toHaveBeenCalledWith({
         channel: 'C123456',
         user: 'U123456',
-        text: '⚠️ No active investigations found. Create one with `/trace create [title]`',
+        text: '⚠️ No active investigations found. Create one with `/case create [title]`',
       });
     });
 
@@ -252,7 +252,7 @@ describe('registerListeners', () => {
     it('should handle investigation selection', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -462,7 +462,7 @@ describe('registerListeners', () => {
     it('should show investigation details', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -509,7 +509,7 @@ describe('registerListeners', () => {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: 'trace-api-issue-abc'
+              text: 'case-api-issue-abc'
             }
           }),
           expect.objectContaining({
@@ -531,7 +531,7 @@ describe('registerListeners', () => {
     it('should show escalated investigation with incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-payment-fail-xyz',
+        name: 'case-payment-fail-xyz',
         title: 'Payment failures',
         status: 'escalated',
         channelId: 'C999INVEST',

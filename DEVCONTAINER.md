@@ -36,9 +36,9 @@ docker-compose exec app bash
 
 The PostgreSQL database is automatically configured with:
 - Host: `db` (from within containers) or `localhost:5432` (from host)
-- Database: `trace`
-- User: `trace`
-- Password: `trace_password`
+- Database: `case`
+- User: `case`
+- Password: `case_password`
 
 ### Prisma Studio
 

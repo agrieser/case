@@ -94,14 +94,14 @@ export async function handleExport(
     
     // Generate filename with timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-    const filename = `trace-export-${timestamp}.csv`;
+    const filename = `case-export-${timestamp}.csv`;
 
     // Upload file to Slack
     const uploadResult = await client.files.uploadV2({
       channel_id: userId, // Send as DM to the user
       filename,
       file: buffer,
-      initial_comment: `📊 Trace Export - ${investigations.length} investigations`
+      initial_comment: `📊 Case Export - ${investigations.length} investigations`
     });
 
     if (!uploadResult.ok) {

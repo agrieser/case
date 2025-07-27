@@ -1,13 +1,13 @@
 display_information:
-  name: Trace
+  name: Case
   description: Incident Management - Track events, investigations, and incidents
   background_color: "#1f2937"
 features:
   bot_user:
-    display_name: Trace
+    display_name: Case
     always_online: true
   slash_commands:
-    - command: /trace
+    - command: /case
       description: Create and manage investigations for incidents
       usage_hint: "create [description] | list | status | incident | transfer @user | resolve | close | help"
       should_escape: false

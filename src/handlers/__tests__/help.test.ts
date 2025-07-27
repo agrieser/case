@@ -19,14 +19,14 @@ describe('handleHelp', () => {
           expect.objectContaining({
             type: 'header',
             text: expect.objectContaining({
-              text: '🔍 Trace - Incident Management'
+              text: '🔍 Case - Incident Management'
             })
           }),
           expect.objectContaining({
             type: 'section',
             text: expect.objectContaining({
               type: 'mrkdwn',
-              text: expect.stringContaining('/trace create')
+              text: expect.stringContaining('/case create')
             })
           })
         ])
@@ -40,11 +40,11 @@ describe('handleHelp', () => {
     const call = mockRespond.mock.calls[0][0];
     const helpText = JSON.stringify(call);
 
-    expect(helpText).toContain('/trace create');
-    expect(helpText).toContain('/trace status');
-    expect(helpText).toContain('/trace incident');
-    expect(helpText).toContain('/trace list');
-    expect(helpText).toContain('/trace help');
+    expect(helpText).toContain('/case create');
+    expect(helpText).toContain('/case status');
+    expect(helpText).toContain('/case incident');
+    expect(helpText).toContain('/case list');
+    expect(helpText).toContain('/case help');
     expect(helpText).toContain('Add to Investigation');
   });
 });

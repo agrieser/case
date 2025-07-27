@@ -7,11 +7,11 @@ services:
       - ../..:/workspaces:cached
       - ../:/workspace:cached
     environment:
-      DATABASE_URL: "postgresql://trace:trace_password@db:5432/trace?schema=public"
+      DATABASE_URL: "postgresql://case:case_password@db:5432/case?schema=public"
       NODE_ENV: development
     command: sleep infinity
     networks:
-      - trace-network
+      - case-network
     depends_on:
       db:
         condition: service_healthy
@@ -22,15 +22,15 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: trace
-      POSTGRES_PASSWORD: trace_password
-      POSTGRES_DB: trace
+      POSTGRES_USER: case
+      POSTGRES_PASSWORD: case_password
+      POSTGRES_DB: case
     ports:
       - "5432:5432"
     networks:
-      - trace-network
+      - case-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U trace"]
+      test: ["CMD-SHELL", "pg_isready -U case"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,5 +40,5 @@ volumes:
   postgres-data:
 
 networks:
-  trace-network:
+  case-network:
     driver: bridge

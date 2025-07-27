@@ -8,7 +8,7 @@ import { SlackCommandMiddlewareArgs } from '@slack/bolt';
 const LIMITS = {
   TITLE_MAX_LENGTH: 200,
   TITLE_MIN_LENGTH: 1,
-  INVESTIGATION_NAME_PATTERN: /^trace-[a-z]+-[a-z]+(-[a-z0-9]+)?$/,
+  INVESTIGATION_NAME_PATTERN: /^case-[a-z]+-[a-z]+(-[a-z0-9]+)?$/,
   COMMAND_MAX_LENGTH: 500,
 } as const;
 
@@ -84,7 +84,7 @@ export function validateInvestigationName(name: string): string {
   }
 
   if (!LIMITS.INVESTIGATION_NAME_PATTERN.test(trimmed)) {
-    throw new ValidationError('Invalid investigation name format. Expected: trace-adjective-animal');
+    throw new ValidationError('Invalid investigation name format. Expected: case-adjective-animal');
   }
 
   return trimmed;
@@ -172,7 +172,7 @@ export function validateCommandContext(command: SlackCommandMiddlewareArgs['comm
   validateSlackChannelId(command.channel_id);
 
   // Validate command matches expected pattern
-  if (command.command !== '/trace') {
+  if (command.command !== '/case') {
     throw new ValidationError('Invalid command');
   }
 }

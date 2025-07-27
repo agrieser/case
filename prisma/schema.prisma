@@ -18,7 +18,7 @@ enum InvestigationStatus {
 
 model Investigation {
   id            String              @id @default(uuid())
-  name          String              @unique // "trace-golden-falcon"
+  name          String              @unique // "case-golden-falcon"
   title         String              // "payment API issues"
   status        InvestigationStatus @default(investigating)
   channelId     String              @unique // Slack channel ID created for this investigation
@@ -27,10 +27,10 @@ model Investigation {
   closedBy      String?             // Slack user ID who closed the investigation
   closedAt      DateTime?           // When investigation was closed
   issuesMessageTs String            // Timestamp of the message posted to issues channel
-  
+
   events        Event[]
   incident      Incident?
-  
+
   @@index([channelId])
   @@index([status])
   @@index([name])
@@ -42,9 +42,9 @@ model Event {
   slackMessageUrl     String        // Link to the Slack message
   addedBy             String        // Slack user ID who added event
   addedAt             DateTime      @default(now())
-  
+
   investigation       Investigation @relation(fields: [investigationId], references: [id])
-  
+
   @@index([investigationId])
   @@index([addedAt])
 }
@@ -56,7 +56,7 @@ model Incident {
   escalatedAt         DateTime      @default(now())
   resolvedAt          DateTime?     // When incident was resolved
   resolvedBy          String?       // Slack user ID who resolved it
-  
+
   investigation       Investigation @relation(fields: [investigationId], references: [id])
 }
 

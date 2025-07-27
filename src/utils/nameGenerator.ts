@@ -52,7 +52,7 @@ export async function generateUniqueName(
     .digest('hex')
     .substring(0, 8);
 
-  return `trace-inv-${longHash}`;
+  return `case-inv-${longHash}`;
 }
 
 /**
@@ -73,14 +73,14 @@ export function generateChannelName(title: string): string {
     channelName = 'investigation';
   }
 
-  // Add trace prefix
-  const prefix = 'trace-';
+  // Add case prefix
+  const prefix = 'case-';
   
   // Generate random suffix (3 characters)
   const randomSuffix = crypto.randomBytes(2).toString('hex').substring(0, 3);
   
   // Calculate available length for the title part
-  // Max 21 chars - 6 for "trace-" - 4 for "-xxx" suffix = 11 chars for title
+  // Max 21 chars - 5 for "case-" - 4 for "-xxx" suffix = 12 chars for title
   const maxTitleLength = 21 - prefix.length - randomSuffix.length - 1;
   
   // Truncate channel name if needed

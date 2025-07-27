@@ -21,7 +21,7 @@ export async function handleIncident(
 
     if (!investigation) {
       await respond({
-        text: '⚠️ The `/trace incident` command can only be used within investigation channels.',
+        text: '⚠️ The `/case incident` command can only be used within investigation channels.',
         response_type: 'ephemeral',
       });
       return;

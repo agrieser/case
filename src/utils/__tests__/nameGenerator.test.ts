@@ -7,9 +7,9 @@ describe('nameGenerator', () => {
       const title = 'Database connection timeout';
       const name = generateInvestigationName(title);
       
-      // Should match channel name format: trace-[title]-[3char-hex]
-      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
-      expect(name.startsWith('trace-')).toBeTruthy();
+      // Should match channel name format: case-[title]-[3char-hex]
+      expect(name).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
+      expect(name.startsWith('case-')).toBeTruthy();
       expect(name.length).toBeLessThanOrEqual(21);
     });
 
@@ -25,8 +25,8 @@ describe('nameGenerator', () => {
         const channelName = generateChannelName(title);
         
         // Both should have same format but different random suffixes
-        expect(investigationName).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
-        expect(channelName).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+        expect(investigationName).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
+        expect(channelName).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
         
         // Same prefix (without random suffix)
         const invPrefix = investigationName.substring(0, investigationName.lastIndexOf('-'));
@@ -37,9 +37,9 @@ describe('nameGenerator', () => {
 
     it('should handle various title types', () => {
       const testCases = [
-        { title: 'API down', expected: /^trace-api-down-[a-f0-9]{3}$/ },
-        { title: 'Payment processing errors', expected: /^trace-payment-pro-[a-f0-9]{3}$/ },
-        { title: 'Database is slow', expected: /^trace-database-is-[a-f0-9]{3}$/ }
+        { title: 'API down', expected: /^case-api-down-[a-f0-9]{3}$/ },
+        { title: 'Payment processing errors', expected: /^case-payment-proc-[a-f0-9]{3}$/ },
+        { title: 'Database is slow', expected: /^case-database-is-[a-f0-9]{3}$/ }
       ];
       
       for (const { title, expected } of testCases) {
@@ -62,7 +62,7 @@ describe('nameGenerator', () => {
       
       // All should follow the pattern
       names.forEach(name => {
-        expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+        expect(name).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
       });
     });
 
@@ -71,7 +71,7 @@ describe('nameGenerator', () => {
       const name = generateInvestigationName(title);
       
       expect(name.length).toBeLessThanOrEqual(21);
-      expect(name).toMatch(/^trace-this-is-a-v-[a-f0-9]{3}$/);
+      expect(name).toMatch(/^case-this-is-a-ve-[a-f0-9]{3}$/);
     });
   });
 
@@ -82,7 +82,7 @@ describe('nameGenerator', () => {
       
       const name = await generateUniqueName(title, checkExists);
       
-      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+      expect(name).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
       expect(checkExists).toHaveBeenCalledTimes(1);
     });
 
@@ -95,7 +95,7 @@ describe('nameGenerator', () => {
       
       const name = await generateUniqueName(title, checkExists);
       
-      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
+      expect(name).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
       expect(checkExists).toHaveBeenCalledTimes(3);
     });
 
@@ -105,18 +105,18 @@ describe('nameGenerator', () => {
       
       const name = await generateUniqueName(title, checkExists);
       
-      expect(name).toMatch(/^trace-inv-[a-f0-9]{8}$/);
+      expect(name).toMatch(/^case-inv-[a-f0-9]{8}$/);
       expect(checkExists).toHaveBeenCalledTimes(11); // 1 initial + 10 retry attempts
     });
   });
 
   describe('generateChannelName', () => {
-    it('should generate channel name with trace prefix', () => {
+    it('should generate channel name with case prefix', () => {
       const title = 'API response times';
       const name = generateChannelName(title);
       
-      expect(name).toMatch(/^trace-[a-z0-9-]+-[a-f0-9]{3}$/);
-      expect(name.startsWith('trace-')).toBeTruthy();
+      expect(name).toMatch(/^case-[a-z0-9-]+-[a-f0-9]{3}$/);
+      expect(name.startsWith('case-')).toBeTruthy();
       expect(name.length).toBeLessThanOrEqual(21);
     });
 
@@ -124,8 +124,8 @@ describe('nameGenerator', () => {
       const title = 'Database @ Performance! Issue #123';
       const name = generateChannelName(title);
       
-      // With 11 chars for title, "database-pe" is what we expect
-      expect(name).toMatch(/^trace-database-pe-[a-f0-9]{3}$/);
+      // With 12 chars for title, "database-per" is what we expect
+      expect(name).toMatch(/^case-database-per-[a-f0-9]{3}$/);
       expect(name).not.toContain('@');
       expect(name).not.toContain('!');
       expect(name).not.toContain('#');
@@ -137,7 +137,7 @@ describe('nameGenerator', () => {
       const name = generateChannelName(title);
       
       expect(name.length).toBeLessThanOrEqual(21);
-      expect(name).toMatch(/^trace-this-is-a-v-[a-f0-9]{3}$/);
+      expect(name).toMatch(/^case-this-is-a-ve-[a-f0-9]{3}$/);
     });
 
     it('should handle empty or invalid titles', () => {
@@ -145,8 +145,8 @@ describe('nameGenerator', () => {
       
       for (const title of emptyTitles) {
         const name = generateChannelName(title);
-        // "investigation" is 13 chars, truncated to 11 = "investigati"
-        expect(name).toMatch(/^trace-investigati-[a-f0-9]{3}$/);
+        // "investigation" is 13 chars, truncated to 12 = "investigatio"
+        expect(name).toMatch(/^case-investigatio-[a-f0-9]{3}$/);
         expect(name.length).toBeLessThanOrEqual(21);
       }
     });
@@ -166,10 +166,10 @@ describe('nameGenerator', () => {
 
     it('should create sensible channel names', () => {
       const testCases = [
-        { title: 'API down', expected: /^trace-api-down-[a-f0-9]{3}$/ },
-        { title: 'Payment processing errors', expected: /^trace-payment-pro-[a-f0-9]{3}$/ }, // 11 char limit
-        { title: 'User login issues', expected: /^trace-user-login-[a-f0-9]{3}$/ },
-        { title: 'DB connection timeout', expected: /^trace-db-connecti-[a-f0-9]{3}$/ }
+        { title: 'API down', expected: /^case-api-down-[a-f0-9]{3}$/ },
+        { title: 'Payment processing errors', expected: /^case-payment-proc-[a-f0-9]{3}$/ }, // 12 char limit
+        { title: 'User login issues', expected: /^case-user-login-i-[a-f0-9]{3}$/ },
+        { title: 'DB connection timeout', expected: /^case-db-connection-[a-f0-9]{3}$/ }
       ];
       
       for (const { title, expected } of testCases) {

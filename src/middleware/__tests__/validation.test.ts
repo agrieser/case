@@ -59,14 +59,14 @@ describe('validation middleware', () => {
 
   describe('validateInvestigationName', () => {
     it('should accept valid investigation names', () => {
-      expect(validateInvestigationName('trace-golden-falcon')).toBe('trace-golden-falcon');
-      expect(validateInvestigationName('TRACE-SILVER-DOLPHIN')).toBe('trace-silver-dolphin');
+      expect(validateInvestigationName('case-golden-falcon')).toBe('case-golden-falcon');
+      expect(validateInvestigationName('CASE-SILVER-DOLPHIN')).toBe('case-silver-dolphin');
     });
 
     it('should reject invalid formats', () => {
       expect(() => validateInvestigationName('invalid-name')).toThrow('Invalid investigation name format');
-      expect(() => validateInvestigationName('trace-123-456')).toThrow('Invalid investigation name format');
-      // trace-golden-falcon-extra is now valid with the hash suffix
+      expect(() => validateInvestigationName('case-123-456')).toThrow('Invalid investigation name format');
+      // case-golden-falcon-extra is now valid with the hash suffix
     });
 
     it('should reject empty names', () => {
@@ -151,7 +151,7 @@ describe('validation middleware', () => {
 
   describe('validateCommandContext', () => {
     const validCommand = {
-      command: '/trace',
+      command: '/case',
       user_id: 'U123456789',
       channel_id: 'C123456789',
       text: 'test'

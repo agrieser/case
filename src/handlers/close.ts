@@ -45,7 +45,7 @@ export async function handleClose(
     // Check if there's an unresolved incident
     if (investigation.incident && !investigation.incident.resolvedAt) {
       await respond({
-        text: '⚠️ This investigation has an active incident that must be resolved first. Use `/trace resolve` to resolve the incident.',
+        text: '⚠️ This investigation has an active incident that must be resolved first. Use `/case resolve` to resolve the incident.',
         response_type: 'ephemeral',
       });
       return;

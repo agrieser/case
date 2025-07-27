@@ -18,7 +18,7 @@ describe('handleTransfer', () => {
     it('should transfer incident commander role', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues critical',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -77,7 +77,7 @@ describe('handleTransfer', () => {
           expect.objectContaining({
             elements: expect.arrayContaining([
               expect.objectContaining({
-                text: 'Incident: *trace-api-issue-abc*',
+                text: 'Incident: *case-api-issue-abc*',
               }),
             ]),
           }),
@@ -88,7 +88,7 @@ describe('handleTransfer', () => {
     it('should handle transfer from different user than current commander', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-database-slow-def',
+        name: 'case-database-slow-def',
         title: 'Database performance',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -160,7 +160,7 @@ describe('handleTransfer', () => {
     it('should reject if investigation not escalated to incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-not-escalated-abc',
+        name: 'case-not-escalated-abc',
         title: 'Not escalated',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -184,7 +184,7 @@ describe('handleTransfer', () => {
       );
 
       expect(mockRespond).toHaveBeenCalledWith({
-        text: '⚠️ This investigation has not been escalated to an incident yet. Use `/trace incident` first.',
+        text: '⚠️ This investigation has not been escalated to an incident yet. Use `/case incident` first.',
         response_type: 'ephemeral',
       });
       expect(mockPrisma.incident.update).not.toHaveBeenCalled();
@@ -193,7 +193,7 @@ describe('handleTransfer', () => {
     it('should reject invalid user mention format', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -236,7 +236,7 @@ describe('handleTransfer', () => {
         );
 
         expect(mockRespond).toHaveBeenCalledWith({
-          text: '⚠️ Please mention a user to transfer incident commander role to (e.g., `/trace transfer @username`).',
+          text: '⚠️ Please mention a user to transfer incident commander role to (e.g., `/case transfer @username`).',
           response_type: 'ephemeral',
         });
         expect(mockPrisma.incident.update).not.toHaveBeenCalled();
@@ -249,7 +249,7 @@ describe('handleTransfer', () => {
     it('should reject if transferring to current commander', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-same-commander-xyz',
+        name: 'case-same-commander-xyz',
         title: 'Same commander',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -291,7 +291,7 @@ describe('handleTransfer', () => {
     it('should handle database errors during update', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-db-error-abc',
+        name: 'case-db-error-abc',
         title: 'Database error test',
         status: 'escalated',
         channelId: 'C999INVEST',

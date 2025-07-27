@@ -96,12 +96,12 @@ describe('registerCommands', () => {
   });
 
   describe('command registration', () => {
-    it('should register /trace command', () => {
-      expect(mockApp.command).toHaveBeenCalledWith('/trace', expect.any(Function));
+    it('should register /case command', () => {
+      expect(mockApp.command).toHaveBeenCalledWith('/case', expect.any(Function));
     });
   });
 
-  describe('/trace create', () => {
+  describe('/case create', () => {
     it('should call handleInvestigate with title', async () => {
       const mockCommand = createMockCommand({ text: 'create API issues' });
       const mockRespond = createMockRespond();
@@ -124,7 +124,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace status', () => {
+  describe('/case status', () => {
     it('should call handleStatus', async () => {
       const mockCommand = createMockCommand({ text: 'status' });
       const mockRespond = createMockRespond();
@@ -144,7 +144,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace incident', () => {
+  describe('/case incident', () => {
     it('should call handleIncident', async () => {
       const mockCommand = createMockCommand({ text: 'incident' });
       const mockRespond = createMockRespond();
@@ -165,7 +165,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace list', () => {
+  describe('/case list', () => {
     it('should call handleList', async () => {
       const mockCommand = createMockCommand({ text: 'list' });
       const mockRespond = createMockRespond();
@@ -185,7 +185,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace close', () => {
+  describe('/case close', () => {
     it('should call handleClose', async () => {
       const mockCommand = createMockCommand({ text: 'close' });
       const mockRespond = createMockRespond();
@@ -207,7 +207,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace transfer', () => {
+  describe('/case transfer', () => {
     it('should call handleTransfer with new commander', async () => {
       const mockCommand = createMockCommand({ text: 'transfer <@U789012>' });
       const mockRespond = createMockRespond();
@@ -229,7 +229,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace resolve', () => {
+  describe('/case resolve', () => {
     it('should call handleResolve', async () => {
       const mockCommand = createMockCommand({ text: 'resolve' });
       const mockRespond = createMockRespond();
@@ -250,7 +250,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace stats', () => {
+  describe('/case stats', () => {
     it('should call handleStats', async () => {
       const mockCommand = createMockCommand({ text: 'stats' });
       const mockRespond = createMockRespond();
@@ -270,7 +270,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace export', () => {
+  describe('/case export', () => {
     it('should call handleExport', async () => {
       const mockCommand = createMockCommand({ text: 'export' });
       const mockRespond = createMockRespond();
@@ -292,7 +292,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace help', () => {
+  describe('/case help', () => {
     it('should call handleHelp', async () => {
       const mockCommand = createMockCommand({ text: 'help' });
       const mockRespond = createMockRespond();
@@ -311,7 +311,7 @@ describe('registerCommands', () => {
     });
   });
 
-  describe('/trace (no subcommand)', () => {
+  describe('/case (no subcommand)', () => {
     it('should call handleList when no subcommand provided', async () => {
       const mockCommand = createMockCommand({ text: '' });
       const mockRespond = createMockRespond();
@@ -363,7 +363,7 @@ describe('registerCommands', () => {
       });
 
       expect(mockRespond).toHaveBeenCalledWith({
-        text: '⚠️ Unknown command: `unknown`. Use `/trace help` for available commands.',
+        text: '⚠️ Unknown command: `unknown`. Use `/case help` for available commands.',
         response_type: 'ephemeral'
       });
     });
@@ -381,7 +381,7 @@ describe('registerCommands', () => {
       });
 
       expect(mockRespond).toHaveBeenCalledWith({
-        text: '⚠️ Unknown command: `scriptalert("xss")/script`. Use `/trace help` for available commands.',
+        text: '⚠️ Unknown command: `scriptalert("xss")/script`. Use `/case help` for available commands.',
         response_type: 'ephemeral'
       });
     });

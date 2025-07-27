@@ -1,18 +1,18 @@
-# Trace - Slack Incident Management
+# Case - Slack Incident Management
 
 A lightweight Slack app that helps teams track the flow from events → investigations → incidents, with each investigation getting its own dedicated Slack channel.
 
 ## 🎯 Quick Demo
 
-See Trace in action - here's how it works:
+See Case in action - here's how it works:
 
 ### 1. Something happens (alert fires, customer complains, metrics spike)
 
 ```
-/trace create API response times increasing
+/case create API response times increasing
 ```
 
-→ Creates `#trace-api-respons-a3f` channel and adds you to it
+→ Creates `#case-api-respons-a3f` channel and adds you to it
 
 ### 2. Collect evidence by right-clicking any message
 
@@ -21,7 +21,7 @@ Right-click any Slack message → "Add to Investigation" → Links it to your in
 ### 3. If it's serious, escalate to incident
 
 ```
-/trace incident
+/case incident
 ```
 
 → You're now the incident commander, team gets notified
@@ -29,7 +29,7 @@ Right-click any Slack message → "Add to Investigation" → Links it to your in
 ### 4. When service is restored
 
 ```
-/trace resolve
+/case resolve
 ```
 
 → Incident resolved, but investigation stays open for follow-up
@@ -37,7 +37,7 @@ Right-click any Slack message → "Add to Investigation" → Links it to your in
 ### 5. After completing post-mortem
 
 ```
-/trace close
+/case close
 ```
 
 → Archives the channel, complete audit trail preserved
@@ -46,7 +46,7 @@ Right-click any Slack message → "Add to Investigation" → Links it to your in
 
 ## ✨ Key Features
 
-- **🔍 Dedicated Channels**: Each investigation gets its own channel (e.g., `#trace-api-down-a3f`)
+- **🔍 Dedicated Channels**: Each investigation gets its own channel (e.g., `#case-api-down-a3f`)
 - **📎 Evidence Collection**: Right-click any message to add it as evidence
 - **🚨 Smart Escalation**: Not every investigation needs to be an incident
 - **📊 Full Reporting**: Export everything to CSV for analysis
@@ -74,7 +74,7 @@ Right-click any Slack message → "Add to Investigation" → Links it to your in
 
    ```bash
    # Required environment variables
-   DATABASE_URL=postgresql://localhost/trace_production
+   DATABASE_URL=postgresql://localhost/case_production
    SLACK_BOT_TOKEN=xoxb-your-bot-token
    SLACK_SIGNING_SECRET=your-signing-secret
    SLACK_APP_TOKEN=xapp-your-app-token
@@ -90,21 +90,21 @@ Right-click any Slack message → "Add to Investigation" → Links it to your in
 
 For detailed setup instructions, see [INSTALLATION.md](INSTALLATION.md).
 
-## 📖 How to Use Trace
+## 📖 How to Use Case
 
 ### Commands Overview
 
-All commands start with `/trace`:
+All commands start with `/case`:
 
-| Command                       | What it does              | Where to use          |
-| ----------------------------- | ------------------------- | --------------------- |
-| `/trace create [description]` | Start new investigation   | Any channel           |
-| `/trace list`                 | See active investigations | Any channel           |
-| `/trace stats`                | View metrics and KPIs     | Any channel           |
-| `/trace export`               | Export all data to CSV    | Any channel           |
-| `/trace incident`             | Escalate to incident      | Investigation channel |
-| `/trace resolve`              | Mark incident resolved    | Investigation channel |
-| `/trace close`                | Close investigation       | Investigation channel |
+| Command                      | What it does              | Where to use          |
+| ---------------------------- | ------------------------- | --------------------- |
+| `/case create [description]` | Start new investigation   | Any channel           |
+| `/case list`                 | See active investigations | Any channel           |
+| `/case stats`                | View metrics and KPIs     | Any channel           |
+| `/case export`               | Export all data to CSV    | Any channel           |
+| `/case incident`             | Escalate to incident      | Investigation channel |
+| `/case resolve`              | Mark incident resolved    | Investigation channel |
+| `/case close`                | Close investigation       | Investigation channel |
 
 ### Typical Workflow Example
 
@@ -113,10 +113,10 @@ All commands start with `/trace`:
 1. **Create Investigation** (2:45 PM)
 
    ```
-   /trace create API response times degrading
+   /case create API response times degrading
    ```
 
-   - Creates `#trace-api-respons-3f2` channel
+   - Creates `#case-api-respons-3f2` channel
    - Posts notification to your incidents channel
    - Investigation timer starts
 
@@ -130,7 +130,7 @@ All commands start with `/trace`:
 3. **Escalate to Incident** (2:55 PM)
 
    ```
-   /trace incident
+   /case incident
    ```
 
    - You become incident commander
@@ -140,7 +140,7 @@ All commands start with `/trace`:
 4. **Resolve Incident** (3:30 PM)
 
    ```
-   /trace resolve
+   /case resolve
    ```
 
    - Incident marked resolved (35 min duration)
@@ -148,15 +148,15 @@ All commands start with `/trace`:
 
 5. **Close Investigation** (Next day after post-mortem)
    ```
-   /trace close
+   /case close
    ```
    - Channel archived
    - Full timeline preserved
    - Data available for reporting
 
-## 📚 Why Trace? The Methodology
+## 📚 Why Case? The Methodology
 
-Trace implements a proven incident management methodology:
+Case implements a proven incident management methodology:
 
 ### Events → Investigations → Incidents
 
@@ -189,7 +189,7 @@ flowchart TD
 
 ### Zero Message Access Policy
 
-**Trace cannot read your messages.** We deliberately chose not to request message reading permissions:
+**Case cannot read your messages.** We deliberately chose not to request message reading permissions:
 
 - ✅ Only stores links to messages, not content
 - ✅ No risk of exposing sensitive data
@@ -198,7 +198,7 @@ flowchart TD
 
 ### Minimal Permissions
 
-Trace only requests:
+Case only requests:
 
 - `commands` - Respond to slash commands
 - `chat:write` - Post updates
@@ -212,7 +212,7 @@ No message reading, no user data access, no file access.
 Get insights into your incident management:
 
 ```
-/trace stats
+/case stats
 ```
 
 Shows:
@@ -223,7 +223,7 @@ Shows:
 - Top responders
 
 ```
-/trace export
+/case export
 ```
 
 Exports CSV with:
@@ -272,8 +272,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🙋 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-org/trace/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/trace/discussions)
+- **Issues**: [GitHub Issues](https://github.com/agrieser/case/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/agrieser/case/discussions)
 
 ---
 

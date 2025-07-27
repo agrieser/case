@@ -1,6 +1,6 @@
-# Contributing to Trace
+# Contributing to Case
 
-Thank you for your interest in contributing to Trace! We welcome contributions from the community.
+Thank you for your interest in contributing to Case! We welcome contributions from the community.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ Thank you for your interest in contributing to Trace! We welcome contributions f
 
 2. **Set up test database**
    ```bash
-   createdb trace_test
+   createdb case_test
    ```
 
 3. **Configure test environment**
@@ -75,7 +75,7 @@ npm run lint:fix  # Auto-fix issues
 
 ## Security
 
-If you discover a security vulnerability, please email security@your-org.com instead of using the issue tracker.
+If you discover a security vulnerability, please use GitHub's private vulnerability reporting feature or contact the maintainers directly instead of using the public issue tracker.
 
 ## Questions?
 

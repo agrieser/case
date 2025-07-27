@@ -1,5 +1,5 @@
 {
-  "name": "Trace - Slack Incident Management",
+  "name": "Case - Slack Incident Management",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",

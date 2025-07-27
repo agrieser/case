@@ -20,8 +20,8 @@ import { checkRateLimit } from './middleware/rateLimit';
 import { validateUserAccess, getUserContext } from './middleware/security';
 
 export function registerCommands(app: App, prisma: PrismaClient): void {
-  // Handle /trace command
-  app.command('/trace', async ({ command, ack, respond, client }) => {
+  // Handle /case command
+  app.command('/case', async ({ command, ack, respond, client }) => {
     await ack();
 
     try {
@@ -150,7 +150,7 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
           // Sanitize subcommand before displaying
           const safeSubcommand = sanitizeInput(subcommand);
           await respond({
-            text: `⚠️ Unknown command: \`${safeSubcommand}\`. Use \`/trace help\` for available commands.`,
+            text: `⚠️ Unknown command: \`${safeSubcommand}\`. Use \`/case help\` for available commands.`,
             response_type: 'ephemeral'
           });
       }

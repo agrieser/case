@@ -20,7 +20,7 @@ describe('handleClose', () => {
     it('should close investigation without incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -75,7 +75,7 @@ describe('handleClose', () => {
     it('should close investigation with resolved incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-payment-fail-xyz',
+        name: 'case-payment-fail-xyz',
         title: 'Payment failures',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -141,7 +141,7 @@ describe('handleClose', () => {
     it('should reject if already closed', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-old-issue-abc',
+        name: 'case-old-issue-abc',
         title: 'Old issue',
         status: 'closed',
         channelId: 'C999INVEST',
@@ -175,7 +175,7 @@ describe('handleClose', () => {
     it('should reject if incident is unresolved', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-active-incident-def',
+        name: 'case-active-incident-def',
         title: 'Active incident',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -218,7 +218,7 @@ describe('handleClose', () => {
     it('should handle database errors', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-test-issue-ghi',
+        name: 'case-test-issue-ghi',
         title: 'Test issue',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -254,7 +254,7 @@ describe('handleClose', () => {
     it('should continue if archive fails', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-archive-fail-jkl',
+        name: 'case-archive-fail-jkl',
         title: 'Archive fail test',
         status: 'investigating',
         channelId: 'C999INVEST',

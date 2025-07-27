@@ -55,7 +55,7 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
         await client.chat.postEphemeral({
           channel: channelId,
           user: userId,
-          text: '⚠️ No active investigations found. Create one with `/trace create [title]`',
+          text: '⚠️ No active investigations found. Create one with `/case create [title]`',
         });
         return;
       }
@@ -293,7 +293,7 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
     await handleHelp({ respond });
   });
 
-  // Handle investigation selection from /trace list dropdown
+  // Handle investigation selection from /case list dropdown
   app.action('investigation_selected', async ({ action, ack, respond, body }) => {
     await ack();
 

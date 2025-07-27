@@ -1,5 +1,5 @@
 {
-  "name": "trace-slack",
+  "name": "case-slack",
   "version": "1.0.0",
   "description": "A lightweight Slack app for incident management that organizes the flow from events to investigations to incidents",
   "main": "dist/index.js",
@@ -18,15 +18,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/agrieser/trace.git"
+    "url": "git+https://github.com/agrieser/case.git"
   },
   "keywords": ["slack", "incident-management", "investigations", "slack-app", "typescript"],
-  "author": "Trace Contributors",
+  "author": "Case Contributors",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/agrieser/trace/issues"
+    "url": "https://github.com/agrieser/case/issues"
   },
-  "homepage": "https://github.com/agrieser/trace#readme",
+  "homepage": "https://github.com/agrieser/case#readme",
   "dependencies": {
     "@prisma/client": "^6.12.0",
     "@slack/bolt": "^4.4.0",

@@ -65,7 +65,7 @@ registerListeners(app, prisma);
     console.log('✅ Database connected successfully');
     
     await app.start();
-    console.log('⚡️ Trace app is running!');
+    console.log('⚡️ Case app is running!');
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'production'}`);
   } catch (error) {
     console.error('❌ Failed to start app:', error);

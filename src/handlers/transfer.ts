@@ -30,7 +30,7 @@ export async function handleTransfer(
     // Check if investigation has been escalated to incident
     if (!investigation.incident) {
       await respond({
-        text: '⚠️ This investigation has not been escalated to an incident yet. Use `/trace incident` first.',
+        text: '⚠️ This investigation has not been escalated to an incident yet. Use `/case incident` first.',
         response_type: 'ephemeral',
       });
       return;
@@ -40,7 +40,7 @@ export async function handleTransfer(
     const userIdMatch = newCommander.match(/^<@([A-Z0-9]+)>$/);
     if (!userIdMatch) {
       await respond({
-        text: '⚠️ Please mention a user to transfer incident commander role to (e.g., `/trace transfer @username`).',
+        text: '⚠️ Please mention a user to transfer incident commander role to (e.g., `/case transfer @username`).',
         response_type: 'ephemeral',
       });
       return;

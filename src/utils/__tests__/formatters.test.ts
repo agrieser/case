@@ -27,7 +27,7 @@ describe('formatters', () => {
     it('should format investigation correctly', () => {
       const investigation: Investigation & { _count: { events: number } } = {
         id: 'inv-123',
-        name: 'trace-golden-falcon',
+        name: 'case-golden-falcon',
         title: 'API response times increasing',
         status: 'investigating' as InvestigationStatus,
         channelId: 'C123456',
@@ -42,7 +42,7 @@ describe('formatters', () => {
 
       expect(formatted.type).toBe('section');
       expect(formatted.fields).toHaveLength(6);
-      expect(formatted.fields![0].text).toContain('trace-golden-falcon');
+      expect(formatted.fields![0].text).toContain('case-golden-falcon');
       expect(formatted.fields![1].text).toContain('API response times increasing');
       expect(formatted.fields![2].text).toContain('investigating');
       expect(formatted.fields![3].text).toContain('3');
@@ -60,7 +60,7 @@ describe('formatters', () => {
         resolvedBy: null,
         investigation: {
           id: 'inv-123',
-          name: 'trace-golden-falcon',
+          name: 'case-golden-falcon',
           title: 'Test Investigation',
           status: 'escalated' as InvestigationStatus,
           channelId: 'C123456',
@@ -75,7 +75,7 @@ describe('formatters', () => {
 
       expect(formatted.type).toBe('section');
       expect(formatted.fields).toHaveLength(3);
-      expect(formatted.fields![0].text).toContain('trace-golden-falcon');
+      expect(formatted.fields![0].text).toContain('case-golden-falcon');
       expect(formatted.fields![1].text).toContain('U789012');
       expect(formatted.fields![2].text).toContain('Escalated');
     });

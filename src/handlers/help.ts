@@ -11,7 +11,7 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'header',
         text: {
           type: 'plain_text',
-          text: '🔍 Trace - Incident Management',
+          text: '🔍 Case - Incident Management',
         },
       },
       {
@@ -25,16 +25,16 @@ export async function handleHelp({ respond }: HelpContext): Promise<void> {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: '• `/trace create [title]` - Create new investigation with dedicated channel\n' +
-                '• `/trace list` - List all active investigations\n' +
-                '• `/trace stats` - View investigation and incident statistics\n' +
-                '• `/trace export` - Export all investigations to CSV\n' +
-                '• `/trace status` - Show investigation status (in investigation channels)\n' +
-                '• `/trace incident` - Escalate to incident (in investigation channels)\n' +
-                '• `/trace resolve` - Resolve incident when service is restored (for incidents only)\n' +
-                '• `/trace transfer @user` - Transfer incident commander role (for incidents only)\n' +
-                '• `/trace close` - Close investigation and archive channel (in investigation channels)\n' +
-                '• `/trace help` - Show this help message',
+          text: '• `/case create [title]` - Create new investigation with dedicated channel\n' +
+                '• `/case list` - List all active investigations\n' +
+                '• `/case stats` - View investigation and incident statistics\n' +
+                '• `/case export` - Export all investigations to CSV\n' +
+                '• `/case status` - Show investigation status (in investigation channels)\n' +
+                '• `/case incident` - Escalate to incident (in investigation channels)\n' +
+                '• `/case resolve` - Resolve incident when service is restored (for incidents only)\n' +
+                '• `/case transfer @user` - Transfer incident commander role (for incidents only)\n' +
+                '• `/case close` - Close investigation and archive channel (in investigation channels)\n' +
+                '• `/case help` - Show this help message',
         },
       },
       {

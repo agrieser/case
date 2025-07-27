@@ -1,12 +1,12 @@
-# Trace - Slack Incident Management App
+# Case - Slack Incident Management App
 
 ## Project Overview
 
-Trace is a Slack app that implements a streamlined incident management workflow. It helps teams track the flow from events → investigations → incidents, with each investigation having its own dedicated Slack channel.
+Case is a Slack app that implements a streamlined incident management workflow. It helps teams track the flow from events → investigations → incidents, with each investigation having its own dedicated Slack channel.
 
 ### Key Features
 - **Dedicated Channels**: Each investigation creates its own Slack channel
-- **Intuitive Channel Names**: Channels named after your description (e.g., `trace-api-down-a3f`)
+- **Intuitive Channel Names**: Channels named after your description (e.g., `case-api-down-a3f`)
 - **Simple Commands**: Just 9 intuitive slash commands  
 - **Message Shortcuts**: Right-click any message to add it as evidence
 - **Central Notifications**: Investigation summaries posted to issues channel
@@ -35,7 +35,7 @@ Key distinction: Incidents are resolved when service is restored, but investigat
 ```
 src/
 ├── index.ts           # Application entry point
-├── commands.ts        # Command router for /trace
+├── commands.ts        # Command router for /case
 ├── db/
 │   └── client.ts      # Prisma client singleton
 ├── handlers/          # Command handlers
@@ -61,7 +61,7 @@ src/
 ```prisma
 model Investigation {
   id            String              @id @default(uuid())
-  name          String              @unique // "trace-golden-falcon"
+  name          String              @unique // "case-golden-falcon"
   title         String              // User-provided description
   status        InvestigationStatus @default(investigating)
   channelId     String              @unique // Dedicated Slack channel ID
@@ -94,14 +94,14 @@ model Incident {
 
 ## Commands
 
-All commands use the `/trace` prefix:
+All commands use the `/case` prefix:
 
-1. **`/trace create [title]`** - Create a new investigation
-   - Generates investigation name (e.g., "trace-golden-falcon")
-   - Creates channel based on title (e.g., #trace-api-down-a3f)
+1. **`/case create [title]`** - Create a new investigation
+   - Generates investigation name (e.g., "case-golden-falcon")
+   - Creates channel based on title (e.g., #case-api-down-a3f)
    - Posts summary to issues channel
    - Automatically adds the user to the channel
-   - Example: `/trace create API response times increasing`
+   - Example: `/case create API response times increasing`
 
 2. **Message Shortcut: "Add to Investigation"**
    - Right-click (or tap ⋯) on any message
@@ -109,58 +109,58 @@ All commands use the `/trace` prefix:
    - If multiple investigations exist, shows a modal to select
    - Adds the message as evidence with a link back to original
 
-3. **`/trace status`** - Show investigation details
+3. **`/case status`** - Show investigation details
    - **Only works within investigation channels**
    - Displays name, title, event count, duration
    - Shows if escalated to incident
    - Ephemeral response (only visible to user)
 
-4. **`/trace incident`** - Escalate to incident
+4. **`/case incident`** - Escalate to incident
    - **Only works within investigation channels**
    - Converts investigation to incident
    - Sets the user as incident commander
    - Updates investigation status to "escalated"
 
-5. **`/trace list`** - List active investigations
+5. **`/case list`** - List active investigations
    - Shows a formatted list of all active investigations
    - Displays title, channel link, event count, duration, and creator
    - Lists up to 25 most recent investigations
    - Excludes closed investigations
 
-6. **`/trace stats`** - View investigation statistics
+6. **`/case stats`** - View investigation statistics
    - Shows all-time metrics and key performance indicators
    - Total investigations (active vs total)
    - Incident escalation rate
    - Average resolution time
    - Top investigators and incident commanders
 
-7. **`/trace export`** - Export all investigations to CSV
+7. **`/case export`** - Export all investigations to CSV
    - Exports complete investigation history
    - Includes all investigation details, incident data, and metrics
    - Sends CSV file as a direct message
    - Useful for external analysis and reporting
 
-8. **`/trace resolve`** - Resolve incident
+8. **`/case resolve`** - Resolve incident
    - **Only works for escalated incidents**
    - Marks the incident as resolved (service restored)
    - Investigation remains open for follow-up work
    - Posts resolution notice to channel and issues channel
    - Tracks who resolved it and when
 
-9. **`/trace transfer @user`** - Transfer incident commander role
+9. **`/case transfer @user`** - Transfer incident commander role
    - **Only works within investigation channels that have been escalated**
    - Changes the incident commander to the mentioned user
    - Posts public confirmation in the channel
-   - Example: `/trace transfer @sarah`
+   - Example: `/case transfer @sarah`
 
-10. **`/trace close`** - Close investigation
+10. **`/case close`** - Close investigation
     - **Only works within investigation channels**
     - Cannot close if incident is unresolved
     - Archives the Slack channel
     - Updates investigation status to "closed"
     - Tracks who closed it and when
 
-11. **`/trace help`** - Show available commands
+11. **`/case help`** - Show available commands
 
 ## Development Workflow
 
@@ -270,16 +270,16 @@ src/
 
 ## Channel Naming Convention
 
-Channels are named using the pattern: `trace-[description]-[random]`
-- Prefix: Always `trace-`
+Channels are named using the pattern: `case-[description]-[random]`
+- Prefix: Always `case-`
 - Description: Derived from user's title, max 11 chars
 - Random: 3 character hex string for uniqueness
 - Max length: 21 characters (Slack limit)
 
 Examples:
-- "API down" → `trace-api-down-a3f`
-- "Payment processing errors" → `trace-payment-pro-b2c`
-- "Database performance" → `trace-database-pe-d4e`
+- "API down" → `case-api-down-a3f`
+- "Payment processing errors" → `case-payment-pro-b2c`
+- "Database performance" → `case-database-pe-d4e`
 
 ## Slack App Manifest
 
@@ -287,7 +287,7 @@ Key configuration in `manifest.yml`:
 - Socket mode enabled
 - Interactivity enabled
 - Message shortcut: "Add to Investigation"
-- Slash command: `/trace`
+- Slash command: `/case`
 - Required bot scopes
 
 ## Future Enhancements

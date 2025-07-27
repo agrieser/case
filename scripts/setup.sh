@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Trace - Slack Incident Management App"
+echo "🚀 Setting up Case - Slack Incident Management App"
 echo ""
 
 # Check for .env file

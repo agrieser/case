@@ -19,7 +19,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-api-issue-abc',
+          name: 'case-api-issue-abc',
           title: 'API response times increasing',
           status: 'investigating',
           channelId: 'C999INVEST1',
@@ -32,7 +32,7 @@ describe('handleList', () => {
         },
         {
           id: 'inv-456',
-          name: 'trace-database-pe-def',
+          name: 'case-database-pe-def',
           title: 'Database performance issues',
           status: 'investigating',
           channelId: 'C999INVEST2',
@@ -75,7 +75,7 @@ describe('handleList', () => {
           expect.objectContaining({
             type: 'header',
             text: expect.objectContaining({
-              text: 'Active Trace Investigations'
+              text: 'Active Case Investigations'
             })
           }),
           expect.objectContaining({
@@ -90,7 +90,7 @@ describe('handleList', () => {
           expect.objectContaining({
             type: 'section',
             text: expect.objectContaining({
-              text: expect.stringContaining('trace-api-issue-abc')
+              text: expect.stringContaining('case-api-issue-abc')
             })
           })
         ])
@@ -101,7 +101,7 @@ describe('handleList', () => {
       const listText = responseBlocks[3].text.text;
       
       // First investigation
-      expect(listText).toContain('1. 🔍 *trace-api-issue-abc*');
+      expect(listText).toContain('1. 🔍 *case-api-issue-abc*');
       expect(listText).toContain('Title: API response times increasing');
       expect(listText).toContain('Channel: <#C999INVEST1>');
       expect(listText).toContain('Events: 5');
@@ -109,7 +109,7 @@ describe('handleList', () => {
       expect(listText).toContain('Created by: <@U123456>');
       
       // Second investigation
-      expect(listText).toContain('2. 🔍 *trace-database-pe-def*');
+      expect(listText).toContain('2. 🔍 *case-database-pe-def*');
       expect(listText).toContain('Title: Database performance issues');
       expect(listText).toContain('Channel: <#C999INVEST2>');
       expect(listText).toContain('Events: 3');
@@ -121,7 +121,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-payment-fail-xyz',
+          name: 'case-payment-fail-xyz',
           title: 'Payment failures critical',
           status: 'escalated',
           channelId: 'C999INVEST1',
@@ -148,7 +148,7 @@ describe('handleList', () => {
       const responseBlocks = mockRespond.mock.calls[0][0].blocks;
       const listText = responseBlocks[3].text.text;
       
-      expect(listText).toContain('1. 🚨 *trace-payment-fail-xyz*');
+      expect(listText).toContain('1. 🚨 *case-payment-fail-xyz*');
       expect(listText).toContain('Incident Commander: <@U789012>');
     });
 
@@ -156,7 +156,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-database-slow-def',
+          name: 'case-database-slow-def',
           title: 'Database performance degraded',
           status: 'escalated',
           channelId: 'C999INVEST1',
@@ -183,7 +183,7 @@ describe('handleList', () => {
       const responseBlocks = mockRespond.mock.calls[0][0].blocks;
       const listText = responseBlocks[3].text.text;
       
-      expect(listText).toContain('1. ✅ *trace-database-slow-def*');
+      expect(listText).toContain('1. ✅ *case-database-slow-def*');
       expect(listText).toContain('Incident Commander: <@U789012>');
     });
 
@@ -191,7 +191,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-1',
-          name: 'trace-active-inc-abc',
+          name: 'case-active-inc-abc',
           title: 'Active incident',
           status: 'escalated',
           channelId: 'C999INVEST1',
@@ -211,7 +211,7 @@ describe('handleList', () => {
         },
         {
           id: 'inv-2',
-          name: 'trace-regular-inv-def',
+          name: 'case-regular-inv-def',
           title: 'Regular investigation',
           status: 'investigating',
           channelId: 'C999INVEST2',
@@ -224,7 +224,7 @@ describe('handleList', () => {
         },
         {
           id: 'inv-3',
-          name: 'trace-resolved-inc-ghi',
+          name: 'case-resolved-inc-ghi',
           title: 'Resolved incident',
           status: 'escalated',
           channelId: 'C999INVEST3',
@@ -265,7 +265,7 @@ describe('handleList', () => {
       await handleList({ respond: mockRespond, userId: 'U123456' }, mockPrisma);
 
       expect(mockRespond).toHaveBeenCalledWith({
-        text: 'No active investigations found. Create one with `/trace create [title]`',
+        text: 'No active investigations found. Create one with `/case create [title]`',
         response_type: 'ephemeral',
       });
     });
@@ -274,7 +274,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-single-issue-abc',
+          name: 'case-single-issue-abc',
           title: 'Single issue',
           status: 'investigating',
           channelId: 'C999INVEST1',
@@ -303,7 +303,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-new-issue-abc',
+          name: 'case-new-issue-abc',
           title: 'New issue',
           status: 'investigating',
           channelId: 'C999INVEST1',
@@ -330,7 +330,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-old-issue-abc',
+          name: 'case-old-issue-abc',
           title: 'Old issue',
           status: 'investigating',
           channelId: 'C999INVEST1',
@@ -398,7 +398,7 @@ describe('handleList', () => {
       const mockInvestigations = [
         {
           id: 'inv-new',
-          name: 'trace-newest-abc',
+          name: 'case-newest-abc',
           title: 'Newest',
           status: 'investigating',
           channelId: 'C999NEW',
@@ -411,7 +411,7 @@ describe('handleList', () => {
         },
         {
           id: 'inv-old',
-          name: 'trace-oldest-xyz',
+          name: 'case-oldest-xyz',
           title: 'Oldest',
           status: 'investigating',
           channelId: 'C999OLD',
@@ -432,8 +432,8 @@ describe('handleList', () => {
       const listText = responseBlocks[3].text.text;
       
       // Verify newest appears first
-      const newestIndex = listText.indexOf('trace-newest-abc');
-      const oldestIndex = listText.indexOf('trace-oldest-xyz');
+      const newestIndex = listText.indexOf('case-newest-abc');
+      const oldestIndex = listText.indexOf('case-oldest-xyz');
       expect(newestIndex).toBeLessThan(oldestIndex);
     });
   });

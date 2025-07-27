@@ -35,7 +35,7 @@ describe('handleIncident', () => {
     it('should escalate investigation to incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API response times critical',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -102,7 +102,7 @@ describe('handleIncident', () => {
           }),
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('trace-api-issue-abc'),
+              text: expect.stringContaining('case-api-issue-abc'),
             }),
           }),
         ]),
@@ -126,7 +126,7 @@ describe('handleIncident', () => {
     it('should reject if already escalated', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -158,7 +158,7 @@ describe('handleIncident', () => {
     it('should reject if investigation is closed', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-old-issue-xyz',
+        name: 'case-old-issue-xyz',
         title: 'Old issue',
         status: 'closed',
         channelId: 'C999INVEST',
@@ -185,7 +185,7 @@ describe('handleIncident', () => {
     it('should handle database errors during incident creation', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -213,7 +213,7 @@ describe('handleIncident', () => {
     it('should handle database errors during status update', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -251,7 +251,7 @@ describe('handleIncident', () => {
       
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API response times critical',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -294,7 +294,7 @@ describe('handleIncident', () => {
       
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API response times critical',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -346,7 +346,7 @@ describe('handleIncident', () => {
       
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API response times critical',
         status: 'investigating',
         channelId: 'C999INVEST',

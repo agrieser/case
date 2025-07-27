@@ -30,7 +30,7 @@ describe('handleResolve', () => {
     it('should resolve an active incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API issues critical',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -80,7 +80,7 @@ describe('handleResolve', () => {
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: '✅ Incident *trace-api-issue-abc* has been resolved!',
+              text: '✅ Incident *case-api-issue-abc* has been resolved!',
             }),
           }),
           expect.objectContaining({
@@ -105,7 +105,7 @@ describe('handleResolve', () => {
     it('should handle short duration incidents', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-quick-fix-def',
+        name: 'case-quick-fix-def',
         title: 'Quick fix incident',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -155,7 +155,7 @@ describe('handleResolve', () => {
     it('should continue if posting to issues channel fails', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-post-fail-ghi',
+        name: 'case-post-fail-ghi',
         title: 'Post fail test',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -207,7 +207,7 @@ describe('handleResolve', () => {
 
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-no-env-jkl',
+        name: 'case-no-env-jkl',
         title: 'No env test',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -271,7 +271,7 @@ describe('handleResolve', () => {
     it('should reject if investigation not escalated to incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-not-escalated-mno',
+        name: 'case-not-escalated-mno',
         title: 'Not escalated',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -304,7 +304,7 @@ describe('handleResolve', () => {
     it('should reject if incident already resolved', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-already-res-pqr',
+        name: 'case-already-res-pqr',
         title: 'Already resolved',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -346,7 +346,7 @@ describe('handleResolve', () => {
     it('should handle database errors during update', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-db-error-stu',
+        name: 'case-db-error-stu',
         title: 'Database error test',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -411,7 +411,7 @@ describe('handleResolve', () => {
     it('should calculate long duration correctly', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-long-dur-vwx',
+        name: 'case-long-dur-vwx',
         title: 'Long duration incident',
         status: 'escalated',
         channelId: 'C999INVEST',

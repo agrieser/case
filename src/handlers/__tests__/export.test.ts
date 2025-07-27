@@ -24,7 +24,7 @@ describe('handleExport', () => {
       const mockInvestigations = [
         {
           id: 'inv-123',
-          name: 'trace-api-issue-abc',
+          name: 'case-api-issue-abc',
           title: 'API issues critical',
           status: 'escalated',
           channelId: 'C999INVEST',
@@ -45,7 +45,7 @@ describe('handleExport', () => {
         },
         {
           id: 'inv-789',
-          name: 'trace-db-slow-def',
+          name: 'case-db-slow-def',
           title: 'Database queries slow',
           status: 'closed',
           channelId: 'C999INVEST2',
@@ -86,17 +86,17 @@ describe('handleExport', () => {
       // Verify file was uploaded
       expect(mockClient.files.uploadV2).toHaveBeenCalledWith({
         channel_id: 'U123456',
-        filename: expect.stringMatching(/^trace-export-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}.csv$/),
+        filename: expect.stringMatching(/^case-export-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}.csv$/),
         file: expect.any(Buffer),
-        initial_comment: '📊 Trace Export - 2 investigations'
+        initial_comment: '📊 Case Export - 2 investigations'
       });
 
       // Verify CSV content includes headers
       const uploadCall = mockClient.files.uploadV2.mock.calls[0][0];
       const csvContent = uploadCall.file.toString();
       expect(csvContent).toContain('Investigation Name,Title,Status,Channel ID');
-      expect(csvContent).toContain('trace-api-issue-abc,"API issues critical",escalated');
-      expect(csvContent).toContain('trace-db-slow-def,"Database queries slow",closed');
+      expect(csvContent).toContain('case-api-issue-abc,"API issues critical",escalated');
+      expect(csvContent).toContain('case-db-slow-def,"Database queries slow",closed');
 
       // Verify response
       expect(mockRespond).toHaveBeenCalledWith({
@@ -114,7 +114,7 @@ describe('handleExport', () => {
     it('should handle investigations with special characters in title', async () => {
       const mockInvestigations = [{
         id: 'inv-123',
-        name: 'trace-special-abc',
+        name: 'case-special-abc',
         title: 'Title with "quotes" and, commas',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -151,7 +151,7 @@ describe('handleExport', () => {
       
       const mockInvestigations = [{
         id: 'inv-123',
-        name: 'trace-duration-test',
+        name: 'case-duration-test',
         title: 'Duration test',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -228,7 +228,7 @@ describe('handleExport', () => {
     it('should handle file upload failure', async () => {
       mockPrisma.investigation.findMany.mockResolvedValue([{
         id: 'inv-123',
-        name: 'trace-test',
+        name: 'case-test',
         title: 'Test',
         status: 'investigating',
         channelId: 'C999',

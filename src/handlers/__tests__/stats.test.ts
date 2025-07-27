@@ -68,7 +68,7 @@ describe('handleStats', () => {
           expect.objectContaining({
             type: 'header',
             text: expect.objectContaining({
-              text: '📊 Trace Statistics'
+              text: '📊 Case Statistics'
             })
           }),
           expect.objectContaining({

@@ -16,7 +16,7 @@ describe('Rate Limiting', () => {
     channel_name: 'test',
     user_id: userId,
     user_name: 'test',
-    command: '/trace',
+    command: '/case',
     text: 'test',
     api_app_id: 'A123',
     is_enterprise_install: 'false',
@@ -141,7 +141,7 @@ describe('Rate Limiting', () => {
 
   describe('getRateLimitStatus', () => {
     it('should return correct status for new user', () => {
-      const status = getRateLimitStatus('T123', 'U123', '/trace');
+      const status = getRateLimitStatus('T123', 'U123', '/case');
       
       expect(status.requests).toBe(0);
       expect(status.remaining).toBe(60);
@@ -156,7 +156,7 @@ describe('Rate Limiting', () => {
         checkRateLimit(command);
       }
       
-      const status = getRateLimitStatus('T123', 'U123', '/trace');
+      const status = getRateLimitStatus('T123', 'U123', '/case');
       expect(status.requests).toBe(3);
       expect(status.remaining).toBe(57);
       expect(status.blockedUntil).toBeUndefined();
@@ -174,7 +174,7 @@ describe('Rate Limiting', () => {
         checkRateLimit(command);
       }
       
-      const status = getRateLimitStatus('T123', 'U123', '/trace');
+      const status = getRateLimitStatus('T123', 'U123', '/case');
       expect(status.requests).toBe(60);
       expect(status.remaining).toBe(0);
       expect(status.blockedUntil).toBeDefined();
@@ -193,14 +193,14 @@ describe('Rate Limiting', () => {
       checkRateLimit(command);
       
       // Verify entry exists
-      let status = getRateLimitStatus('T123', 'U123', '/trace');
+      let status = getRateLimitStatus('T123', 'U123', '/case');
       expect(status.requests).toBe(1);
       
       // Advance time past window and cleanup interval
       jest.advanceTimersByTime(2 * 60 * 1000);
       
       // Entry should be cleaned up
-      status = getRateLimitStatus('T123', 'U123', '/trace');
+      status = getRateLimitStatus('T123', 'U123', '/case');
       expect(status.requests).toBe(0);
       
       jest.useRealTimers();

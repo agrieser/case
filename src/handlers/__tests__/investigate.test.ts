@@ -26,13 +26,13 @@ describe('handleInvestigate', () => {
     // Default successful mock implementations
     mockClient.conversations.create.mockResolvedValue({
       ok: true,
-      channel: { id: 'C999NEWCHANNEL', name: 'trace-test-issue-abc' },
+      channel: { id: 'C999NEWCHANNEL', name: 'case-test-issue-abc' },
     });
     
     mockPrisma.investigation.findUnique.mockResolvedValue(null);
     mockPrisma.investigation.create.mockResolvedValue({
       id: 'inv-123',
-      name: 'trace-test-issue-abc',
+      name: 'case-test-issue-abc',
       title: 'Test issue',
       status: 'investigating',
       channelId: 'C999NEWCHANNEL',
@@ -63,14 +63,14 @@ describe('handleInvestigate', () => {
 
       // Verify channel was created
       expect(mockClient.conversations.create).toHaveBeenCalledWith({
-        name: expect.stringMatching(/^trace-api-respons-[a-f0-9]{3}$/),
+        name: expect.stringMatching(/^case-api-response-[a-f0-9]{3}$/),
         is_private: false,
       });
 
       // Verify investigation was created in database
       expect(mockPrisma.investigation.create).toHaveBeenCalledWith({
         data: {
-          name: expect.stringMatching(/^trace-api-respons-[a-f0-9]{3}$/),
+          name: expect.stringMatching(/^case-api-response-[a-f0-9]{3}$/),
           title: 'API response times increasing',
           channelId: 'C999NEWCHANNEL',
           createdBy: 'U123456',
@@ -117,7 +117,7 @@ describe('handleInvestigate', () => {
       );
 
       expect(mockClient.conversations.create).toHaveBeenCalledWith({
-        name: expect.stringMatching(/^trace-this-is-a-v-[a-f0-9]{3}$/),
+        name: expect.stringMatching(/^case-this-is-a-ve-[a-f0-9]{3}$/),
         is_private: false,
       });
     });
@@ -131,7 +131,7 @@ describe('handleInvestigate', () => {
       );
 
       expect(mockClient.conversations.create).toHaveBeenCalledWith({
-        name: expect.stringMatching(/^trace-database-pe-[a-f0-9]{3}$/),
+        name: expect.stringMatching(/^case-database-per-[a-f0-9]{3}$/),
         is_private: false,
       });
     });

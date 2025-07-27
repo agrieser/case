@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Trace development environment..."
+echo "🚀 Setting up Case development environment..."
 
 # Install Claude Code
 echo "🤖 Installing Claude Code..."
@@ -24,7 +24,7 @@ npm run prisma:generate
 
 # Wait for database to be ready
 echo "⏳ Waiting for database..."
-until pg_isready -h db -U trace; do
+until pg_isready -h db -U case; do
     sleep 2
 done
 

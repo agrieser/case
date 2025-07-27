@@ -39,7 +39,7 @@ export const createMockCommand = (text: string = '', userId: string = 'U123456')
     user_id: userId,
     channel_id: 'C123456',
     channel_name: 'general',
-    command: '/trace',
+    command: '/case',
     trigger_id: 'trigger_123',
     token: 'xoxb-test-token',
     response_url: 'https://hooks.slack.com/commands/test',

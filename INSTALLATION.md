@@ -1,6 +1,6 @@
 # Detailed Installation Guide
 
-This guide provides step-by-step instructions for installing Trace in your Slack workspace.
+This guide provides step-by-step instructions for installing Case in your Slack workspace.
 
 ## Prerequisites
 
@@ -64,10 +64,10 @@ From the Slack app configuration page, collect these tokens:
 
 ```bash
 # Using PostgreSQL command line
-createdb trace_production
+createdb case_production
 
 # Or using psql
-psql -U postgres -c "CREATE DATABASE trace_production;"
+psql -U postgres -c "CREATE DATABASE case_production;"
 ```
 
 ### 2.2 Create Database User (Optional but recommended)
@@ -77,8 +77,8 @@ psql -U postgres -c "CREATE DATABASE trace_production;"
 psql -U postgres
 
 -- Create user and grant permissions
-CREATE USER trace_user WITH PASSWORD 'secure_password';
-GRANT ALL PRIVILEGES ON DATABASE trace_production TO trace_user;
+CREATE USER case_user WITH PASSWORD 'secure_password';
+GRANT ALL PRIVILEGES ON DATABASE case_production TO case_user;
 ```
 
 ## Step 3: Configure the Application
@@ -86,8 +86,8 @@ GRANT ALL PRIVILEGES ON DATABASE trace_production TO trace_user;
 ### 3.1 Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/trace.git
-cd trace
+git clone https://github.com/agrieser/case.git
+cd case
 ```
 
 ### 3.2 Install Dependencies
@@ -102,7 +102,7 @@ Create a `.env` file in the project root:
 
 ```bash
 # Database
-DATABASE_URL="postgresql://trace_user:secure_password@localhost:5432/trace_production"
+DATABASE_URL="postgresql://case_user:secure_password@localhost:5432/case_production"
 
 # Slack Credentials (from Step 1.3)
 SLACK_BOT_TOKEN="xoxb-your-bot-token"
@@ -166,9 +166,9 @@ npm run dev
 
 ### 4.3 Verify Installation
 
-1. In Slack, type `/trace help`
+1. In Slack, type `/case help`
 2. You should see the help message with available commands
-3. Try creating a test investigation: `/trace create Test investigation`
+3. Try creating a test investigation: `/case create Test investigation`
 
 ## Step 5: Production Deployment Options
 
@@ -179,7 +179,7 @@ npm run dev
 npm install -g pm2
 
 # Start application
-pm2 start dist/index.js --name trace
+pm2 start dist/index.js --name case
 
 # Save PM2 configuration
 pm2 save
@@ -200,18 +200,18 @@ CMD ["node", "dist/index.js"]
 
 ### Option C: Using systemd
 
-Create `/etc/systemd/system/trace.service`:
+Create `/etc/systemd/system/case.service`:
 
 ```ini
 [Unit]
-Description=Trace Slack Bot
+Description=Case Slack Bot
 After=network.target
 
 [Service]
 Type=simple
-User=trace
-WorkingDirectory=/opt/trace
-ExecStart=/usr/bin/node /opt/trace/dist/index.js
+User=case
+WorkingDirectory=/opt/case
+ExecStart=/usr/bin/node /opt/case/dist/index.js
 Restart=on-failure
 Environment=NODE_ENV=production
 
@@ -256,5 +256,5 @@ WantedBy=multi-user.target
 ## Getting Help
 
 - Check application logs: `npm run logs`
-- Join our [Discussions](https://github.com/your-org/trace/discussions)
-- Report issues: [GitHub Issues](https://github.com/your-org/trace/issues)
+- Join our [Discussions](https://github.com/agrieser/case/discussions)
+- Report issues: [GitHub Issues](https://github.com/agrieser/case/issues)

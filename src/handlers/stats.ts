@@ -75,7 +75,7 @@ export async function handleStats(
           type: 'header',
           text: {
             type: 'plain_text',
-            text: '📊 Trace Statistics',
+            text: '📊 Case Statistics',
             emoji: true
           }
         },

@@ -14,7 +14,7 @@ export function createMockCommand(overrides?: Partial<SlackCommandMiddlewareArgs
     channel_name: 'test-channel',
     user_id: 'U123456',
     user_name: 'testuser',
-    command: '/trace',
+    command: '/case',
     text: '',
     api_app_id: 'A123456',
     response_url: 'https://hooks.slack.com/response',

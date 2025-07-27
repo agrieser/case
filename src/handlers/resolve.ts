@@ -87,7 +87,7 @@ export async function handleResolve(
           elements: [
             {
               type: 'mrkdwn',
-              text: `The investigation remains open for follow-up analysis and post-mortem. Use \`/trace close\` when all follow-up work is complete.`,
+              text: `The investigation remains open for follow-up analysis and post-mortem. Use \`/case close\` when all follow-up work is complete.`,
             },
           ],
         },

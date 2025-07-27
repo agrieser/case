@@ -28,12 +28,12 @@ describe('handleStatus', () => {
       user_id: 'U123456',
       channel_id: 'C999INVEST',
       team_id: 'T111111',
-      command: '/trace',
+      command: '/case',
       trigger_id: 'trigger123',
       response_url: 'https://hooks.slack.com/response',
       token: 'token123',
       api_app_id: 'A123456',
-      channel_name: 'trace-api-issue-abc',
+      channel_name: 'case-api-issue-abc',
       user_name: 'testuser',
       team_domain: 'testteam',
       enterprise_id: undefined,
@@ -46,7 +46,7 @@ describe('handleStatus', () => {
     it('should show investigation status without incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-api-issue-abc',
+        name: 'case-api-issue-abc',
         title: 'API response times increasing',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -75,7 +75,7 @@ describe('handleStatus', () => {
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
-              text: expect.stringContaining('trace-api-issue-abc'),
+              text: expect.stringContaining('case-api-issue-abc'),
             }),
           }),
           expect.objectContaining({
@@ -107,7 +107,7 @@ describe('handleStatus', () => {
     it('should show investigation with active incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-payment-fail-xyz',
+        name: 'case-payment-fail-xyz',
         title: 'Payment failures critical',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -147,7 +147,7 @@ describe('handleStatus', () => {
     it('should show investigation with resolved incident', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-database-slow-def',
+        name: 'case-database-slow-def',
         title: 'Database performance degraded',
         status: 'escalated',
         channelId: 'C999INVEST',
@@ -189,7 +189,7 @@ describe('handleStatus', () => {
     it('should format duration in days for old investigations', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-old-issue-ghi',
+        name: 'case-old-issue-ghi',
         title: 'Old ongoing issue',
         status: 'investigating',
         channelId: 'C999INVEST',
@@ -222,7 +222,7 @@ describe('handleStatus', () => {
     it('should format duration in minutes for new investigations', async () => {
       const mockInvestigation = {
         id: 'inv-123',
-        name: 'trace-new-issue-jkl',
+        name: 'case-new-issue-jkl',
         title: 'Just started investigation',
         status: 'investigating',
         channelId: 'C999INVEST',

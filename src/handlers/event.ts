@@ -18,7 +18,7 @@ export async function handleEvent(
 
     if (!investigation) {
       await respond({
-        text: '⚠️ This channel is not associated with an investigation. Create one with `/trace investigate [title]`',
+        text: '⚠️ This channel is not associated with an investigation. Create one with `/case create [title]`',
         response_type: 'ephemeral',
       });
       return;
