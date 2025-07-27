@@ -1,45 +1,23 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { PrismaClient } from '@prisma/client';
 import { handleStatus } from '../status';
-import { SlackCommandMiddlewareArgs } from '@slack/bolt';
-
-// Mock Prisma
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    investigation: {
-      findUnique: jest.fn(),
-    },
-  })),
-}));
+import { createMockRespond, createMockCommand, createMockPrismaClient } from '../../test/utils/testHelpers';
 
 describe('handleStatus', () => {
-  let prisma: PrismaClient;
-  let respond: jest.Mock;
-  let command: SlackCommandMiddlewareArgs['command'];
+  let prisma: any;
+  let respond: any;
+  let command: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     
-    prisma = new PrismaClient();
-    respond = jest.fn().mockResolvedValue(undefined);
-    
-    command = {
-      text: '',
-      user_id: 'U123456',
+    prisma = createMockPrismaClient();
+    respond = createMockRespond();
+    command = createMockCommand({
       channel_id: 'C999INVEST',
-      team_id: 'T111111',
+      text: '',
       command: '/case',
       trigger_id: 'trigger123',
-      response_url: 'https://hooks.slack.com/response',
-      token: 'token123',
-      api_app_id: 'A123456',
-      channel_name: 'case-api-issue-abc',
-      user_name: 'testuser',
-      team_domain: 'testteam',
-      enterprise_id: undefined,
-      enterprise_name: undefined,
-      is_enterprise_install: 'false',
-    };
+    });
   });
 
   describe('successful status display', () => {
@@ -54,11 +32,12 @@ describe('handleStatus', () => {
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
         closedBy: null,
         closedAt: null,
+        issuesMessageTs: '1234567890.123456',
         _count: { events: 5 },
         incident: null,
       };
 
-      (prisma.investigation.findUnique as jest.Mock).mockResolvedValue(mockInvestigation);
+      prisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
 
       await handleStatus({ command, respond }, prisma);
 
@@ -115,6 +94,7 @@ describe('handleStatus', () => {
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
         closedBy: null,
         closedAt: null,
+        issuesMessageTs: '1234567890.123456',
         _count: { events: 12 },
         incident: {
           id: 'inc-456',
@@ -126,7 +106,7 @@ describe('handleStatus', () => {
         },
       };
 
-      (prisma.investigation.findUnique as jest.Mock).mockResolvedValue(mockInvestigation);
+      prisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
 
       await handleStatus({ command, respond }, prisma);
 
@@ -155,6 +135,7 @@ describe('handleStatus', () => {
         createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
         closedBy: null,
         closedAt: null,
+        issuesMessageTs: '1234567890.123456',
         _count: { events: 8 },
         incident: {
           id: 'inc-789',
@@ -166,7 +147,7 @@ describe('handleStatus', () => {
         },
       };
 
-      (prisma.investigation.findUnique as jest.Mock).mockResolvedValue(mockInvestigation);
+      prisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
 
       await handleStatus({ command, respond }, prisma);
 
@@ -197,11 +178,12 @@ describe('handleStatus', () => {
         createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
         closedBy: null,
         closedAt: null,
+        issuesMessageTs: '1234567890.123456',
         _count: { events: 25 },
         incident: null,
       };
 
-      (prisma.investigation.findUnique as jest.Mock).mockResolvedValue(mockInvestigation);
+      prisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
 
       await handleStatus({ command, respond }, prisma);
 
@@ -230,11 +212,12 @@ describe('handleStatus', () => {
         createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
         closedBy: null,
         closedAt: null,
+        issuesMessageTs: '1234567890.123456',
         _count: { events: 1 },
         incident: null,
       };
 
-      (prisma.investigation.findUnique as jest.Mock).mockResolvedValue(mockInvestigation);
+      prisma.investigation.findUnique.mockResolvedValue(mockInvestigation);
 
       await handleStatus({ command, respond }, prisma);
 
@@ -255,7 +238,7 @@ describe('handleStatus', () => {
 
   describe('error handling', () => {
     it('should handle non-investigation channel', async () => {
-      (prisma.investigation.findUnique as jest.Mock).mockResolvedValue(null);
+      prisma.investigation.findUnique.mockResolvedValue(null);
 
       await handleStatus({ command, respond }, prisma);
 
@@ -266,7 +249,7 @@ describe('handleStatus', () => {
     });
 
     it('should handle database errors', async () => {
-      (prisma.investigation.findUnique as jest.Mock).mockRejectedValue(
+      prisma.investigation.findUnique.mockRejectedValue(
         new Error('Database connection failed')
       );
 

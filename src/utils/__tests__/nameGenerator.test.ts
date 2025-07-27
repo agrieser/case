@@ -169,7 +169,7 @@ describe('nameGenerator', () => {
         { title: 'API down', expected: /^case-api-down-[a-f0-9]{3}$/ },
         { title: 'Payment processing errors', expected: /^case-payment-proc-[a-f0-9]{3}$/ }, // 12 char limit
         { title: 'User login issues', expected: /^case-user-login-i-[a-f0-9]{3}$/ },
-        { title: 'DB connection timeout', expected: /^case-db-connection-[a-f0-9]{3}$/ }
+        { title: 'DB connection timeout', expected: /^case-db-connectio-[a-f0-9]{3}$/ }
       ];
       
       for (const { title, expected } of testCases) {

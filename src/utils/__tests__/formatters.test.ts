@@ -35,6 +35,7 @@ describe('formatters', () => {
         createdAt: new Date('2024-01-15T10:00:00Z'),
         closedBy: null,
         closedAt: null,
+        issuesMessageTs: '1234567890.123456',
         _count: { events: 3 }
       };
 
@@ -67,7 +68,8 @@ describe('formatters', () => {
           createdBy: 'U123456',
           createdAt: new Date('2024-01-15T10:00:00Z'),
           closedBy: null,
-          closedAt: null
+          closedAt: null,
+          issuesMessageTs: '1234567890.123456'
         }
       };
 
