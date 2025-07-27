@@ -32,7 +32,7 @@ export async function handleList(
 
     if (investigations.length === 0) {
       await respond({
-        text: 'No active investigations found. Create one with `/trace investigate [title]`',
+        text: 'No active investigations found. Create one with `/trace create [title]`',
         response_type: 'ephemeral',
       });
       return;
