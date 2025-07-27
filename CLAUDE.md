@@ -9,7 +9,7 @@ Trace is a Slack app that implements a streamlined incident management workflow.
 - **Intuitive Channel Names**: Channels named after your description (e.g., `trace-api-down-a3f`)
 - **Simple Commands**: Just 9 intuitive slash commands  
 - **Message Shortcuts**: Right-click any message to add it as evidence
-- **Central Notifications**: Investigation summaries posted to #h-potential-issues
+- **Central Notifications**: Investigation summaries posted to issues channel
 - **Smart Event Linking**: Add events from any channel to any investigation
 
 ### Investigation & Incident Lifecycle
@@ -99,7 +99,7 @@ All commands use the `/trace` prefix:
 1. **`/trace create [title]`** - Create a new investigation
    - Generates investigation name (e.g., "trace-golden-falcon")
    - Creates channel based on title (e.g., #trace-api-down-a3f)
-   - Posts summary to #h-potential-issues
+   - Posts summary to issues channel
    - Automatically adds the user to the channel
    - Example: `/trace create API response times increasing`
 
@@ -131,7 +131,7 @@ All commands use the `/trace` prefix:
    - **Only works for escalated incidents**
    - Marks the incident as resolved (service restored)
    - Investigation remains open for follow-up work
-   - Posts resolution notice to channel and #h-potential-issues
+   - Posts resolution notice to channel and issues channel
    - Tracks who resolved it and when
 
 7. **`/trace transfer @user`** - Transfer incident commander role
@@ -178,7 +178,7 @@ Required in `.env`:
 - `SLACK_SIGNING_SECRET` - App signing secret
 - `SLACK_APP_TOKEN` - Socket mode app token
 - `DATABASE_URL` - PostgreSQL connection string
-- `POTENTIAL_ISSUES_CHANNEL_ID` - Channel ID for #h-potential-issues (e.g., C0123456789)
+- `ISSUES_CHANNEL_ID` - Channel ID for issues notifications (e.g., C0123456789)
 
 Test environment uses `.env.test` with separate database.
 

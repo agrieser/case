@@ -15,7 +15,7 @@ describe('handleInvestigate', () => {
     
     // Set up environment
     process.env = { ...originalEnv };
-    process.env.POTENTIAL_ISSUES_CHANNEL_ID = 'C123POTENTIAL';
+    process.env.ISSUES_CHANNEL_ID = 'C123ISSUES';
 
     // Initialize mocks
     mockPrisma = createMockPrismaClient();
@@ -81,9 +81,9 @@ describe('handleInvestigate', () => {
         users: 'U123456',
       });
 
-      // Verify message posted to potential issues channel
+      // Verify message posted to issues channel
       expect(mockClient.chat.postMessage).toHaveBeenCalledWith({
-        channel: 'C123POTENTIAL',
+        channel: 'C123ISSUES',
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
@@ -264,9 +264,9 @@ describe('handleInvestigate', () => {
     });
   });
 
-  describe('potential issues channel', () => {
-    it('should handle missing POTENTIAL_ISSUES_CHANNEL_ID env var', async () => {
-      delete process.env.POTENTIAL_ISSUES_CHANNEL_ID;
+  describe('issues channel', () => {
+    it('should handle missing ISSUES_CHANNEL_ID env var', async () => {
+      delete process.env.ISSUES_CHANNEL_ID;
 
       await handleInvestigate(
         { command: mockCommand, respond: mockRespond, title: 'Test issue', client: mockClient },
@@ -279,7 +279,7 @@ describe('handleInvestigate', () => {
       });
     });
 
-    it('should handle failure to post to potential issues channel', async () => {
+    it('should handle failure to post to issues channel', async () => {
       mockClient.chat.postMessage.mockRejectedValue(
         new Error('channel_not_found')
       );
@@ -289,7 +289,7 @@ describe('handleInvestigate', () => {
         mockPrisma
       );
 
-      // Should fail because posting to potential issues channel failed
+      // Should fail because posting to issues channel failed
       expect(mockRespond).toHaveBeenCalledWith({
         text: expect.stringContaining('An error occurred'),
         response_type: 'ephemeral',

@@ -96,12 +96,12 @@ export async function handleResolve(
       ],
     });
 
-    // Post to #h-potential-issues about the resolution
-    const potentialIssuesChannelId = process.env.POTENTIAL_ISSUES_CHANNEL_ID;
-    if (potentialIssuesChannelId) {
+    // Post to issues channel about the resolution
+    const issuesChannelId = process.env.ISSUES_CHANNEL_ID;
+    if (issuesChannelId) {
       try {
         await client.chat.postMessage({
-          channel: potentialIssuesChannelId,
+          channel: issuesChannelId,
           blocks: [
             {
               type: 'section',
@@ -120,7 +120,7 @@ export async function handleResolve(
           ],
         });
       } catch (error) {
-        console.error('Failed to post resolution to potential issues channel:', error);
+        console.error('Failed to post resolution to issues channel:', error);
       }
     }
   } catch (error) {

@@ -80,21 +80,21 @@ export async function handleInvestigate(
       }
     }
 
-    // Get the potential issues channel ID from environment variable
-    const potentialIssuesChannelId = process.env.POTENTIAL_ISSUES_CHANNEL_ID;
+    // Get the issues channel ID from environment variable
+    const issuesChannelId = process.env.ISSUES_CHANNEL_ID;
     
-    if (!potentialIssuesChannelId) {
-      throw new Error('POTENTIAL_ISSUES_CHANNEL_ID environment variable not set');
+    if (!issuesChannelId) {
+      throw new Error('ISSUES_CHANNEL_ID environment variable not set');
     }
 
     // Try to join the channel first (in case bot isn't already in it)
     try {
       await client.conversations.join({
-        channel: potentialIssuesChannelId,
+        channel: issuesChannelId,
       });
     } catch (error: any) {
       // Log the error but continue - we'll get a better error from postMessage if needed
-      console.error('Failed to join potential issues channel:', error?.data?.error || error);
+      console.error('Failed to join issues channel:', error?.data?.error || error);
       
       // If it's a missing_scope error, we need to add channels:join
       if (error?.data?.error === 'missing_scope') {
@@ -102,9 +102,9 @@ export async function handleInvestigate(
       }
     }
 
-    // Post to #h-potential-issues
+    // Post to issues channel
     await client.chat.postMessage({
-      channel: potentialIssuesChannelId,
+      channel: issuesChannelId,
       blocks: [
         {
           type: 'section',
@@ -135,7 +135,7 @@ export async function handleInvestigate(
     // Send ephemeral confirmation to the user
     await respond({
       response_type: 'ephemeral',
-      text: `✅ Investigation *${name}* created successfully!\n\nChannel: <#${channelId}>\nSummary posted to: <#${potentialIssuesChannelId}>`,
+      text: `✅ Investigation *${name}* created successfully!\n\nChannel: <#${channelId}>\nSummary posted to: <#${issuesChannelId}>`,
     });
   } catch (error) {
     // Log error safely without exposing sensitive details

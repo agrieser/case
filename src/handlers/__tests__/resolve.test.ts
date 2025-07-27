@@ -14,7 +14,7 @@ describe('handleResolve', () => {
     
     // Set up environment
     process.env = { ...originalEnv };
-    process.env.POTENTIAL_ISSUES_CHANNEL_ID = 'C123POTENTIAL';
+    process.env.ISSUES_CHANNEL_ID = 'C123ISSUES';
     
     // Initialize mocks
     mockPrisma = createMockPrismaClient();
@@ -99,9 +99,9 @@ describe('handleResolve', () => {
         ]),
       });
 
-      // Verify notification to potential issues channel
+      // Verify notification to issues channel
       expect(mockClient.chat.postMessage).toHaveBeenCalledWith({
-        channel: 'C123POTENTIAL',
+        channel: 'C123ISSUES',
         blocks: expect.arrayContaining([
           expect.objectContaining({
             text: expect.objectContaining({
@@ -168,7 +168,7 @@ describe('handleResolve', () => {
       });
     });
 
-    it('should continue if posting to potential issues fails', async () => {
+    it('should continue if posting to issues channel fails', async () => {
       const mockInvestigation = {
         id: 'inv-123',
         name: 'trace-post-fail-ghi',
@@ -216,8 +216,8 @@ describe('handleResolve', () => {
       });
     });
 
-    it('should handle missing POTENTIAL_ISSUES_CHANNEL_ID', async () => {
-      delete process.env.POTENTIAL_ISSUES_CHANNEL_ID;
+    it('should handle missing ISSUES_CHANNEL_ID', async () => {
+      delete process.env.ISSUES_CHANNEL_ID;
 
       const mockInvestigation = {
         id: 'inv-123',
@@ -257,7 +257,7 @@ describe('handleResolve', () => {
         mockPrisma
       );
 
-      // Should still resolve but not post to potential issues
+      // Should still resolve but not post to issues channel
       expect(mockPrisma.incident.update).toHaveBeenCalled();
       expect(mockClient.chat.postMessage).not.toHaveBeenCalled();
     });

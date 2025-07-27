@@ -29,7 +29,7 @@ Escalate investigations to incidents with one command, automatically setting the
 
 ### 📊 **Central Visibility**
 
-All new investigations are announced in your designated channel (e.g., `#potential-issues`) for team awareness.
+All new investigations are announced in your designated issues channel for team awareness.
 
 ### 🛡️ **Secure by Default**
 
@@ -119,7 +119,7 @@ flowchart TD
    SLACK_BOT_TOKEN=xoxb-your-bot-token
    SLACK_SIGNING_SECRET=your-signing-secret
    SLACK_APP_TOKEN=xapp-your-app-token
-   POTENTIAL_ISSUES_CHANNEL_ID=C123456789  # Channel ID for notifications
+   ISSUES_CHANNEL_ID=C123456789  # Channel ID for notifications
 
    # Optional
    ALLOWED_WORKSPACE_IDS=T123456,T789012  # Restrict to specific workspaces
@@ -275,7 +275,7 @@ Notably absent: No `channels:read`, `channels:history`, `messages:read`, `usergr
 | `SLACK_BOT_TOKEN`             | Yes      | Bot user OAuth token                                  |
 | `SLACK_SIGNING_SECRET`        | Yes      | App signing secret                                    |
 | `SLACK_APP_TOKEN`             | Yes      | Socket mode app token                                 |
-| `POTENTIAL_ISSUES_CHANNEL_ID` | Yes      | Channel ID for investigation notifications            |
+| `ISSUES_CHANNEL_ID`           | Yes      | Channel ID for investigation notifications            |
 | `INCIDENT_RESPONSE_GROUP_ID`  | No       | User group ID - members auto-added on escalation     |
 | `ALLOWED_WORKSPACE_IDS`       | No       | Comma-separated list of allowed workspace IDs         |
 | `NODE_ENV`                    | No       | Set to `production` for production deployments        |
@@ -284,7 +284,7 @@ Notably absent: No `channels:read`, `channels:history`, `messages:read`, `usergr
 
 You can customize Trace by:
 
-- Changing the notification channel (set `POTENTIAL_ISSUES_CHANNEL_ID`)
+- Changing the notification channel (set `ISSUES_CHANNEL_ID`)
 - Restricting to specific workspaces (set `ALLOWED_WORKSPACE_IDS`)
 - Modifying the channel naming pattern in `src/utils/nameGenerator.ts`
 
