@@ -1,13 +1,15 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
+import { WebClient } from '@slack/web-api';
 import { PrismaClient } from '@prisma/client';
 
 interface IncidentContext {
   command: SlackCommandMiddlewareArgs['command'];
   respond: RespondFn;
+  client: WebClient;
 }
 
 export async function handleIncident(
-  { command, respond }: IncidentContext,
+  { command, respond, client }: IncidentContext,
   prisma: PrismaClient
 ): Promise<void> {
   try {
@@ -33,6 +35,14 @@ export async function handleIncident(
       return;
     }
 
+    if (investigation.status === 'closed') {
+      await respond({
+        text: '⚠️ This investigation is closed and cannot be escalated to an incident',
+        response_type: 'ephemeral',
+      });
+      return;
+    }
+
     // Create incident
     await prisma.incident.create({
       data: {
@@ -46,6 +56,22 @@ export async function handleIncident(
       where: { id: investigation.id },
       data: { status: 'escalated' },
     });
+
+    // Add incident response team if configured
+    const incidentResponseGroup = process.env.INCIDENT_RESPONSE_GROUP_ID;
+    if (incidentResponseGroup) {
+      try {
+        // Invite the user group directly to the channel
+        // Slack accepts user group IDs (S...) in the users parameter
+        await client.conversations.invite({
+          channel: command.channel_id,
+          users: incidentResponseGroup,
+        });
+      } catch (error) {
+        // Log but don't fail the incident escalation if group invite fails
+        console.error('Failed to add incident response team:', error instanceof Error ? error.message : 'Unknown error');
+      }
+    }
 
     await respond({
       response_type: 'in_channel',

@@ -78,7 +78,8 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
         case 'incident':
           await handleIncident({
             command,
-            respond
+            respond,
+            client
           }, prisma);
           break;
 
