@@ -127,27 +127,40 @@ All commands use the `/trace` prefix:
    - Lists up to 25 most recent investigations
    - Excludes closed investigations
 
-6. **`/trace resolve`** - Resolve incident
+6. **`/trace stats`** - View investigation statistics
+   - Shows all-time metrics and key performance indicators
+   - Total investigations (active vs total)
+   - Incident escalation rate
+   - Average resolution time
+   - Top investigators and incident commanders
+
+7. **`/trace export`** - Export all investigations to CSV
+   - Exports complete investigation history
+   - Includes all investigation details, incident data, and metrics
+   - Sends CSV file as a direct message
+   - Useful for external analysis and reporting
+
+8. **`/trace resolve`** - Resolve incident
    - **Only works for escalated incidents**
    - Marks the incident as resolved (service restored)
    - Investigation remains open for follow-up work
    - Posts resolution notice to channel and issues channel
    - Tracks who resolved it and when
 
-7. **`/trace transfer @user`** - Transfer incident commander role
+9. **`/trace transfer @user`** - Transfer incident commander role
    - **Only works within investigation channels that have been escalated**
    - Changes the incident commander to the mentioned user
    - Posts public confirmation in the channel
    - Example: `/trace transfer @sarah`
 
-8. **`/trace close`** - Close investigation
-   - **Only works within investigation channels**
-   - Cannot close if incident is unresolved
-   - Archives the Slack channel
-   - Updates investigation status to "closed"
-   - Tracks who closed it and when
+10. **`/trace close`** - Close investigation
+    - **Only works within investigation channels**
+    - Cannot close if incident is unresolved
+    - Archives the Slack channel
+    - Updates investigation status to "closed"
+    - Tracks who closed it and when
 
-9. **`/trace help`** - Show available commands
+11. **`/trace help`** - Show available commands
 
 ## Development Workflow
 

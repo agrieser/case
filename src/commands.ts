@@ -8,6 +8,8 @@ import { handleList } from './handlers/list';
 import { handleClose } from './handlers/close';
 import { handleTransfer } from './handlers/transfer';
 import { handleResolve } from './handlers/resolve';
+import { handleStats } from './handlers/stats';
+import { handleExport } from './handlers/export';
 import { 
   validateCommandContext, 
   parseCommandArgs, 
@@ -113,6 +115,20 @@ export function registerCommands(app: App, prisma: PrismaClient): void {
             respond,
             channelId: command.channel_id!,
             userId: command.user_id!
+          }, prisma);
+          break;
+
+        case 'stats':
+          await handleStats({
+            respond
+          }, prisma);
+          break;
+
+        case 'export':
+          await handleExport({
+            respond,
+            userId: command.user_id!,
+            client
           }, prisma);
           break;
 

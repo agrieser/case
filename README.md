@@ -143,6 +143,8 @@ All commands start with `/trace`:
 | ----------------------------- | --------------------------------- | --------------------------- |
 | `/trace create [description]` | Create a new investigation        | Any channel                 |
 | `/trace list`                 | View all active investigations    | Any channel                 |
+| `/trace stats`                | View investigation statistics     | Any channel                 |
+| `/trace export`               | Export all investigations to CSV  | Any channel                 |
 | `/trace status`               | Show investigation details        | Investigation channels only |
 | `/trace incident`             | Escalate to incident              | Investigation channels only |
 | `/trace transfer @user`       | Transfer incident commander role  | Investigation channels only |

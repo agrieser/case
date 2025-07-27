@@ -28,6 +28,12 @@ jest.mock('../handlers/transfer', () => ({
 jest.mock('../handlers/resolve', () => ({
   handleResolve: jest.fn()
 }));
+jest.mock('../handlers/stats', () => ({
+  handleStats: jest.fn()
+}));
+jest.mock('../handlers/export', () => ({
+  handleExport: jest.fn()
+}));
 
 // Mock middleware
 jest.mock('../middleware/rateLimit', () => ({
@@ -153,7 +159,8 @@ describe('registerCommands', () => {
 
       expect(handleIncident).toHaveBeenCalledWith({
         command: mockCommand,
-        respond: mockRespond
+        respond: mockRespond,
+        client: mockClient
       }, mockPrisma);
     });
   });
@@ -239,6 +246,48 @@ describe('registerCommands', () => {
         respond: mockRespond,
         channelId: 'C123456',
         userId: 'U123456'
+      }, mockPrisma);
+    });
+  });
+
+  describe('/trace stats', () => {
+    it('should call handleStats', async () => {
+      const mockCommand = createMockCommand({ text: 'stats' });
+      const mockRespond = createMockRespond();
+      const ack = jest.fn();
+
+      await commandHandler({
+        command: mockCommand,
+        ack,
+        respond: mockRespond,
+        client: mockClient
+      });
+
+      const { handleStats } = jest.requireMock('../handlers/stats') as any;
+      expect(handleStats).toHaveBeenCalledWith({
+        respond: mockRespond
+      }, mockPrisma);
+    });
+  });
+
+  describe('/trace export', () => {
+    it('should call handleExport', async () => {
+      const mockCommand = createMockCommand({ text: 'export' });
+      const mockRespond = createMockRespond();
+      const ack = jest.fn();
+
+      await commandHandler({
+        command: mockCommand,
+        ack,
+        respond: mockRespond,
+        client: mockClient
+      });
+
+      const { handleExport } = jest.requireMock('../handlers/export') as any;
+      expect(handleExport).toHaveBeenCalledWith({
+        respond: mockRespond,
+        userId: 'U123456',
+        client: mockClient
       }, mockPrisma);
     });
   });

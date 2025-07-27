@@ -31,6 +31,8 @@ export function createMockPrismaClient() {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
+      groupBy: jest.fn(),
     },
     incident: {
       findUnique: jest.fn(),
@@ -38,6 +40,8 @@ export function createMockPrismaClient() {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
+      groupBy: jest.fn(),
     },
     event: {
       findUnique: jest.fn(),
@@ -67,6 +71,9 @@ export function createMockWebClient() {
       open: jest.fn().mockResolvedValue({ ok: true }),
       update: jest.fn().mockResolvedValue({ ok: true }),
       push: jest.fn().mockResolvedValue({ ok: true }),
+    },
+    files: {
+      uploadV2: jest.fn().mockResolvedValue({ ok: true }),
     },
   };
 }
