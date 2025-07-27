@@ -18,7 +18,7 @@ export async function generateUniqueName(
   // First try the standard name
   const baseName = generateInvestigationName(title);
   const exists = await checkExists(baseName);
-  
+
   if (!exists) {
     return baseName;
   }
@@ -30,11 +30,11 @@ export async function generateUniqueName(
   while (attempts < maxAttempts) {
     // Generate a new random suffix
     const randomSuffix = crypto.randomBytes(2).toString('hex').substring(0, 3);
-    
+
     // Extract the base part without the original suffix
     const parts = baseName.split('-');
     parts[parts.length - 1] = randomSuffix; // Replace the last part (the suffix)
-    
+
     const name = parts.join('-');
     const nameExists = await checkExists(name);
 
@@ -75,20 +75,20 @@ export function generateChannelName(title: string): string {
 
   // Add case prefix
   const prefix = 'case-';
-  
+
   // Generate random suffix (3 characters)
   const randomSuffix = crypto.randomBytes(2).toString('hex').substring(0, 3);
-  
+
   // Calculate available length for the title part
   // Max 21 chars - 5 for "case-" - 4 for "-xxx" suffix = 12 chars for title
   const maxTitleLength = 21 - prefix.length - randomSuffix.length - 1;
-  
+
   // Truncate channel name if needed
   if (channelName.length > maxTitleLength) {
     channelName = channelName.substring(0, maxTitleLength);
     // Remove trailing hyphen if any
     channelName = channelName.replace(/-$/, '');
   }
-  
+
   return `${prefix}${channelName}-${randomSuffix}`;
 }

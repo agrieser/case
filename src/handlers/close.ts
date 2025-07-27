@@ -54,7 +54,7 @@ export async function handleClose(
     // Update investigation status to closed
     await prisma.investigation.update({
       where: { id: investigation.id },
-      data: { 
+      data: {
         status: 'closed',
         closedAt: new Date(),
         closedBy: userId,

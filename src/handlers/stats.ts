@@ -12,23 +12,23 @@ export async function handleStats(
   try {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
+
     // Current state metrics
     const currentInvestigations = await prisma.investigation.count({
-      where: { 
+      where: {
         status: 'investigating',
       },
     });
-    
+
     const currentIncidents = await prisma.investigation.count({
-      where: { 
+      where: {
         status: 'escalated',
         incident: {
           resolvedAt: null,
         },
       },
     });
-    
+
     // 7-day activity metrics
     const investigationsLast7Days = await prisma.investigation.count({
       where: {
@@ -37,7 +37,7 @@ export async function handleStats(
         },
       },
     });
-    
+
     const incidentsLast7Days = await prisma.incident.count({
       where: {
         escalatedAt: {
@@ -45,7 +45,7 @@ export async function handleStats(
         },
       },
     });
-    
+
     // Calculate time spent in investigations (7 days)
     const investigationsLast7DaysData = await prisma.investigation.findMany({
       where: {
@@ -59,14 +59,14 @@ export async function handleStats(
         status: true,
       },
     });
-    
+
     let totalInvestigationMinutes = 0;
     investigationsLast7DaysData.forEach(inv => {
       const endTime = inv.closedAt || now;
       const duration = endTime.getTime() - inv.createdAt.getTime();
       totalInvestigationMinutes += duration / (1000 * 60);
     });
-    
+
     // Calculate time spent in incidents (7 days)
     const incidentsLast7DaysData = await prisma.incident.findMany({
       where: {
@@ -79,17 +79,17 @@ export async function handleStats(
         resolvedAt: true,
       },
     });
-    
+
     let totalIncidentMinutes = 0;
     incidentsLast7DaysData.forEach(inc => {
       const endTime = inc.resolvedAt || now;
       const duration = endTime.getTime() - inc.escalatedAt.getTime();
       totalIncidentMinutes += duration / (1000 * 60);
     });
-    
+
     // Calculate average close times (all time for better data)
     const closedInvestigations = await prisma.investigation.findMany({
-      where: { 
+      where: {
         closedAt: { not: null },
       },
       select: {
@@ -97,7 +97,7 @@ export async function handleStats(
         closedAt: true,
       },
     });
-    
+
     let avgInvestigationCloseMinutes = 0;
     if (closedInvestigations.length > 0) {
       const totalMinutes = closedInvestigations.reduce((sum, inv) => {
@@ -106,7 +106,7 @@ export async function handleStats(
       }, 0);
       avgInvestigationCloseMinutes = Math.round(totalMinutes / closedInvestigations.length);
     }
-    
+
     const resolvedIncidents = await prisma.incident.findMany({
       where: { resolvedAt: { not: null } },
       select: {
@@ -114,7 +114,7 @@ export async function handleStats(
         resolvedAt: true,
       },
     });
-    
+
     let avgIncidentResolveMinutes = 0;
     if (resolvedIncidents.length > 0) {
       const totalMinutes = resolvedIncidents.reduce((sum, inc) => {
@@ -123,7 +123,7 @@ export async function handleStats(
       }, 0);
       avgIncidentResolveMinutes = Math.round(totalMinutes / resolvedIncidents.length);
     }
-    
+
     // Format time displays
     const formatMinutes = (minutes: number): string => {
       const hours = Math.floor(minutes / 60);
@@ -135,7 +135,7 @@ export async function handleStats(
       }
       return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
     };
-    
+
     // Format the response with operational focus
     await respond({
       response_type: 'ephemeral',

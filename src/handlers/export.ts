@@ -15,7 +15,7 @@ export async function handleExport(
   try {
     // Check if user is authorized to export
     const authorizedUsers = process.env.EXPORT_AUTHORIZED_USERS?.split(',').map(u => u.trim()) || [];
-    
+
     if (authorizedUsers.length > 0 && !authorizedUsers.includes(userId)) {
       await respond({
         text: '🔒 You are not authorized to export data. Please contact your administrator.',
@@ -23,7 +23,7 @@ export async function handleExport(
       });
       return;
     }
-    
+
     // Fetch all investigations with related data
     const investigations = await prisma.investigation.findMany({
       include: {
@@ -47,7 +47,7 @@ export async function handleExport(
 
     // Generate CSV content
     const csvRows: string[] = [];
-    
+
     // Header row
     csvRows.push([
       'Investigation Name',
@@ -70,10 +70,10 @@ export async function handleExport(
 
     // Data rows
     for (const inv of investigations) {
-      const duration = inv.closedAt 
+      const duration = inv.closedAt
         ? (inv.closedAt.getTime() - inv.createdAt.getTime()) / (1000 * 60 * 60)
         : (Date.now() - inv.createdAt.getTime()) / (1000 * 60 * 60);
-      
+
       const resolutionTime = inv.incident?.resolvedAt
         ? (inv.incident.resolvedAt.getTime() - inv.incident.escalatedAt.getTime()) / (1000 * 60 * 60)
         : null;
@@ -102,7 +102,7 @@ export async function handleExport(
 
     const csvContent = csvRows.join('\n');
     const buffer = Buffer.from(csvContent, 'utf-8');
-    
+
     // Generate filename with timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const filename = `case-export-${timestamp}.csv`;

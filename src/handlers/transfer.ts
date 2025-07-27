@@ -61,7 +61,7 @@ export async function handleTransfer(
     // Update incident commander
     await prisma.incident.update({
       where: { id: investigation.incident.id },
-      data: { 
+      data: {
         incidentCommander: newCommanderId,
       },
     });

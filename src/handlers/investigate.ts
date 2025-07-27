@@ -35,7 +35,7 @@ export async function handleInvestigate(
 
     // Generate channel name based on title
     const channelName = generateChannelName(validatedTitle);
-    
+
     // Create Slack channel for the investigation
     const channelResult = await client.conversations.create({
       name: channelName,
@@ -72,7 +72,7 @@ export async function handleInvestigate(
 
     // Get the issues channel ID from environment variable
     const issuesChannelId = process.env.ISSUES_CHANNEL_ID;
-    
+
     if (!issuesChannelId) {
       throw new Error('ISSUES_CHANNEL_ID environment variable not set');
     }
@@ -85,7 +85,7 @@ export async function handleInvestigate(
     } catch (error: any) {
       // Log the error but continue - we'll get a better error from postMessage if needed
       console.error('Failed to join issues channel:', error?.data?.error || error);
-      
+
       // If it's a missing_scope error, we need to add channels:join
       if (error?.data?.error === 'missing_scope') {
         throw new Error(`Bot missing required scope to join channels. Error: ${JSON.stringify(error.data)}`);

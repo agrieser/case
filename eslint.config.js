@@ -62,6 +62,15 @@ module.exports = [
           functions: "never", // Function params don't need trailing commas
         },
       ],
+      
+      // Trailing spaces rule - removes unnecessary whitespace
+      "no-trailing-spaces": [
+        "error",
+        {
+          skipBlankLines: false, // Also check blank lines
+          ignoreComments: false, // Also check comments
+        },
+      ],
     },
   },
 ];

@@ -15,7 +15,7 @@ export async function handleResolve(
     // Find the investigation for this channel
     const investigation = await prisma.investigation.findUnique({
       where: { channelId },
-      include: { 
+      include: {
         incident: true,
         _count: {
           select: { events: true },
@@ -58,7 +58,7 @@ export async function handleResolve(
     // Update incident as resolved
     await prisma.incident.update({
       where: { id: investigation.incident.id },
-      data: { 
+      data: {
         resolvedAt: new Date(),
         resolvedBy: userId,
       },

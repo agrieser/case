@@ -18,16 +18,16 @@ describe('registerListeners', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Initialize mocks
     mockPrisma = createMockPrismaClient();
     mockClient = createMockWebClient();
-    
+
     // Create maps to store registered handlers
     shortcuts = new Map();
     views = new Map();
     actions = new Map();
-    
+
     // Mock App with handler registration
     mockApp = {
       shortcut: jest.fn((name: string, handler: any) => {
@@ -40,7 +40,7 @@ describe('registerListeners', () => {
         actions.set(name, handler);
       }),
     };
-    
+
     // Register all listeners
     registerListeners(mockApp as App, mockPrisma);
   });
@@ -66,7 +66,7 @@ describe('registerListeners', () => {
 
       const handler = shortcuts.get('add_event_to_investigation');
       const ack = jest.fn();
-      
+
       await handler({
         shortcut: {
           type: 'message_action',
@@ -127,7 +127,7 @@ describe('registerListeners', () => {
 
       const handler = shortcuts.get('add_event_to_investigation');
       const ack = jest.fn();
-      
+
       await handler({
         shortcut: {
           type: 'message_action',
@@ -184,7 +184,7 @@ describe('registerListeners', () => {
 
       const handler = shortcuts.get('add_event_to_investigation');
       const ack = jest.fn();
-      
+
       await handler({
         shortcut: {
           type: 'message_action',
@@ -207,7 +207,7 @@ describe('registerListeners', () => {
     it('should handle invalid shortcut type', async () => {
       const handler = shortcuts.get('add_event_to_investigation');
       const ack = jest.fn();
-      
+
       await handler({
         shortcut: {
           type: 'global_shortcut', // Invalid type
@@ -227,7 +227,7 @@ describe('registerListeners', () => {
 
       const handler = shortcuts.get('add_event_to_investigation');
       const ack = jest.fn();
-      
+
       await handler({
         shortcut: {
           type: 'message_action',
@@ -269,7 +269,7 @@ describe('registerListeners', () => {
 
       const handler = views.get('select_investigation_for_event');
       const ack = jest.fn();
-      
+
       await handler({
         ack,
         view: {
@@ -308,7 +308,7 @@ describe('registerListeners', () => {
     it('should handle missing investigation selection', async () => {
       const handler = views.get('select_investigation_for_event');
       const ack = jest.fn();
-      
+
       await handler({
         ack,
         view: {
@@ -342,7 +342,7 @@ describe('registerListeners', () => {
 
       const handler = views.get('select_investigation_for_event');
       const ack = jest.fn();
-      
+
       await handler({
         ack,
         view: {
@@ -378,7 +378,7 @@ describe('registerListeners', () => {
     it('should open create investigation modal', async () => {
       const handler = actions.get('create_investigation_button');
       const ack = jest.fn();
-      
+
       await handler({
         ack,
         client: mockClient,
@@ -404,7 +404,7 @@ describe('registerListeners', () => {
     it('should handle missing trigger_id', async () => {
       const handler = actions.get('create_investigation_button');
       const ack = jest.fn();
-      
+
       await handler({
         ack,
         client: mockClient,
@@ -426,7 +426,7 @@ describe('registerListeners', () => {
 
       const handler = actions.get('create_investigation_button');
       const ack = jest.fn();
-      
+
       await handler({
         ack,
         client: errorClient,
@@ -443,11 +443,11 @@ describe('registerListeners', () => {
   describe('show_help_button action', () => {
     it('should call help handler', async () => {
       const { handleHelp } = await import('../handlers/help');
-      
+
       const handler = actions.get('show_help_button');
       const ack = jest.fn();
       const respond = jest.fn();
-      
+
       await handler({
         ack,
         respond,
@@ -477,7 +477,7 @@ describe('registerListeners', () => {
       const handler = actions.get('investigation_selected');
       const ack = jest.fn();
       const respond = jest.fn();
-      
+
       await handler({
         action: {
           type: 'static_select',
@@ -550,7 +550,7 @@ describe('registerListeners', () => {
       const handler = actions.get('investigation_selected');
       const ack = jest.fn();
       const respond = jest.fn();
-      
+
       await handler({
         action: {
           type: 'static_select',
@@ -585,7 +585,7 @@ describe('registerListeners', () => {
       const handler = actions.get('investigation_selected');
       const ack = jest.fn();
       const respond = jest.fn();
-      
+
       await handler({
         action: {
           type: 'static_select',
@@ -608,7 +608,7 @@ describe('registerListeners', () => {
       const handler = actions.get('investigation_selected');
       const ack = jest.fn();
       const respond = jest.fn();
-      
+
       await handler({
         action: {
           type: 'button', // Invalid type
@@ -628,7 +628,7 @@ describe('registerListeners', () => {
       const handler = actions.get('investigation_selected');
       const ack = jest.fn();
       const respond = jest.fn();
-      
+
       await handler({
         action: {
           type: 'static_select',

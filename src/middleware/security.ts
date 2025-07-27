@@ -14,18 +14,18 @@ export function isExternalUser(userId: string, teamId: string, enterpriseId?: st
   if (userId.includes('_')) {
     return true;
   }
-  
+
   // Format 2: W prefix indicates external workspace user
   if (userId.startsWith('W')) {
     return true;
   }
-  
+
   // In enterprise grid, check if user's team differs from command origin
   if (enterpriseId && teamId) {
     // This would need additional context about user's home workspace
     // For now, we'll rely on the ID format checks above
   }
-  
+
   return false;
 }
 
@@ -35,22 +35,22 @@ export function isExternalUser(userId: string, teamId: string, enterpriseId?: st
  */
 export function validateUserAccess(command: SlackCommandMiddlewareArgs['command']): string | null {
   const { user_id, team_id, enterprise_id } = command;
-  
+
   if (!user_id || !team_id) {
     return '⚠️ Invalid command context. Missing user or team information.';
   }
-  
+
   // Check if user is external
   if (isExternalUser(user_id, team_id, enterprise_id)) {
     return '⚠️ This command is not available for external users. Please contact a member of this workspace for assistance.';
   }
-  
+
   // Check if we should restrict to specific workspaces
   const allowedWorkspaces = process.env.ALLOWED_WORKSPACE_IDS?.split(',').map(id => id.trim());
   if (allowedWorkspaces && allowedWorkspaces.length > 0 && !allowedWorkspaces.includes(team_id)) {
     return '⚠️ This command is not available in this workspace.';
   }
-  
+
   return null; // Access allowed
 }
 
@@ -67,7 +67,7 @@ export function getUserContext(command: SlackCommandMiddlewareArgs['command']): 
   teamDomain?: string;
 } {
   const { user_id, team_id, enterprise_id, channel_id, user_name, team_domain } = command;
-  
+
   return {
     userId: user_id || 'unknown',
     teamId: team_id || 'unknown',

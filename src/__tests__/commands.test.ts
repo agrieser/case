@@ -79,18 +79,18 @@ describe('registerCommands', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Initialize mocks
     mockPrisma = createMockPrismaClient();
     mockClient = createMockWebClient();
-    
+
     // Mock App with command registration
     mockApp = {
       command: jest.fn((_cmd: string, handler: any) => {
         commandHandler = handler;
       }),
     };
-    
+
     // Register commands
     registerCommands(mockApp as App, mockPrisma);
   });
@@ -389,9 +389,9 @@ describe('registerCommands', () => {
 
   describe('rate limiting', () => {
     it('should reject command when rate limited', async () => {
-      checkRateLimit.mockReturnValueOnce({ 
-        allowed: false, 
-        message: '⚠️ You are sending too many requests. Please wait 30 seconds.', 
+      checkRateLimit.mockReturnValueOnce({
+        allowed: false,
+        message: '⚠️ You are sending too many requests. Please wait 30 seconds.',
       });
 
       const mockCommand = createMockCommand({ text: 'status' });
@@ -444,7 +444,7 @@ describe('registerCommands', () => {
         channelId: 'C123456',
       });
 
-      const mockCommand = createMockCommand({ 
+      const mockCommand = createMockCommand({
         text: 'create API issue',
         user_id: 'U123_T456',
       });
@@ -475,7 +475,7 @@ describe('registerCommands', () => {
         channelId: 'C123456',
       });
 
-      const mockCommand = createMockCommand({ 
+      const mockCommand = createMockCommand({
         text: 'status',
         user_id: 'W123456',
       });
@@ -494,7 +494,7 @@ describe('registerCommands', () => {
 
     it('should log blocked external user attempts', async () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-      
+
       validateUserAccess.mockReturnValueOnce('⚠️ This command is not available for external users. Please contact a member of this workspace for assistance.');
       getUserContext.mockReturnValueOnce({
         userId: 'U123_T456',
@@ -503,7 +503,7 @@ describe('registerCommands', () => {
         channelId: 'C123456',
       });
 
-      const mockCommand = createMockCommand({ 
+      const mockCommand = createMockCommand({
         text: 'incident',
         user_id: 'U123_T456',
       });

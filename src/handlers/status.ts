@@ -105,10 +105,10 @@ function getIncidentStatus(incident: any): string {
   if (!incident) {
     return 'None';
   }
-  
+
   if (incident.resolvedAt) {
     return '✅ Resolved';
   }
-  
+
   return '🚨 Active';
 }
