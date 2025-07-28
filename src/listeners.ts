@@ -155,11 +155,6 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
       },
     });
 
-    // Get updated event count
-    const eventCount = await prisma.event.count({
-      where: { investigationId: investigation.id },
-    });
-
     // Post confirmation to the investigation channel
     // Using simple text format to see if Slack will handle the URL naturally
     await client.chat.postMessage({

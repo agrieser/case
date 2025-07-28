@@ -54,7 +54,7 @@ export class PagerDutyService {
     }
 
     const dedupKey = `case-${investigationId}`;
-    const channelUrl = slackWorkspaceUrl 
+    const channelUrl = slackWorkspaceUrl
       ? `${slackWorkspaceUrl}/archives/${channelId}`
       : `slack://channel?id=${channelId}`;
 
@@ -72,15 +72,15 @@ export class PagerDutyService {
           investigation_id: investigationId,
           channel_id: channelId,
           incident_commander: incidentCommander,
-          case_type: 'incident'
-        }
+          case_type: 'incident',
+        },
       },
       links: [
         {
           href: channelUrl,
-          text: 'View in Slack'
-        }
-      ]
+          text: 'View in Slack',
+        },
+      ],
     };
 
     try {
@@ -90,8 +90,8 @@ export class PagerDutyService {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/vnd.pagerduty+json;version=2'
-          }
+            'Accept': 'application/vnd.pagerduty+json;version=2',
+          },
         }
       );
 
@@ -122,7 +122,7 @@ export class PagerDutyService {
     const event: PagerDutyEvent = {
       routing_key: this.routingKey!,
       event_action: 'resolve',
-      dedup_key: dedupKey
+      dedup_key: dedupKey,
     };
 
     try {
@@ -132,8 +132,8 @@ export class PagerDutyService {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/vnd.pagerduty+json;version=2'
-          }
+            'Accept': 'application/vnd.pagerduty+json;version=2',
+          },
         }
       );
 

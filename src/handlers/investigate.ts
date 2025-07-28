@@ -64,7 +64,7 @@ export async function handleInvestigate(
       .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '')
       .replace(/javascript:\s*/gi, '')
       .substring(0, 250); // Slack topic limit
-    
+
     try {
       await client.conversations.setTopic({
         channel: channelId,

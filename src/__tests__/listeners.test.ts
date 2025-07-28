@@ -90,13 +90,7 @@ describe('registerListeners', () => {
       });
       expect(mockClient.chat.postMessage).toHaveBeenCalledWith({
         channel: 'C999INVEST',
-        blocks: expect.arrayContaining([
-          expect.objectContaining({
-            text: expect.objectContaining({
-              text: expect.stringContaining('case-api-issue-abc'),
-            }),
-          }),
-        ]),
+        text: 'Evidence added by <@U123456>: https://workspace.slack.com/archives/C123456/p1234567890123456',
       });
       expect(mockClient.chat.postEphemeral).toHaveBeenCalledWith({
         channel: 'C123456',

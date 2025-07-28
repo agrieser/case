@@ -62,6 +62,7 @@ export function createMockWebClient() {
       invite: jest.fn().mockResolvedValue({ ok: true }),
       list: jest.fn().mockResolvedValue({ ok: true, channels: [] }),
       archive: jest.fn().mockResolvedValue({ ok: true }),
+      setTopic: jest.fn().mockResolvedValue({ ok: true }),
     },
     chat: {
       postMessage: jest.fn().mockResolvedValue({ ok: true }),
@@ -74,6 +75,9 @@ export function createMockWebClient() {
     },
     files: {
       uploadV2: jest.fn().mockResolvedValue({ ok: true }),
+    },
+    team: {
+      info: jest.fn().mockResolvedValue({ ok: true, team: { id: 'T123456', name: 'Test Team', url: 'https://test-team.slack.com' } }),
     },
   };
 }
