@@ -1,5 +1,6 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
 import { PrismaClient } from '@prisma/client';
+import { pagerDutyService } from '../services/pagerduty';
 
 interface StatusContext {
   command: SlackCommandMiddlewareArgs['command'];
@@ -33,6 +34,42 @@ export async function handleStatus(
     const timeSinceCreation = Date.now() - investigation.createdAt.getTime();
     const duration = formatDuration(timeSinceCreation);
 
+    // Build fields array
+    const fields = [
+      {
+        type: 'mrkdwn' as const,
+        text: `*Title:*\n${investigation.title}`,
+      },
+      {
+        type: 'mrkdwn' as const,
+        text: `*Status:*\n${investigation.status}`,
+      },
+      {
+        type: 'mrkdwn' as const,
+        text: `*Evidence Collected:*\n${investigation._count.events} pieces`,
+      },
+      {
+        type: 'mrkdwn' as const,
+        text: `*Duration:*\n${duration}`,
+      },
+      {
+        type: 'mrkdwn' as const,
+        text: `*Created by:*\n<@${investigation.createdBy}>`,
+      },
+      {
+        type: 'mrkdwn' as const,
+        text: `*Incident:*\n${getIncidentStatus(investigation.incident)}`,
+      },
+    ];
+
+    // Add PagerDuty status if enabled and incident exists
+    if (pagerDutyService.isEnabled() && investigation.incident) {
+      fields.push({
+        type: 'mrkdwn' as const,
+        text: `*PagerDuty:*\n${investigation.incident.pagerDutyIncidentKey ? '✅ Integrated' : '❌ Not integrated'}`,
+      });
+    }
+
     await respond({
       response_type: 'ephemeral',
       blocks: [
@@ -45,32 +82,7 @@ export async function handleStatus(
         },
         {
           type: 'section',
-          fields: [
-            {
-              type: 'mrkdwn',
-              text: `*Title:*\n${investigation.title}`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Status:*\n${investigation.status}`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Evidence Collected:*\n${investigation._count.events} pieces`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Duration:*\n${duration}`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Created by:*\n<@${investigation.createdBy}>`,
-            },
-            {
-              type: 'mrkdwn',
-              text: `*Incident:*\n${getIncidentStatus(investigation.incident)}`,
-            },
-          ],
+          fields,
         },
       ],
     });

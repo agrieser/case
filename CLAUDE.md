@@ -11,6 +11,7 @@ Case is a Slack app that implements a streamlined incident management workflow. 
 - **Message Shortcuts**: Right-click any message to add it as evidence
 - **Central Notifications**: Investigation summaries posted to issues channel
 - **Smart Event Linking**: Add events from any channel to any investigation
+- **PagerDuty Integration**: Automatically create and resolve PagerDuty incidents (optional)
 
 ### Investigation & Incident Lifecycle
 
@@ -44,6 +45,8 @@ src/
 │   ├── incident.ts    # Escalate to incident
 │   ├── list.ts        # List active investigations
 │   └── help.ts        # Show help message
+├── services/          # External service integrations
+│   └── pagerduty.ts   # PagerDuty API integration
 ├── utils/             # Utility functions
 │   ├── nameGenerator.ts   # Generate investigation & channel names
 │   └── formatters.ts      # Format Slack messages
@@ -87,6 +90,7 @@ model Incident {
   investigationId     String        @unique // Foreign key to Investigation
   incidentCommander   String        // Slack user ID
   escalatedAt         DateTime      @default(now())
+  pagerDutyIncidentKey String?      // PagerDuty dedup key for incident tracking
   
   investigation       Investigation @relation(fields: [investigationId], references: [id])
 }
@@ -199,6 +203,11 @@ Optional:
   - If set, only listed users can use `/case export`
   - Spaces around IDs are automatically trimmed
   - To find a user's ID: Click their profile → More → Copy member ID
+- `PAGERDUTY_ROUTING_KEY` - PagerDuty Events API V2 routing key (32-character string)
+  - When set, PagerDuty integration is automatically enabled
+  - Incidents will be automatically created when Case escalates to incident
+  - Incidents will be automatically resolved when Case incident is resolved
+  - To obtain: Create an Events API V2 integration in PagerDuty service settings
 
 Test environment uses `.env.test` with separate database.
 
@@ -317,6 +326,37 @@ Key configuration in `manifest.yml`:
 - Message shortcut: "Collect Evidence"
 - Slash command: `/case`
 - Required bot scopes
+
+## PagerDuty Integration
+
+When `PAGERDUTY_ROUTING_KEY` is set, Case automatically integrates with PagerDuty:
+
+### How It Works
+1. **Incident Creation**: When a Case investigation is escalated to incident via `/case incident`:
+   - A PagerDuty incident is automatically triggered
+   - The incident uses a dedup key of `case-{investigationId}` for correlation
+   - Incident includes investigation title, channel link, and incident commander
+   
+2. **Incident Resolution**: When a Case incident is resolved via `/case resolve`:
+   - The corresponding PagerDuty incident is automatically resolved
+   - Resolution status is shown in the Slack confirmation message
+
+3. **Status Visibility**: 
+   - `/case status` shows PagerDuty integration status when enabled
+   - Incident escalation messages indicate if PagerDuty was triggered
+   - Resolution messages show if PagerDuty was successfully resolved
+
+### PagerDuty Setup
+1. In PagerDuty, navigate to your service's Integrations tab
+2. Add a new integration and select "Events API V2"
+3. Copy the Integration Key (routing key)
+4. Set `PAGERDUTY_ROUTING_KEY` in your `.env` file
+5. Restart the Case app
+
+### Error Handling
+- PagerDuty failures don't block Case operations
+- All PagerDuty errors are logged but operations continue
+- Users see PagerDuty status in command responses
 
 ## Future Enhancements
 

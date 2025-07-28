@@ -116,6 +116,7 @@ ISSUES_CHANNEL_ID="C123456789"  # See below for how to find this
 NODE_ENV="production"
 # INCIDENT_RESPONSE_GROUP_ID="S123456789"  # Optional: User group for incidents
 # ALLOWED_WORKSPACE_IDS="T123456,T789012"  # Optional: Restrict to workspaces
+# PAGERDUTY_ROUTING_KEY="your-32-char-routing-key"  # Optional: Enable PagerDuty integration
 ```
 
 ### 3.4 Find Your Issues Channel ID
@@ -245,9 +246,37 @@ WantedBy=multi-user.target
 2. Verify workspace allows apps to create channels
 3. Check for rate limiting in logs
 
+## Optional: PagerDuty Integration
+
+Case can automatically create and resolve PagerDuty incidents when investigations are escalated.
+
+### Setting Up PagerDuty Integration
+
+1. **Create PagerDuty Integration**
+   - Log into your PagerDuty account
+   - Navigate to your service
+   - Go to **Integrations** tab
+   - Click **"Add Integration"**
+   - Select **"Events API V2"**
+   - Copy the Integration Key (Routing Key)
+
+2. **Configure Case**
+   - Add to your `.env` file:
+     ```bash
+     PAGERDUTY_ROUTING_KEY="your-32-character-routing-key"
+     ```
+   - Restart the Case application
+
+3. **How It Works**
+   - When you run `/case incident`, a PagerDuty incident is automatically triggered
+   - When you run `/case resolve`, the PagerDuty incident is automatically resolved
+   - Check status with `/case status` in any investigation channel
+   - PagerDuty failures don't block Case operations
+
 ## Next Steps
 
 - Configure incident response team: Set `INCIDENT_RESPONSE_GROUP_ID`
+- Enable PagerDuty integration: Set `PAGERDUTY_ROUTING_KEY`
 - Set up monitoring for the application
 - Configure log aggregation
 - Set up database backups

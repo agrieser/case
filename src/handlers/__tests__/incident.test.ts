@@ -2,6 +2,14 @@ import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals
 import { handleIncident } from '../incident';
 import { createMockRespond, createMockCommand, createMockPrismaClient, createMockWebClient } from '../../test/utils/testHelpers';
 
+// Mock the pagerduty service
+jest.mock('../../services/pagerduty', () => ({
+  pagerDutyService: {
+    isEnabled: jest.fn(() => false),
+    triggerIncident: jest.fn(),
+  },
+}));
+
 describe('handleIncident', () => {
   let mockPrisma: any;
   let mockClient: any;
@@ -55,6 +63,7 @@ describe('handleIncident', () => {
         escalatedAt: new Date(),
         resolvedAt: null,
         resolvedBy: null,
+        pagerDutyIncidentKey: null,
       });
       mockPrisma.investigation.update.mockResolvedValue({
         ...mockInvestigation,
@@ -68,6 +77,7 @@ describe('handleIncident', () => {
         data: {
           investigationId: 'inv-123',
           incidentCommander: 'U123456',
+          pagerDutyIncidentKey: null,
         },
       });
 

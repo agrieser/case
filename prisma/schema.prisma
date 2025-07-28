@@ -56,6 +56,7 @@ model Incident {
   escalatedAt         DateTime      @default(now())
   resolvedAt          DateTime?     // When incident was resolved
   resolvedBy          String?       // Slack user ID who resolved it
+  pagerDutyIncidentKey String?      // PagerDuty dedup key for incident tracking
 
   investigation       Investigation @relation(fields: [investigationId], references: [id])
 }

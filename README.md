@@ -52,6 +52,7 @@ Right-click any Slack message → "Collect Evidence" → Links it to your invest
 - **📊 Full Reporting**: Export everything to CSV for analysis
 - **🛡️ Secure**: Can't read your messages, only stores links
 - **📈 Metrics**: Track MTTR, escalation rates, and team performance
+- **🔔 PagerDuty Integration**: Automatically create and resolve PagerDuty incidents
 
 ## 🚀 Quick Start
 
@@ -139,6 +140,7 @@ All commands start with `/case`:
    - You become incident commander
    - Status changes to "escalated"
    - Incident response team auto-added (if configured)
+   - PagerDuty incident automatically triggered (if configured)
 
 4. **Resolve Incident** (3:30 PM)
 
@@ -148,6 +150,7 @@ All commands start with `/case`:
 
    - Incident marked resolved (35 min duration)
    - Investigation remains open for RCA
+   - PagerDuty incident automatically resolved (if configured)
 
 5. **Close Investigation** (Next day after post-mortem)
    ```
@@ -236,6 +239,17 @@ Exports CSV with:
 - Resolution metrics
 - Perfect for quarterly reviews
 
+## 🔔 PagerDuty Integration
+
+Case seamlessly integrates with PagerDuty to automate incident management:
+
+1. **Set up**: Add your PagerDuty Events API V2 routing key to `PAGERDUTY_ROUTING_KEY`
+2. **Automatic triggers**: When you run `/case incident`, PagerDuty incident is created
+3. **Automatic resolution**: When you run `/case resolve`, PagerDuty incident is resolved
+4. **Status tracking**: See PagerDuty status in `/case status` within investigation channels
+
+No additional commands needed - it just works!
+
 ## 🛠️ Configuration
 
 ### Required Environment Variables
@@ -255,6 +269,7 @@ Exports CSV with:
 | `INCIDENT_RESPONSE_GROUP_ID` | User group auto-added to incidents |
 | `ALLOWED_WORKSPACE_IDS`      | Restrict to specific workspaces    |
 | `EXPORT_AUTHORIZED_USERS`    | Comma-separated Slack user IDs who can export data |
+| `PAGERDUTY_ROUTING_KEY`      | Enable PagerDuty integration (32-char Events API V2 key) |
 
 ## 🏗️ Technical Details
 

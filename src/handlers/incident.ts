@@ -1,6 +1,7 @@
 import { SlackCommandMiddlewareArgs, RespondFn } from '@slack/bolt';
 import { WebClient } from '@slack/web-api';
 import { PrismaClient } from '@prisma/client';
+import { pagerDutyService } from '../services/pagerduty';
 
 interface IncidentContext {
   command: SlackCommandMiddlewareArgs['command'];
@@ -43,11 +44,39 @@ export async function handleIncident(
       return;
     }
 
+    // Trigger PagerDuty incident if enabled
+    let pagerDutyIncidentKey: string | null = null;
+    if (pagerDutyService.isEnabled()) {
+      try {
+        // Get workspace URL from team info if available
+        let slackWorkspaceUrl: string | undefined;
+        try {
+          const teamInfo = await client.team.info();
+          slackWorkspaceUrl = teamInfo.team?.url;
+        } catch (error) {
+          // If we can't get team info, continue without the URL
+          console.error('Failed to get team info for workspace URL:', error);
+        }
+        pagerDutyIncidentKey = await pagerDutyService.triggerIncident(
+          investigation.id,
+          investigation.name,
+          investigation.title,
+          command.channel_id,
+          command.user_id,
+          slackWorkspaceUrl
+        );
+      } catch (error) {
+        // Log but don't fail the incident escalation if PagerDuty fails
+        console.error('Failed to trigger PagerDuty incident:', error instanceof Error ? error.message : 'Unknown error');
+      }
+    }
+
     // Create incident
     await prisma.incident.create({
       data: {
         investigationId: investigation.id,
         incidentCommander: command.user_id,
+        pagerDutyIncidentKey,
       },
     });
 
@@ -117,7 +146,7 @@ export async function handleIncident(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Investigation:* ${investigation.name}\n*Title:* ${investigation.title}\n*Incident Commander:* <@${command.user_id}>`,
+            text: `*Investigation:* ${investigation.name}\n*Title:* ${investigation.title}\n*Incident Commander:* <@${command.user_id}>${pagerDutyIncidentKey ? '\n*PagerDuty:* ✅ Incident triggered' : ''}`,
           },
         },
         {

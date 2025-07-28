@@ -1,5 +1,6 @@
 import { RespondFn } from '@slack/bolt';
 import { PrismaClient } from '@prisma/client';
+import { pagerDutyService } from '../services/pagerduty';
 
 interface ResolveContext {
   respond: RespondFn;
@@ -64,6 +65,17 @@ export async function handleResolve(
       },
     });
 
+    // Resolve PagerDuty incident if it was created
+    let pagerDutyResolved = false;
+    if (pagerDutyService.isEnabled() && investigation.incident.pagerDutyIncidentKey) {
+      try {
+        pagerDutyResolved = await pagerDutyService.resolveIncident(investigation.id);
+      } catch (error) {
+        // Log but don't fail the incident resolution if PagerDuty fails
+        console.error('Failed to resolve PagerDuty incident:', error instanceof Error ? error.message : 'Unknown error');
+      }
+    }
+
     // Post resolution message in channel
     await respond({
       response_type: 'in_channel',
@@ -79,7 +91,7 @@ export async function handleResolve(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Incident Duration:* ${durationText}\n*Resolved by:* <@${userId}>\n*Incident Commander:* <@${investigation.incident.incidentCommander}>`,
+            text: `*Incident Duration:* ${durationText}\n*Resolved by:* <@${userId}>\n*Incident Commander:* <@${investigation.incident.incidentCommander}>${investigation.incident.pagerDutyIncidentKey ? `\n*PagerDuty:* ${pagerDutyResolved ? '✅ Incident resolved' : '⚠️ Failed to resolve'}` : ''}`,
           },
         },
         {

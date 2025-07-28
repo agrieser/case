@@ -59,6 +59,7 @@ describe('formatters', () => {
         escalatedAt: new Date('2024-01-15T11:00:00Z'),
         resolvedAt: null,
         resolvedBy: null,
+        pagerDutyIncidentKey: null,
         investigation: {
           id: 'inv-123',
           name: 'case-golden-falcon',

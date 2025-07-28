@@ -10,7 +10,9 @@
       "Bash(grep:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run lint)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(npm run prisma:migrate:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }
