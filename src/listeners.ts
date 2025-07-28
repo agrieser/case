@@ -161,33 +161,10 @@ export function registerListeners(app: App, prisma: PrismaClient): void {
     });
 
     // Post confirmation to the investigation channel
+    // Using simple text format to see if Slack will handle the URL naturally
     await client.chat.postMessage({
       channel: investigation.channelId,
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `✅ New event added to investigation *${investigation.name}*`,
-          },
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `📎 <${slackMessageUrl}|View message> from <#${channelId}>`
-          }
-        },
-        {
-          type: 'context',
-          elements: [
-            {
-              type: 'mrkdwn',
-              text: `Added by: <@${userId}> • Total events: ${eventCount}`,
-            },
-          ],
-        },
-      ],
+      text: `Evidence added by <@${userId}>: ${slackMessageUrl}`,
     });
 
     // Also confirm to the user in the original channel

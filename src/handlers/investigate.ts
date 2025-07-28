@@ -58,10 +58,17 @@ export async function handleInvestigate(
     }
 
     // Set the channel topic to the investigation title
+    // For channel topics, we want the original title without HTML escaping
+    const topicTitle = title.trim()
+      .replace(/<script[^>]*>.*?<\/script>/gi, '')
+      .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '')
+      .replace(/javascript:\s*/gi, '')
+      .substring(0, 250); // Slack topic limit
+    
     try {
       await client.conversations.setTopic({
         channel: channelId,
-        topic: `🔍 ${validatedTitle}`,
+        topic: `🔍 ${topicTitle}`,
       });
     } catch (error: any) {
       console.error('Failed to set channel topic:', error?.data?.error || error);
@@ -125,7 +132,7 @@ export async function handleInvestigate(
           elements: [
             {
               type: 'mrkdwn',
-              text: `Head to <#${channelId}> to collaborate on this case. Gather evidence by right-clicking any message and selecting "Add to Investigation".`,
+              text: `Head to <#${channelId}> to collaborate on this case.`,
             },
           ],
         },
@@ -180,7 +187,7 @@ export async function handleInvestigate(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: '1. *Collect Evidence* 📎\n   Right-click any message → "Collect Evidence" to add context\n\n2. *Check Status* 📊\n   Use `/case status` in this channel\n\n3. *If Service Impact* 🚨\n   Escalate with `/case incident`\n\n4. *When Resolved* ✅\n   Close with `/case close`',
+            text: '1. *Collect Evidence* 📎\n   Right-click any message → "Collect Evidence" to add context\n\n2. *If Service Impact* 🚨\n   Escalate with `/case incident`\n\n3. *When Resolved* ✅\n   Close with `/case close`',
           },
         },
         {
