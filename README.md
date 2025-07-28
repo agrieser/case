@@ -210,6 +210,8 @@ Case only requests:
 - `chat:write` - Post updates
 - `channels:manage` - Create investigation channels
 - `channels:join` - Join notification channel
+- `channels:write.invites` - Add users to investigation channels
+- `channels:write.topic` - Set channel topics for investigations
 
 No message reading, no user data access, no file access.
 
