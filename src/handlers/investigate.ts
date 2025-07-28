@@ -57,6 +57,16 @@ export async function handleInvestigate(
       console.error('Bot failed to join channel:', error?.data?.error || error);
     }
 
+    // Set the channel topic to the investigation title
+    try {
+      await client.conversations.setTopic({
+        channel: channelId,
+        topic: `🔍 ${validatedTitle}`,
+      });
+    } catch (error: any) {
+      console.error('Failed to set channel topic:', error?.data?.error || error);
+    }
+
     // Invite the user who created the investigation to the channel
     try {
       await client.conversations.invite({
@@ -135,6 +145,54 @@ export async function handleInvestigate(
         createdBy: userId,
         issuesMessageTs: issuesMessage.ts,
       },
+    });
+
+    // Post initial message to the investigation channel with next steps
+    await client.chat.postMessage({
+      channel: channelId,
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: `🔍 Investigation: ${name}`,
+            emoji: true,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Title:* ${validatedTitle}\n*Created by:* <@${userId}>\n*Status:* Investigating`,
+          },
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '*📋 Next Steps:*',
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: '1. *Collect Evidence* 📎\n   Right-click any message → "Collect Evidence" to add context\n\n2. *Check Status* 📊\n   Use `/case status` in this channel\n\n3. *If Service Impact* 🚨\n   Escalate with `/case incident`\n\n4. *When Resolved* ✅\n   Close with `/case close`',
+          },
+        },
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: '💡 All commands work only in this investigation channel',
+            },
+          ],
+        },
+      ],
     });
 
     // Send ephemeral confirmation to the user
